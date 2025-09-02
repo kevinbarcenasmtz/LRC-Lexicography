@@ -72,7 +72,7 @@ logs/
 *.sw?
 
 # Database
-*.db
+# *.db
 *.sqlite3
 
 # Temporary files
