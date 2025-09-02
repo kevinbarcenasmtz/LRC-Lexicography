@@ -1,10 +1,12 @@
 
 # Development Guide
 
-1. Create a virtual environment: (Python version 3.11.9 required)
+1. Create a virtual environment: (Python version 3.11.1 required)
+py -3.11 --version
+Python 3.11.1
 
 ```bash
-python -m venv nahuaLEX_env
+py -3.11 -m venv nahuaLEX_env
 ```
 
 1. Activate the virtual environment:
