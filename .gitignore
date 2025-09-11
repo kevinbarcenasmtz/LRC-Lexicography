@@ -93,4 +93,4 @@ htmlcov/
 nahuaLEX_venv/
 nahuaLEX_env/
 src/notebooks/working_files
-data/sqLiteDb/
+data/sqLiteDb
