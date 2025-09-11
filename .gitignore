@@ -92,3 +92,5 @@ htmlcov/
 # Virtual Environment
 nahuaLEX_venv/
 nahuaLEX_env/
+src/notebooks/working_files
+data/sqLiteDb/
