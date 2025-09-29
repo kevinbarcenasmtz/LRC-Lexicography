@@ -252,6 +252,33 @@ class WHPScraper:
 
         return str(filepath)
 
+    def save_not_found_entries(
+        self, entries: List[WHPEntry], filename: Optional[str] = None
+    ) -> Optional[str]:
+        """Save list of not-found headwords to a text file for easy review"""
+        not_found = [e for e in entries if e.scrape_status == "not_found"]
+        
+        if not not_found:
+            self.logger.info("No not-found entries to save")
+            return None
+        
+        output_dir = Path(self.config.output_dir)
+        output_dir.mkdir(parents=True, exist_ok=True)
+        
+        if filename is None:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"whp_not_found_{timestamp}.txt"
+        
+        filepath = output_dir / filename
+        
+        with open(filepath, 'w', encoding='utf-8') as f:
+            f.write(f"# Not Found Entries - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+            f.write(f"# Total: {len(not_found)}\n\n")
+            for entry in not_found:
+                f.write(f"{entry.headword}\n")
+        
+        self.logger.info(f"Not-found entries saved to: {filepath}")
+        return str(filepath)
 
 def main():
     """Test the scraper with the ayac example"""
