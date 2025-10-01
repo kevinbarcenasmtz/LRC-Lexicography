@@ -1,4 +1,5 @@
 """
+src\scripts\whp_scraping\whp_scraper.py
 WHP Nahuatl Website Scraper
 Scrapes entries from nahuatl.wired-humanities.org to identify gaps in existing dataset
 """

@@ -1,4 +1,5 @@
 """
+src\scripts\whp_scraping\whp_database_scraper.py
 Integration script to scrape WHP entries from database headwords
 Connects SQLite database with WHPScraper
 """

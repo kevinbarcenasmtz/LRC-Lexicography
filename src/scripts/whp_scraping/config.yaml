@@ -1,4 +1,5 @@
 # WHP Scraper Configuration
+# src\scripts\whp_scraping\config.yaml
 scraping:
   base_url: "https://nahuatl.wired-humanities.org/content/"
   delay_seconds: 1.5
