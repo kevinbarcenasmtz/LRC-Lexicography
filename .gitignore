@@ -95,3 +95,4 @@ nahuaLEX_env/
 src/notebooks/working_files
 data/sqLiteDb
 nahuatl_processor.ipynb
+data/
