@@ -506,7 +506,7 @@ class AudioScraper:
         return -1
 
     def scrape_from_node_list(
-        self, node_file: str, resume: bool = True
+        self, node_file: str, resume: bool = True, limit: Optional[int] = None
     ) -> List[AudioFileData]:
         """
         Scrape audio nodes from file
@@ -522,7 +522,10 @@ class AudioScraper:
                 for line in f
                 if line.strip() and not line.startswith("#") and line.strip().isdigit()
             ]
-
+            
+        if limit is not None:
+            node_ids = node_ids[:limit]  # Add this line
+            self.logger.info(f"TESTING MODE: Limited to {limit} nodes")
         # Resume from checkpoint
         start_idx = 0
         last_completed = -1
@@ -723,6 +726,9 @@ def main():
         action="store_true",
         help="Start from beginning (ignore checkpoint)",
     )
+    parser.add_argument(
+        "--limit", type=int, help="Limit number of nodes to scrape (for testing)"
+    )
 
     args = parser.parse_args()
 
@@ -738,7 +744,9 @@ def main():
 
     # Run scraping
     audio_data = scraper.scrape_from_node_list(
-        node_file=args.node_file, resume=not args.no_resume
+        node_file=args.node_file,
+        resume=not args.no_resume,
+        limit=args.limit
     )
 
     # Save results
