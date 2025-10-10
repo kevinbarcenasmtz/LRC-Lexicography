@@ -1,16 +1,18 @@
+# from initial sqLite table get it already in json format skip all csv shenanigans as formatting becomes an issue
+
 import sqlite3
 import pandas as pd
 import json
 import re
 from typing import List, Dict, Optional
 
-class NahuatlCSVExporter:
-    """Transform normalized database to batch import CSV format"""
+class NahuatlJsonExporter:
+    """Transformed db to batch import JSON format"""
     
     def __init__(self, db_path: str):
         self.conn = sqlite3.connect(db_path)
         
-        # Reference table abbreviations
+        # reference tbl abbreviations
         self.authority_mapping = {
             'Molina': 'VLM',
             'Karttunen': 'AND',
@@ -37,7 +39,7 @@ class NahuatlCSVExporter:
             match = re.search(pattern, citation)
             if match:
                 return match.group(1)
-        
+            
         return ""
     
     def match_citation_to_authority(self, citation: str) -> Optional[str]:
@@ -62,8 +64,6 @@ class NahuatlCSVExporter:
     def build_whp_sources(self, row: pd.Series) -> List[Dict]:
         """Build Sources JSON for WHP/Classical Nahuatl entry"""
         sources = []
-        
-        # Parse citations
         citations = self.parse_citations(row['Citations'])
         
         # Authority columns to check
@@ -72,7 +72,7 @@ class NahuatlCSVExporter:
             'Frances Karttunen': 'AND',
             'Horacio Carochi / English': 'GML',
             'Andrés de Olmos': 'ALM',
-            "Lockhart’s Nahuatl as Written": 'NWN'
+            "Lockhart's Nahuatl as Written": 'NWN'
         }
         
         # Process each authority column
@@ -96,8 +96,7 @@ class NahuatlCSVExporter:
                 sources.append({
                     "source": abbrev,
                     "page_number": page_number,
-                    "original_entry": authority_content,
-                    "bibliography": citation
+                    "original_entry": authority_content + " " + citation
                 })
             
             # If no matching citation found but column has content, add without bibliography
@@ -106,11 +105,10 @@ class NahuatlCSVExporter:
                     "source": abbrev,
                     "page_number": "",
                     "original_entry": authority_content,
-                    "bibliography": ""
                 })
         
         return sources
-    
+        
     def build_idiez_sources(self, row: pd.Series) -> List[Dict]:
         """Build Sources JSON for IDIEZ/Huasteca Nahuatl entry"""
         # Compile all IDIEZ fields
@@ -136,22 +134,11 @@ class NahuatlCSVExporter:
             "page_number": "",
             "original_entry": original_entry
         }]
-    
-    def detect_homographs(self, df: pd.DataFrame, headword_col: str) -> pd.Series:
-        """Assign homograph numbers to duplicate headwords within same dataset"""
-        # Group by headword and count
-        headword_counts = df.groupby(headword_col).cumcount() + 1
         
-        # Only assign numbers if there are duplicates
-        duplicates = df[headword_col].duplicated(keep=False)
-        homograph_numbers = headword_counts.where(duplicates, "")
-        
-        return homograph_numbers
-    
-    def process_whp_data(self) -> pd.DataFrame:
-        """Process WHP data to CSV format"""
-        
+    def process_whp_data(self, limit: Optional[int] = None) -> List[Dict]:
+        """Process WHP data to JSON format"""
         print("Loading WHP data...")
+        
         query = """
         SELECT 
             Ref,
@@ -164,13 +151,16 @@ class NahuatlCSVExporter:
             "Frances Karttunen",
             "Horacio Carochi / English",
             "Andrés de Olmos",
-            "Lockhart’s Nahuatl as Written",
+            "Lockhart's Nahuatl as Written",
             themes,
             "Spanish Loanword",
             Citations,
             Number_of_Citations
         FROM "checkpoint_after_empty_p_tag_removal_20251002"
         """
+        
+        if limit:
+            query += f" LIMIT {limit}"
         
         df = pd.read_sql(query, self.conn)
         
@@ -182,38 +172,25 @@ class NahuatlCSVExporter:
             if idx % 1000 == 0:
                 print(f"  Processing WHP entry {idx}...")
             
-            # Build Headwords (keep period)
-            headwords = row['Headword']
-          
-            # Build Gloss (keep HTML)
-            gloss = row['Principal English Translation'] or ""
-            
-            # Build Sources JSON
-            sources = self.build_whp_sources(row)
-            sources_json = json.dumps(sources, ensure_ascii=False)
-            
-            # Build Extra Data
-            extra_data = ""
-            if row.get('themes') and not pd.isna(row['themes']):
-                extra_data = json.dumps({"themes": row['themes']}, ensure_ascii=False)
-            
-            export_rows.append({
-                'Headwords': headwords,
-                'Gloss': gloss,
+            entry = {
+                'Headwords': row['Headword'],
+                'Gloss': row['Principal English Translation'] or "",
                 'Language': 'Classical Nahuatl',
-                'Etyma': '',
-                'HomographNumber': '',
-                'Sources': sources_json,
-                'Extra Data': extra_data,
-                'Ref': row['Ref']  # Keep for etyma linking
-            })
+                'Sources': self.build_whp_sources(row)
+            }
+            
+            # Add themes if present
+            if row.get('themes') and not pd.isna(row['themes']):
+                entry['Themes'] = row['themes']
+            
+            export_rows.append(entry)
         
-        return pd.DataFrame(export_rows)
+        return export_rows
     
-    def process_idiez_data(self, whp_headword_map: Dict[str, str]) -> pd.DataFrame:
-        """Process IDIEZ data to CSV format"""
+    def process_idiez_data(self, limit: Optional[int] = None) -> List[Dict]:
+        """Process IDIEZ data to JSON format"""
+        print("\nLoading IDIEZ data...")
         
-        print("Loading IDIEZ data...")
         query = """
         SELECT 
             Ref,
@@ -229,6 +206,9 @@ class NahuatlCSVExporter:
         FROM "IDIEZ_modern_nahuatl-all-2024-03-27T09-45-31"
         """
         
+        if limit:
+            query += f" LIMIT {limit}"
+        
         df = pd.read_sql(query, self.conn)
         
         print(f"Processing {len(df)} IDIEZ entries...")
@@ -239,96 +219,72 @@ class NahuatlCSVExporter:
             if idx % 1000 == 0:
                 print(f"  Processing IDIEZ entry {idx}...")
             
-            # Build Headwords (keep period)
-            headwords = row['OND_Node_Title']
-            
-            # Build Gloss
-            gloss = row['IDIEZ traduc. inglés'] or ""
-            
-            # Build Etyma (link to WHP if hybrid)
-            etyma = ""
-            ref = row['Ref']
-            if ref in whp_headword_map:
-                etyma = whp_headword_map[ref]
-            
-            # Build Sources JSON
-            sources = self.build_idiez_sources(row)
-            sources_json = json.dumps(sources, ensure_ascii=False)
-            
-            export_rows.append({
-                'Headwords': headwords,
-                'Gloss': gloss,
+            entry = {
+                'Headwords': row['OND_Node_Title'],
+                'Gloss': row['IDIEZ traduc. inglés'] or "",
                 'Language': 'Huasteca Nahuatl',
-                'Etyma': etyma,
-                'HomographNumber': '',
-                'Sources': sources_json,
-                'Extra Data': '',
-                'Ref': row['Ref']
-            })
+                'Sources': self.build_idiez_sources(row)
+            }
+            
+            # Add themes if present
+            if row.get('themes') and not pd.isna(row['themes']):
+                entry['Themes'] = row['themes']
+                
+            export_rows.append(entry)
         
-        return pd.DataFrame(export_rows)
+        return export_rows
     
-    def export_combined_csv(self, output_path: str = "data/nahuatl_batch_import.csv"):
-        """Export both WHP and IDIEZ to single combined CSV"""
+    def export_combined_json(self, output_path: str = "data/nahuatl_batch_import.json", limit: Optional[int] = None):
+        """Export both WHP and IDIEZ to single combined JSON"""
         
         print("="*70)
-        print("EXPORTING COMBINED NAHUATL LEXICON")
+        print("EXPORTING COMBINED NAHUATL LEXICON TO JSON")
+        if limit:
+            print(f"TEST MODE: Limited to {limit} records per dataset")
         print("="*70)
         print()
         
         # Process WHP
-        whp_df = self.process_whp_data()
+        whp_entries = self.process_whp_data(limit=limit)
         
-        # Create ref to headword mapping for etyma linking
-        whp_headword_map = dict(zip(whp_df['Ref'], whp_df['Headwords']))
-        
-        print()
-        
-        # Process IDIEZ (with etyma links to WHP)
-        idiez_df = self.process_idiez_data(whp_headword_map)
+        # Process IDIEZ
+        idiez_entries = self.process_idiez_data(limit=limit)
         
         # Combine
         print("\nCombining datasets...")
-        combined_df = pd.concat([whp_df, idiez_df], ignore_index=True)
+        combined_entries = whp_entries + idiez_entries
         
-        # Detect homographs within each language
-        print("Detecting homographs within Classical Nahuatl...")
-        classical_mask = combined_df['Language'] == 'Classical Nahuatl'
-        combined_df.loc[classical_mask, 'HomographNumber'] = self.detect_homographs(
-            combined_df[classical_mask], 'Headwords'
-        )
-        
-        print("Detecting homographs within Huasteca Nahuatl...")
-        huasteca_mask = combined_df['Language'] == 'Huasteca Nahuatl'
-        combined_df.loc[huasteca_mask, 'HomographNumber'] = self.detect_homographs(
-            combined_df[huasteca_mask], 'Headwords'
-        )
-        
-        # Drop Ref column (was only for internal linking)
-        combined_df = combined_df.drop(columns=['Ref'])
-        
-        # Reorder columns to match expected format
-        column_order = ['Headwords', 'Gloss', 'Language', 'Etyma', 'HomographNumber', 'Sources', 'Extra Data']
-        combined_df = combined_df[column_order]
-        
-        # Export combined CSV
-        combined_df.to_csv(output_path, index=False, encoding='utf-8-sig')
+        # Export to JSON
+        print(f"Writing JSON to {output_path}...")
+        with open(output_path, 'w', encoding='utf-8') as f:
+            json.dump(combined_entries, f, ensure_ascii=False, indent=2)
         
         print(f"\n{'='*70}")
         print(f"✓ EXPORT COMPLETE")
         print(f"{'='*70}")
-        print(f"Total entries: {len(combined_df)}")
-        print(f"  - Classical Nahuatl: {len(whp_df)}")
-        print(f"  - Huasteca Nahuatl: {len(idiez_df)}")
+        print(f"Total entries: {len(combined_entries)}")
+        print(f"  - Classical Nahuatl: {len(whp_entries)}")
+        print(f"  - Huasteca Nahuatl: {len(idiez_entries)}")
         print(f"\nOutput file: {output_path}")
         
-        return combined_df
+        # Print sample output for verification
+        if limit and limit <= 5:
+            print(f"\n{'='*70}")
+            print("SAMPLE OUTPUT:")
+            print(f"{'='*70}")
+            print(json.dumps(combined_entries, ensure_ascii=False, indent=2))
+        
+        return combined_entries
 
 
 # Usage
 if __name__ == "__main__":
     # Update with your actual database path
-    exporter = NahuatlCSVExporter("../../../data/sqLiteDb/nahuatl_processing.db")
+    exporter = NahuatlJsonExporter("../../../data/sqLiteDb/nahuatl_processing.db")
     
-    # Export to single combined CSV
-    combined_df = exporter.export_combined_csv("data/nahuatl_batch_import.csv")
+    # TEST: Export only 2 records from each dataset
+    # print("Running TEST with 2 records per dataset...\n")
+    # test_data = exporter.export_combined_json("data/nahuatl_test_2records.json", limit=2)
+    
+    # Uncomment below to run full export
+    combined_data = exporter.export_combined_json("data/nahuatl_batch_import.json")
