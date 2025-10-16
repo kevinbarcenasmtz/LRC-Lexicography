@@ -27,7 +27,7 @@ CREATE TABLE dictionary_entries (
     translation_english TEXT,               -- field_translation1
     spanish_loanword TEXT,                  -- field_spanish_loanword (Boolean as TEXT: "Yes"/"No")
     
-    -- IDIEZ fields (modern Nahuatl)
+    -- IDIEZ fields (Huastecan Nahuatl)
     headword_idiez TEXT,                    -- field_head_idiez
     translation_english_idiez TEXT,         -- field_eshort_idiez
     definition_nahuatl_idiez TEXT,          -- field_ndef_idiez
@@ -154,16 +154,16 @@ CREATE TABLE audio_files (
 CREATE TABLE entry_audio (
     entry_node_id INTEGER NOT NULL,
     audio_node_id INTEGER NOT NULL,
-    
+   
     -- Type of reference
     reference_type TEXT CHECK(reference_type IN (
         'headword',     -- field_audio_headword
         'example'       -- field_audio_examples_in_context
     )),
-    
+   
     delta INTEGER DEFAULT 0,                -- Order if multiple audio files
-    
-    PRIMARY KEY (entry_node_id, audio_node_id),
+   
+    PRIMARY KEY (entry_node_id, audio_node_id, delta),  -- Add delta here!
     FOREIGN KEY (entry_node_id) REFERENCES dictionary_entries(node_id) ON DELETE CASCADE,
     FOREIGN KEY (audio_node_id) REFERENCES audio_files(node_id) ON DELETE CASCADE
 );
