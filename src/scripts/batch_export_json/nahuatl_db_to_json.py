@@ -169,7 +169,7 @@ class NahuatlJsonExporter:
         export_rows = []
         
         for idx, row in df.iterrows():
-            if idx % 1000 == 0:
+            if idx % 1000 == 0: # type: ignore
                 print(f"  Processing WHP entry {idx}...")
             
             entry = {
@@ -216,7 +216,7 @@ class NahuatlJsonExporter:
         export_rows = []
         
         for idx, row in df.iterrows():
-            if idx % 1000 == 0:
+            if idx % 1000 == 0: # type: ignore
                 print(f"  Processing IDIEZ entry {idx}...")
             
             entry = {
