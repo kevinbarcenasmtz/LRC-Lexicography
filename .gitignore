@@ -78,6 +78,7 @@ logs/
 # Temporary files
 tmp/
 temp/
+llm_examples/
 
 # Documentation generated files
 /site
