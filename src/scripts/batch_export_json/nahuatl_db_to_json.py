@@ -156,7 +156,7 @@ class NahuatlJsonExporter:
             "Spanish Loanword",
             Citations,
             Number_of_Citations
-        FROM "checkpoint_after_empty_p_tag_removal_20251002"
+        FROM "checkpoint_after_citation_crossref_reinsertion_20251030"
         """
         
         if limit:
@@ -256,7 +256,7 @@ class NahuatlJsonExporter:
         
         # Export to JSON
         print(f"Writing JSON to {output_path}...")
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, 'w', encoding='utf-8-sig') as f:
             json.dump(combined_entries, f, ensure_ascii=False, indent=2)
         
         print(f"\n{'='*70}")
