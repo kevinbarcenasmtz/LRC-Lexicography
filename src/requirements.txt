@@ -27,3 +27,4 @@ ipykernel==6.29.5
 # beautifulsoup4 
 beautifulsoup4==4.13.4
 inscriptis==2.6.0
+anthropic==0.72.0
