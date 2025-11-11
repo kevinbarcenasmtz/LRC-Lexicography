@@ -98,3 +98,6 @@ data/sqLiteDb
 nahuatl_processor.ipynb
 data/scraped_data/nahuatl.db
 data/
+
+# Csv Files, better practice to not track these
+*.csv
