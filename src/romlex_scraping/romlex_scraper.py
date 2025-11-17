@@ -16,7 +16,8 @@ from romlex_config import (
     SEARCH_PARAMS,
     API_CONFIG,
     SCRAPER_CONFIG,
-    HEADERS
+    HEADERS,
+    USER_AGENTS
 )
 
 class RomLexScraper:
@@ -36,7 +37,14 @@ class RomLexScraper:
             'letters_processed': []
         }
         
+        self.session = requests.Session() if SCRAPER_CONFIG.get('use_session') else None
         self.headers = HEADERS.copy()
+    
+    def get_random_user_agent(self):
+        """Get a random user agent from the pool"""
+        if SCRAPER_CONFIG.get('rotate_user_agent'):
+            return random.choice(USER_AGENTS)
+        return self.headers.get('User-Agent')
     
     def query_romlex(self, search_term, translation=None, pattern_match=None, retry_count=0):
         """Query the RomLex database with retry logic"""
@@ -56,8 +64,25 @@ class RomLexScraper:
             'wc': SEARCH_PARAMS['word_class']
         }
         
+        headers = self.headers.copy()
+        headers['User-Agent'] = self.get_random_user_agent() # type: ignore
+        
         try:
-            response = requests.get(self.base_url, params=params, headers=self.headers, timeout=30)
+            if self.session:
+                response = self.session.get(
+                    self.base_url, 
+                    params=params, 
+                    headers=headers, 
+                    timeout=30
+                )
+            else:
+                response = requests.get(
+                    self.base_url, 
+                    params=params, 
+                    headers=headers, 
+                    timeout=30
+                )
+            
             response.encoding = 'utf-8'
             response.raise_for_status()
             
@@ -71,7 +96,7 @@ class RomLexScraper:
         except requests.exceptions.HTTPError as e:
             if e.response.status_code == 403 and retry_count < SCRAPER_CONFIG['max_retries']:
                 wait_time = SCRAPER_CONFIG['error_retry_delay'] * (SCRAPER_CONFIG['backoff_multiplier'] ** retry_count)
-                jitter = random.uniform(0, 1)
+                jitter = random.uniform(0, 2)
                 total_wait = wait_time + jitter
                 
                 print(f"    403 error, retrying in {total_wait:.1f}s (attempt {retry_count + 1}/{SCRAPER_CONFIG['max_retries']})")
@@ -135,12 +160,18 @@ class RomLexScraper:
             for sense in gloss_group:
                 translations = []
                 for trans in sense:
+                    # Handle missing 'translation' key
+                    if 'translation' not in trans:
+                        continue
+                    
                     if 'hint' in trans:
                         translations.append(f"{trans['translation']} ({trans['hint']})")
                     else:
                         translations.append(trans['translation'])
-                sense_parts.append(', '.join(translations))
-            glosses_formatted.append('; '.join(sense_parts))
+                if translations:
+                    sense_parts.append(', '.join(translations))
+            if sense_parts:
+                glosses_formatted.append('; '.join(sense_parts))
         
         return {
             'entry_id': entry['id'],
@@ -162,11 +193,11 @@ class RomLexScraper:
             print(f"{indent}'{prefix}': {count} entries")
             
             if count < API_CONFIG['result_limit']:
-                delay = SCRAPER_CONFIG['request_delay'] + random.uniform(0, 0.3)
+                delay = SCRAPER_CONFIG['request_delay'] + random.uniform(0, 1.0)
                 sleep(delay)
                 return [self.extract_entry_data(e) for e in entries]
             
-            print(f"{indent}    Limit hit, subdividing...")
+            print(f"{indent}  Limit hit, subdividing...")
             all_entries = []
             
             alphabet = string.ascii_lowercase
@@ -174,13 +205,13 @@ class RomLexScraper:
                 sub_prefix = prefix + letter
                 sub_entries = self.get_entries_recursive(sub_prefix, depth + 1)
                 all_entries.extend(sub_entries)
-                delay = SCRAPER_CONFIG['request_delay'] + random.uniform(0, 0.3)
+                delay = SCRAPER_CONFIG['request_delay'] + random.uniform(0, 1.0)
                 sleep(delay)
             
             return all_entries
             
         except Exception as e:
-            print(f"{indent}    Error querying '{prefix}': {e}")
+            print(f"{indent}Error querying '{prefix}': {e}")
             self.stats['failed_queries'] += 1
             sleep(SCRAPER_CONFIG['error_retry_delay'])
             return []
@@ -192,7 +223,8 @@ class RomLexScraper:
         print(f"Dialect name: {self.stats['dialect_name']}")
         print(f"Output directory: {self.output_dir}")
         print(f"Request delay: {SCRAPER_CONFIG['request_delay']}s (+ jitter)")
-        print(f"Inter-letter delay: {SCRAPER_CONFIG.get('inter_letter_delay', 0)}s")
+        print(f"User-Agent rotation: {SCRAPER_CONFIG.get('rotate_user_agent', False)}")
+        print(f"Session management: {SCRAPER_CONFIG.get('use_session', False)}")
         
         alphabet = string.ascii_lowercase
         
@@ -207,7 +239,6 @@ class RomLexScraper:
             print(f"  Total for '{letter}': {len(entries)} entries")
             print(f"  Running total: {len(self.all_entries)} entries")
             
-            # Extra delay between letters to be respectful
             if i < len(alphabet):
                 inter_delay = SCRAPER_CONFIG.get('inter_letter_delay', 0)
                 if inter_delay > 0:
@@ -216,6 +247,9 @@ class RomLexScraper:
         
         self.stats['total_entries'] = len(self.all_entries)
         self.stats['end_time'] = datetime.now().isoformat()
+        
+        if self.session:
+            self.session.close()
         
         self.save_results()
     
@@ -245,7 +279,7 @@ class RomLexScraper:
         with open(stats_file, 'w', encoding='utf-8') as f:
             json.dump(self.stats, f, ensure_ascii=False, indent=2)
         
-        print(" Scraping complete!")
+        print("Scraping complete!")
         print(f"Dialect: {self.stats['dialect_name']} ({self.dialect_code})")
         print(f"Total entries: {self.stats['total_entries']}")
         print(f"Total queries: {self.stats['total_queries']}")
