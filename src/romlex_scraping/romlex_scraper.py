@@ -27,6 +27,7 @@ class RomLexScraper:
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.base_url = API_CONFIG['base_url']
         self.all_entries = []
+        self.duplicate_entries = set()
         self.stats = {
             'dialect': dialect_code,
             'dialect_name': DIALECT_NAMES.get(dialect_code, 'Unknown'),
@@ -34,9 +35,9 @@ class RomLexScraper:
             'total_queries': 0,
             'total_entries': 0,
             'failed_queries': 0,
-            'letters_processed': []
+            'letters_processed': [],
+            'duplicate_entries': 0,
         }
-        
         self.session = requests.Session() if SCRAPER_CONFIG.get('use_session') else None
         self.headers = HEADERS.copy()
     
@@ -116,7 +117,6 @@ class RomLexScraper:
             'pos': '',
             'glosses': []
         }
-        
         ortho_elem = entry.find('o')
         if ortho_elem is not None and ortho_elem.text:
             entry_data['orthographic_form'] = ortho_elem.text.strip()
@@ -195,7 +195,24 @@ class RomLexScraper:
             if count < API_CONFIG['result_limit']:
                 delay = SCRAPER_CONFIG['request_delay'] + random.uniform(0, 1.0)
                 sleep(delay)
-                return [self.extract_entry_data(e) for e in entries]
+                extracted_entries = []
+                duplicates = 0
+                
+                for e in entries:
+                    entry_id = e.get('id')
+                    if entry_id and entry_id not in self.duplicate_entries:
+                        self.duplicate_entries.add(entry_id)
+                        extracted_entries.append(self.extract_entry_data(e))
+                    elif entry_id:
+                        duplicates += 1
+                        self.stats['duplicate_entries'] += 1
+                
+                if duplicates > 0:
+                    print(f" ({duplicates} duplicates skipped)")
+                else:
+                    print()
+                
+                return extracted_entries
             
             print(f"{indent}  Limit hit, subdividing...")
             all_entries = []
