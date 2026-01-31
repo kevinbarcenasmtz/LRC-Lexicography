@@ -1,0 +1,19 @@
+# WHP Scraper Configuration
+# src\scripts\whp_scraping\config.yaml
+scraping:
+  base_url: "https://nahuatl.wired-humanities.org/content/"
+  delay_seconds: 1.5
+  timeout: 30
+  max_retries: 3
+  
+output:
+  directory: "../../data/interim"
+  format: "xlsx"
+  
+logging:
+  level: "INFO"
+  
+# Known field mappings (to be refined)
+field_mappings:
+  variants: "orthographic_variants"
+  ipaspelling: "ipa_spelling"

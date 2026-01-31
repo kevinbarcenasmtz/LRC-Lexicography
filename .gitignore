@@ -72,7 +72,7 @@ logs/
 *.sw?
 
 # Database
-# *.db
+*.db
 *.sqlite3
 
 # Temporary files
@@ -94,10 +94,7 @@ htmlcov/
 nahuaLEX_venv/
 nahuaLEX_env/
 src/notebooks/working_files
-data/sqLiteDb
 nahuatl_processor.ipynb
-data/scraped_data/nahuatl.db
-data/
 
 # Csv Files, better practice to not track these
 *.csv
