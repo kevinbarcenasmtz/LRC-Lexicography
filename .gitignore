@@ -91,7 +91,7 @@ htmlcov/
 .tox/
 
 # Virtual Environment
-nahuaLEX_venv/
+lrc_env/
 nahuaLEX_env/
 src/notebooks/working_files
 nahuatl_processor.ipynb
