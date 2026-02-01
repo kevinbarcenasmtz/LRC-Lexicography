@@ -6,7 +6,7 @@ A monorepo containing comprehensive lexical database construction projects for i
 
 **NahuatLEX** - Classical and contemporary Nahuatl lexical resources, connecting colonial-era sources (Molina, Karttunen, Carochi, Olmos) with modern dialects and Lockhart's historical materials.
 
-**RomLEX** - Indo-Iranian Romani language databases, integrating resources from University of Graz's RomLex project.
+**RomLEX** - Romani language databases, integrating resources from University of Graz's RomLex project.
 
 **DravidianLEX** - Dravidian language family etymological resources from the StarLing database.
 
