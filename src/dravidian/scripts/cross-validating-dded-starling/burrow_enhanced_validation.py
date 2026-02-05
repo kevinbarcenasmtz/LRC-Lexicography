@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Any, Dict, Optional, TypeGuard
+import unicodedata
 
 import pandas as pd
 import requests
@@ -42,6 +43,8 @@ class EnhancedValidationWorkflow:
         self.df: pd.DataFrame | None = None
         self.validation_results: list[dict[str, Any]] = []
         self.cache: Dict[str, str] = {}
+        self.corpus_entries_by_ded: Dict[str, list[Dict[str, Any]]] = {}
+        self.corpus_attestations_by_headword: Dict[str, list[Dict[str, Any]]] = {}
 
     def _require_data_loaded(self) -> pd.DataFrame:
         """Return loaded DataFrame or raise if not loaded."""
@@ -53,6 +56,29 @@ class EnhancedValidationWorkflow:
     def _has_scalar_value(value: Any) -> TypeGuard[int | float | str]:
         """Return True when a scalar value is present and not NaN."""
         return value is not None and not pd.isna(value)
+
+    @staticmethod
+    def _normalize_headword_for_index(text: str) -> str:
+        """
+        Normalize headwords for robust corpus indexing and lookup.
+
+        Mirrors the logic used in BurrowEntryParser.find_matching_attestation:
+        - strip stars, hyphens, parentheses
+        - lowercase
+        - Unicode NFKD + drop combining marks
+        - collapse internal whitespace
+        """
+        base = (
+            text.replace("*", "")
+            .replace("-", " ")
+            .replace("(", " ")
+            .replace(")", " ")
+            .strip()
+            .lower()
+        )
+        decomposed = unicodedata.normalize("NFKD", base)
+        filtered = "".join(ch for ch in decomposed if not unicodedata.combining(ch))
+        return " ".join(filtered.split())
     
     def load_data(self):
         """Load StarlingDB CSV"""
@@ -90,6 +116,68 @@ class EnhancedValidationWorkflow:
         print(
             f"Entries with DED numbers: {ded_count} "
             f"({ded_count/len(self.df)*100:.1f}%)"
+        )
+
+    def load_burrow_corpus(self, corpus_path: str) -> None:
+        """
+        Load Burrow corpus JSON produced by burrow_corpus_scraper.py and
+        build indices for fast lookup by DED number and headword.
+        """
+        corpus_file = Path(corpus_path)
+        print(f"Loading Burrow corpus from: {corpus_file}")
+
+        if not corpus_file.exists():
+            raise FileNotFoundError(f"Burrow corpus not found: {corpus_file}")
+
+        with open(corpus_file, "r", encoding="utf-8-sig") as f:
+            data = json.load(f)
+
+        entries = data.get("entries", [])
+        if not isinstance(entries, list):
+            raise ValueError("Invalid corpus format: 'entries' is not a list")
+
+        entries_by_ded: Dict[str, list[Dict[str, Any]]] = {}
+        att_by_head: Dict[str, list[Dict[str, Any]]] = {}
+
+        for entry in entries:
+            page = entry.get("page")
+            ded_number = entry.get("ded_number")
+            attestations_data = entry.get("attestations", [])
+
+            attestations: list[LanguageAttestation] = []
+            for att_data in attestations_data:
+                try:
+                    attestations.append(LanguageAttestation(**att_data))
+                except TypeError:
+                    continue
+
+            corpus_entry = {
+                "page": page,
+                "ded_number": ded_number,
+                "attestations": attestations,
+            }
+
+            if ded_number is not None:
+                ded_key = str(ded_number)
+                entries_by_ded.setdefault(ded_key, []).append(corpus_entry)
+
+            for att in attestations:
+                for hw in att.headwords:
+                    key = self._normalize_headword_for_index(hw)
+                    att_by_head.setdefault(key, []).append(
+                        {
+                            "attestation": att,
+                            "ded_number": ded_number,
+                            "page": page,
+                        }
+                    )
+
+        self.corpus_entries_by_ded = entries_by_ded
+        self.corpus_attestations_by_headword = att_by_head
+
+        print(
+            f"Loaded Burrow corpus: {len(entries)} entries, "
+            f"{len(self.corpus_attestations_by_headword)} unique headword keys."
         )
     
     def query_ded_entry(self, ded_number: str) -> Optional[str]:
@@ -197,7 +285,49 @@ class EnhancedValidationWorkflow:
                 return match
 
         return None
-    
+
+    def _lookup_in_corpus_by_ded(
+        self, ded_number_str: str, language: str, headword: str
+    ) -> Optional[LanguageAttestation]:
+        """Try to resolve an entry via the local corpus using DED number."""
+        if not self.corpus_entries_by_ded:
+            return None
+
+        candidates = self.corpus_entries_by_ded.get(ded_number_str)
+        if not candidates:
+            return None
+
+        for entry in candidates:
+            attestations: list[LanguageAttestation] = entry.get(
+                "attestations", []
+            )
+            match = self.parser.find_matching_attestation(
+                attestations, language, headword
+            )
+            if match:
+                return match
+
+        return None
+
+    def _lookup_in_corpus_by_headword(
+        self, language: str, headword: str
+    ) -> Optional[LanguageAttestation]:
+        """Try to resolve an entry via the local corpus using language+headword."""
+        if not self.corpus_attestations_by_headword:
+            return None
+
+        key = self._normalize_headword_for_index(headword)
+        refs = self.corpus_attestations_by_headword.get(key)
+        if not refs:
+            return None
+
+        for ref in refs:
+            att: LanguageAttestation = ref["attestation"]
+            if match_language_variant(att.language_abbrev, language):
+                return att
+
+        return None
+
     def validate_entry(self, row: pd.Series) -> Dict[str, Any]:
         """Validate single entry with detailed parsing"""
         starling_id = str(row.get("ID", "unknown"))
@@ -223,10 +353,26 @@ class EnhancedValidationWorkflow:
         has_ded = self._has_scalar_value(ded_number_raw)
         ded_number_str = str(ded_number_raw) if has_ded else ""
 
-        if not has_ded:
-            validation["match_status"] = "no_ded_number"
-            validation["notes"].append("No DED number in StarlingDB")
-        else:
+        # 1) Try DED-based resolution, preferring the local corpus when available.
+        if has_ded:
+            # 1a. Local corpus via DED number.
+            corpus_match = self._lookup_in_corpus_by_ded(
+                ded_number_str, language, headword
+            )
+            if corpus_match:
+                validation["burrow_found"] = True
+                validation["burrow_language_matched"] = True
+                validation["burrow_headword_matched"] = True
+                validation["burrow_attestation"] = {
+                    "language": corpus_match.language_name,
+                    "headwords": corpus_match.headwords,
+                    "gloss": corpus_match.gloss,
+                }
+                validation["match_status"] = "full_match"
+                validation["notes"].append("Matched via local Burrow corpus (DED).")
+                return validation
+
+            # 1b. Live DSAL DED query as fallback.
             try:
                 entry_html = self.query_ded_entry(ded_number_str)
 
@@ -258,39 +404,58 @@ class EnhancedValidationWorkflow:
                                 "gloss": matching_attestation.gloss,
                             }
                             validation["match_status"] = "full_match"
-                        else:
-                            validation["burrow_found"] = True
-                            validation["match_status"] = "no_attestation_match"
+                            return validation
+                        validation["burrow_found"] = True
+                        validation["match_status"] = "no_attestation_match"
+                        validation["notes"].append(
+                            f"DED #{ded_number_str} found but {language} form "
+                            f"'{headword}' not in entry"
+                        )
+
+                        lang_matches = [
+                            a
+                            for a in attestations
+                            if match_language_variant(a.language_abbrev, language)
+                        ]
+                        if lang_matches:
                             validation["notes"].append(
-                                f"DED #{ded_number_str} found but {language} form "
-                                f"'{headword}' not in entry"
+                                f"Language {language} present with forms: "
+                                f"{[a.headwords for a in lang_matches]}"
                             )
 
-                            lang_matches = [
-                                a
-                                for a in attestations
-                                if match_language_variant(a.language_abbrev, language)
-                            ]
-                            if lang_matches:
-                                validation["notes"].append(
-                                    f"Language {language} present with forms: "
-                                    f"{[a.headwords for a in lang_matches]}"
-                                )
-
-            except Exception as e:
+            except Exception as exc:  # pragma: no cover - defensive
                 validation["match_status"] = "error"
-                validation["notes"].append(f"Error: {str(e)}")
+                validation["notes"].append(f"Error during DED-based lookup: {str(exc)}")
+        else:
+            validation["match_status"] = "no_ded_number"
+            validation["notes"].append("No DED number in StarlingDB")
 
-        # If DED-based validation produced a full match, we're done.
-        if validation["match_status"] == "full_match":
+        # 2) Try corpus-based headword lookup (language + headword), independent of DED.
+        corpus_hw_match = self._lookup_in_corpus_by_headword(language, headword)
+        if corpus_hw_match:
+            validation["burrow_found"] = True
+            validation["burrow_language_matched"] = True
+            validation["burrow_headword_matched"] = True
+            validation["burrow_attestation"] = {
+                "language": corpus_hw_match.language_name,
+                "headwords": corpus_hw_match.headwords,
+                "gloss": corpus_hw_match.gloss,
+            }
+            previous_status = validation["match_status"]
+            if previous_status not in ("not_validated", "corpus_headword_match"):
+                validation["notes"].append(
+                    f"Matched via local Burrow corpus (headword) "
+                    f"(previous status: {previous_status})"
+                )
+            validation["match_status"] = "corpus_headword_match"
             return validation
 
-        # Fallback: search by Meaning text, then match language+headword.
+        # 3) Fallback: search by meaning text via live DSAL, then match language+headword.
         meaning_match: Optional[LanguageAttestation] = None
         if meaning:
             try:
                 meaning_match = self._validate_via_meaning(meaning, language, headword)
-            except Exception as exc:
+            except Exception as exc:  # pragma: no cover - defensive
                 validation["notes"].append(
                     f"Meaning-based search error: {str(exc)}"
                 )
@@ -415,9 +580,13 @@ def main():
     parser = argparse.ArgumentParser(
         description="Enhanced Burrow validation with detailed parsing"
     )
-    parser.add_argument("csv_file", help="StarlingDB CSV export")
+    parser.add_argument("csv_file", help="StarlingDB CSV/Excel export")
     parser.add_argument("--output-dir", default="enhanced_validation")
     parser.add_argument("--batch-size", type=int, default=20)
+    parser.add_argument(
+        "--burrow-corpus",
+        help="Optional path to burrow_corpus.json for offline validation",
+    )
     parser.add_argument(
         "--test", action="store_true", help="Test with first 10 entries"
     )
@@ -425,6 +594,10 @@ def main():
     args = parser.parse_args()
     
     workflow = EnhancedValidationWorkflow(args.csv_file, args.output_dir)
+
+    if args.burrow_corpus:
+        workflow.load_burrow_corpus(args.burrow_corpus)
+
     workflow.load_data()
     
     if args.test:
