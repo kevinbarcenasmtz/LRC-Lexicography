@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import List, Optional
+import unicodedata
 import re
 
 from bs4 import BeautifulSoup
@@ -200,9 +201,30 @@ class BurrowEntryParser:
         """
         from burrow_language_mappings import match_language_variant
 
-        starling_headword_clean = (
-            starling_headword.replace("*", "").replace("-", "").strip().lower()
-        )
+        def _normalize_for_match(text: str) -> str:
+            """
+            Normalize headwords for robust matching:
+            - strip stars/hyphens/parentheses
+            - lowercase
+            - Unicode NFKD with combining marks removed (so ḍ vs ḍ align)
+            """
+            base = (
+                text.replace("*", "")
+                .replace("-", " ")
+                .replace("(", " ")
+                .replace(")", " ")
+                .strip()
+                .lower()
+            )
+            decomposed = unicodedata.normalize("NFKD", base)
+            # drop combining marks
+            filtered = "".join(
+                ch for ch in decomposed if not unicodedata.combining(ch)
+            )
+            # collapse whitespace
+            return " ".join(filtered.split())
+
+        starling_headword_clean = _normalize_for_match(starling_headword)
 
         for attestation in attestations:
             if not match_language_variant(
@@ -211,7 +233,7 @@ class BurrowEntryParser:
                 continue
 
             for burrow_headword in attestation.headwords:
-                burrow_clean = burrow_headword.strip().lower()
+                burrow_clean = _normalize_for_match(burrow_headword)
 
                 if burrow_clean == starling_headword_clean:
                     return attestation

@@ -159,8 +159,34 @@ class EnhancedValidationWorkflow:
         results: list[Tag] = [r for r in raw_results if isinstance(r, Tag)]
 
         for result_div in results:
-            entry_html = str(result_div)
-            attestations = self.parser.parse_language_sections(entry_html, None)
+            # Prefer following the full entry page link if available.
+            page_link: Optional[Tag] = None
+            for link in result_div.find_all("a"):
+                if not isinstance(link, Tag):
+                    continue
+                href_val = link.get("href")
+                if isinstance(href_val, str) and "page=" in href_val:
+                    page_link = link
+                    break
+
+            full_entry_html: Optional[str] = None
+            if page_link is not None:
+                href_val = page_link.get("href")
+                if isinstance(href_val, str):
+                    full_url = f"https://dsal.uchicago.edu{href_val}"
+                    try:
+                        page_resp = self.session.get(full_url, timeout=30)
+                        if page_resp.ok:
+                            full_entry_html = page_resp.text
+                    except requests.RequestException:
+                        full_entry_html = None
+
+            # Fall back to using the hw_result block itself if full page not fetched.
+            html_to_parse = full_entry_html if full_entry_html is not None else str(
+                result_div
+            )
+
+            attestations = self.parser.parse_language_sections(html_to_parse, None)
             if not attestations:
                 continue
 
