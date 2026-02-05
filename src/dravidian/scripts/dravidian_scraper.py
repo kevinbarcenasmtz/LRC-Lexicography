@@ -41,7 +41,7 @@ class StarLingGeneralScraper:
             # First substantial field is typically the proto-language + word
             if value and value.strip():
                 content = f"{key.strip()}:{value.strip()}"
-                return hashlib.md5(content.encode('utf-8')).hexdigest()
+                return hashlib.md5(content.encode('utf-8-sig')).hexdigest()
         
         return None
     
@@ -87,7 +87,7 @@ class StarLingGeneralScraper:
         """Save failed URLs to CSV"""
         if self.failed_urls:
             import csv
-            with open('failed_urls.csv', 'w', newline='', encoding='utf-8') as f:
+            with open('failed_urls.csv', 'w', newline='', encoding='utf-8-sig') as f:
                 writer = csv.DictWriter(f, fieldnames=['timestamp', 'url', 'error'])
                 writer.writeheader()
                 writer.writerows(self.failed_urls)
@@ -263,14 +263,14 @@ class StarLingGeneralScraper:
             'seen_content_hashes': list(self.seen_content),
             'records_scraped': len(self.all_records)
         }
-        with open(self.checkpoint_file, 'w', encoding='utf-8') as f:
+        with open(self.checkpoint_file, 'w', encoding='utf-8-sig') as f:
             json.dump(checkpoint, f, ensure_ascii=False, indent=2)
     
     def load_checkpoint(self):
         """Load checkpoint if exists"""
         if os.path.exists(self.checkpoint_file):
             try:
-                with open(self.checkpoint_file, 'r', encoding='utf-8') as f:
+                with open(self.checkpoint_file, 'r', encoding='utf-8-sig') as f:
                     checkpoint = json.load(f)
                 
                 # Verify checkpoint matches current job
@@ -282,7 +282,7 @@ class StarLingGeneralScraper:
                     
                     # Load existing data
                     if os.path.exists('starling_complete_data.json'):
-                        with open('starling_complete_data.json', 'r', encoding='utf-8') as f:
+                        with open('starling_complete_data.json', 'r', encoding='utf-8-sig') as f:
                             existing = json.load(f)
                             self.all_records = existing.get('records', [])
             except Exception as e:
@@ -300,7 +300,7 @@ class StarLingGeneralScraper:
             'records': self.all_records
         }
         
-        with open('starling_complete_data.json', 'w', encoding='utf-8') as f:
+        with open('starling_complete_data.json', 'w', encoding='utf-8-sig') as f:
             json.dump(output, f, ensure_ascii=False, indent=2)
         
         print(f"\n Saved to starling_complete_data.json")
