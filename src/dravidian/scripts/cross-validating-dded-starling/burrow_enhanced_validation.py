@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 from typing import Any, Dict, Optional, TypeGuard
 import unicodedata
+import time
 
 import pandas as pd
 import requests
@@ -16,7 +17,7 @@ from bs4 import BeautifulSoup
 from bs4.element import Tag
 
 from burrow_entry_parser import BurrowEntryParser, LanguageAttestation
-from burrow_language_mappings import match_language_variant
+from burrow_language_mappings import get_burrow_abbrev_for_display, match_language_variant
 
 
 class EnhancedValidationWorkflow:
@@ -45,6 +46,8 @@ class EnhancedValidationWorkflow:
         self.cache: Dict[str, str] = {}
         self.corpus_entries_by_ded: Dict[str, list[Dict[str, Any]]] = {}
         self.corpus_attestations_by_headword: Dict[str, list[Dict[str, Any]]] = {}
+        self.corpus_loaded: bool = False  # Track if corpus is loaded to skip web requests
+        self.checkpoint_file: Path = self.output_dir / "validation_checkpoint.json"
 
     def _require_data_loaded(self) -> pd.DataFrame:
         """Return loaded DataFrame or raise if not loaded."""
@@ -174,11 +177,13 @@ class EnhancedValidationWorkflow:
 
         self.corpus_entries_by_ded = entries_by_ded
         self.corpus_attestations_by_headword = att_by_head
+        self.corpus_loaded = True  # Mark corpus as loaded
 
         print(
             f"Loaded Burrow corpus: {len(entries)} entries, "
             f"{len(self.corpus_attestations_by_headword)} unique headword keys."
         )
+        print("✓ Corpus loaded - web requests will be skipped for faster validation.")
     
     def query_ded_entry(self, ded_number: str) -> Optional[str]:
         """
@@ -321,11 +326,57 @@ class EnhancedValidationWorkflow:
         if not refs:
             return None
 
+        # Try exact language match first
         for ref in refs:
             att: LanguageAttestation = ref["attestation"]
             if match_language_variant(att.language_abbrev, language):
                 return att
+        
+        # If no exact match, try more flexible matching (case-insensitive, partial)
+        # This helps with variant names and slight mismatches
+        lang_lower = language.lower()
+        for ref in refs:
+            att: LanguageAttestation = ref["attestation"]
+            att_lang_lower = att.language_name.lower()
+            # Check if language names overlap (e.g. "Maria Gondi" contains "Gondi")
+            if lang_lower in att_lang_lower or att_lang_lower in lang_lower:
+                return att
 
+        return None
+    
+    def _lookup_in_corpus_by_meaning(
+        self, meaning: str, language: str, headword: str
+    ) -> Optional[LanguageAttestation]:
+        """
+        Search corpus by meaning keywords, then match language+headword.
+        This is much faster than web requests when corpus is loaded.
+        """
+        if not self.corpus_attestations_by_headword:
+            return None
+        
+        # Normalize meaning for keyword matching
+        meaning_words = set(meaning.lower().split())
+        if not meaning_words:
+            return None
+        
+        # Search through corpus attestations for matching glosses
+        # This is a simple keyword match - could be improved with better NLP
+        for headword_key, refs in self.corpus_attestations_by_headword.items():
+            for ref in refs:
+                att: LanguageAttestation = ref["attestation"]
+                gloss_lower = att.gloss.lower()
+                
+                # Check if any meaning words appear in the gloss
+                if any(word in gloss_lower for word in meaning_words if len(word) > 3):
+                    # Now check language and headword match
+                    if match_language_variant(att.language_abbrev, language):
+                        # Check headword match
+                        hw_normalized = self._normalize_headword_for_index(headword)
+                        for burrow_hw in att.headwords:
+                            burrow_hw_normalized = self._normalize_headword_for_index(burrow_hw)
+                            if hw_normalized == burrow_hw_normalized:
+                                return att
+        
         return None
 
     def validate_entry(self, row: pd.Series) -> Dict[str, Any]:
@@ -365,6 +416,7 @@ class EnhancedValidationWorkflow:
                 validation["burrow_headword_matched"] = True
                 validation["burrow_attestation"] = {
                     "language": corpus_match.language_name,
+                    "language_abbrev": corpus_match.language_abbrev,
                     "headwords": corpus_match.headwords,
                     "gloss": corpus_match.gloss,
                 }
@@ -372,60 +424,94 @@ class EnhancedValidationWorkflow:
                 validation["notes"].append("Matched via local Burrow corpus (DED).")
                 return validation
 
-            # 1b. Live DSAL DED query as fallback.
-            try:
-                entry_html = self.query_ded_entry(ded_number_str)
+            # 1b. Live DSAL DED query as fallback (ONLY if corpus not loaded).
+            if not self.corpus_loaded:
+                try:
+                    entry_html = self.query_ded_entry(ded_number_str)
 
-                if not entry_html:
-                    validation["match_status"] = "ded_not_found"
-                    validation["notes"].append(
-                        f"DED #{ded_number_str} not found in Burrow"
-                    )
-                else:
-                    attestations = self.parser.parse_language_sections(
-                        entry_html, ded_number_str
-                    )
-
-                    if not attestations:
-                        validation["match_status"] = "parse_failed"
-                        validation["notes"].append("Could not parse Burrow entry")
-                    else:
-                        matching_attestation = self.parser.find_matching_attestation(
-                            attestations, language, headword
-                        )
-
-                        if matching_attestation:
-                            validation["burrow_found"] = True
-                            validation["burrow_language_matched"] = True
-                            validation["burrow_headword_matched"] = True
-                            validation["burrow_attestation"] = {
-                                "language": matching_attestation.language_name,
-                                "headwords": matching_attestation.headwords,
-                                "gloss": matching_attestation.gloss,
-                            }
-                            validation["match_status"] = "full_match"
-                            return validation
-                        validation["burrow_found"] = True
-                        validation["match_status"] = "no_attestation_match"
+                    if not entry_html:
+                        validation["match_status"] = "ded_not_found"
                         validation["notes"].append(
-                            f"DED #{ded_number_str} found but {language} form "
-                            f"'{headword}' not in entry"
+                            f"DED #{ded_number_str} not found in Burrow"
+                        )
+                    else:
+                        attestations = self.parser.parse_language_sections(
+                            entry_html, ded_number_str
                         )
 
-                        lang_matches = [
-                            a
-                            for a in attestations
-                            if match_language_variant(a.language_abbrev, language)
-                        ]
-                        if lang_matches:
-                            validation["notes"].append(
-                                f"Language {language} present with forms: "
-                                f"{[a.headwords for a in lang_matches]}"
+                        if not attestations:
+                            validation["match_status"] = "parse_failed"
+                            validation["notes"].append("Could not parse Burrow entry")
+                        else:
+                            matching_attestation = self.parser.find_matching_attestation(
+                                attestations, language, headword
                             )
 
-            except Exception as exc:  # pragma: no cover - defensive
-                validation["match_status"] = "error"
-                validation["notes"].append(f"Error during DED-based lookup: {str(exc)}")
+                            if matching_attestation:
+                                validation["burrow_found"] = True
+                                validation["burrow_language_matched"] = True
+                                validation["burrow_headword_matched"] = True
+                                validation["burrow_attestation"] = {
+                                    "language": matching_attestation.language_name,
+                                    "language_abbrev": matching_attestation.language_abbrev,
+                                    "headwords": matching_attestation.headwords,
+                                    "gloss": matching_attestation.gloss,
+                                }
+                                validation["match_status"] = "full_match"
+                                return validation
+                            validation["burrow_found"] = True
+                            validation["match_status"] = "no_attestation_match"
+                            validation["notes"].append(
+                                f"DED #{ded_number_str} found but {language} form "
+                                f"'{headword}' not in entry"
+                            )
+
+                            lang_matches = [
+                                a
+                                for a in attestations
+                                if match_language_variant(a.language_abbrev, language)
+                            ]
+                            if lang_matches:
+                                validation["notes"].append(
+                                    f"Language {language} present with forms: "
+                                    f"{[a.headwords for a in lang_matches]}"
+                                )
+
+                except Exception as exc:  # pragma: no cover - defensive
+                    validation["match_status"] = "error"
+                    validation["notes"].append(f"Error during DED-based lookup: {str(exc)}")
+            else:
+                # Corpus loaded but no match found - provide diagnostic info
+                validation["match_status"] = "no_attestation_match"
+                validation["notes"].append(
+                    f"DED #{ded_number_str} not found in corpus or {language} form '{headword}' not matched"
+                )
+                # Check if DED exists in corpus at all and provide diagnostics
+                if ded_number_str in self.corpus_entries_by_ded:
+                    entry = self.corpus_entries_by_ded[ded_number_str][0]
+                    attestations: list[LanguageAttestation] = entry.get("attestations", [])
+                    all_langs = {att.language_abbrev for att in attestations}
+                    validation["notes"].append(
+                        f"DED #{ded_number_str} exists in corpus with languages: {sorted(all_langs)}"
+                    )
+                    # Check if language exists but headword doesn't match
+                    lang_attestations = [
+                        att for att in attestations
+                        if match_language_variant(att.language_abbrev, language)
+                    ]
+                    if lang_attestations:
+                        all_headwords = []
+                        for att in lang_attestations:
+                            all_headwords.extend(att.headwords)
+                        validation["notes"].append(
+                            f"Language {language} found in DED #{ded_number_str} with headwords: {all_headwords}"
+                        )
+                        validation["burrow_language_matched"] = True
+                        validation["burrow_found"] = True
+                else:
+                    validation["notes"].append(
+                        f"DED #{ded_number_str} not found in corpus"
+                    )
         else:
             validation["match_status"] = "no_ded_number"
             validation["notes"].append("No DED number in StarlingDB")
@@ -438,6 +524,7 @@ class EnhancedValidationWorkflow:
             validation["burrow_headword_matched"] = True
             validation["burrow_attestation"] = {
                 "language": corpus_hw_match.language_name,
+                "language_abbrev": corpus_hw_match.language_abbrev,
                 "headwords": corpus_hw_match.headwords,
                 "gloss": corpus_hw_match.gloss,
             }
@@ -450,15 +537,25 @@ class EnhancedValidationWorkflow:
             validation["match_status"] = "corpus_headword_match"
             return validation
 
-        # 3) Fallback: search by meaning text via live DSAL, then match language+headword.
+        # 3) Fallback: search by meaning (corpus first, then web if corpus not loaded).
         meaning_match: Optional[LanguageAttestation] = None
         if meaning:
-            try:
-                meaning_match = self._validate_via_meaning(meaning, language, headword)
-            except Exception as exc:  # pragma: no cover - defensive
-                validation["notes"].append(
-                    f"Meaning-based search error: {str(exc)}"
-                )
+            if self.corpus_loaded:
+                # Use corpus-based meaning search (much faster)
+                try:
+                    meaning_match = self._lookup_in_corpus_by_meaning(meaning, language, headword)
+                except Exception as exc:  # pragma: no cover - defensive
+                    validation["notes"].append(
+                        f"Corpus meaning search error: {str(exc)}"
+                    )
+            else:
+                # Fall back to web-based meaning search only if corpus not loaded
+                try:
+                    meaning_match = self._validate_via_meaning(meaning, language, headword)
+                except Exception as exc:  # pragma: no cover - defensive
+                    validation["notes"].append(
+                        f"Meaning-based search error: {str(exc)}"
+                    )
 
         if meaning_match:
             validation["burrow_found"] = True
@@ -466,6 +563,7 @@ class EnhancedValidationWorkflow:
             validation["burrow_headword_matched"] = True
             validation["burrow_attestation"] = {
                 "language": meaning_match.language_name,
+                "language_abbrev": meaning_match.language_abbrev,
                 "headwords": meaning_match.headwords,
                 "gloss": meaning_match.gloss,
             }
@@ -482,58 +580,173 @@ class EnhancedValidationWorkflow:
 
         return validation
     
-    def validate_batch(self, start_idx: int, end_idx: int):
+    def save_checkpoint(self):
+        """Save current progress to checkpoint file"""
+        checkpoint_data = {
+            "processed_count": len(self.validation_results),
+            "results": self.validation_results,
+        }
+        with open(self.checkpoint_file, "w", encoding="utf-8-sig") as f:
+            json.dump(checkpoint_data, f, ensure_ascii=False, indent=2)
+    
+    def load_checkpoint(self) -> int:
+        """Load checkpoint and return number of entries already processed"""
+        if not self.checkpoint_file.exists():
+            return 0
+        
+        try:
+            with open(self.checkpoint_file, "r", encoding="utf-8-sig") as f:
+                checkpoint_data = json.load(f)
+            self.validation_results = checkpoint_data.get("results", [])
+            processed = len(self.validation_results)
+            print(f"✓ Loaded checkpoint: {processed} entries already processed")
+            return processed
+        except Exception as exc:
+            print(f"⚠ Could not load checkpoint: {exc}. Starting fresh.")
+            return 0
+    
+    def validate_batch(self, start_idx: int, end_idx: int, total: int):
         """Validate batch with progress"""
         df = self._require_data_loaded()
         batch = df.iloc[start_idx:end_idx]
         
-        print(f"\nValidating {start_idx+1} to {end_idx}...")
+        batch_start_time = time.time()
         
-        for idx, row in batch.iterrows():
+        for batch_pos, (idx, row) in enumerate(batch.iterrows()):
             validation = self.validate_entry(row)
             self.validation_results.append(validation)
             
-            status_symbol = {
-                "full_match": "✓",
-                "no_attestation_match": "✗",
-                "ded_not_found": "?",
-                "no_ded_number": "-",
-                "error": "!",
-            }.get(validation["match_status"], "·")
-            
-            print(
-                f"  {status_symbol} {validation['starling_id']}: "
-                f"{validation['match_status']}"
-            )
+            # Show progress every 10 entries or at batch boundaries
+            current = start_idx + batch_pos + 1
+            if (current % 10 == 0) or (batch_pos == len(batch) - 1):
+                elapsed = time.time() - batch_start_time
+                rate = (batch_pos + 1) / elapsed if elapsed > 0 else 0
+                eta_seconds = (total - current) / rate if rate > 0 else 0
+                eta_minutes = eta_seconds / 60
+                
+                status_symbol = {
+                    "full_match": "✓",
+                    "no_attestation_match": "✗",
+                    "ded_not_found": "?",
+                    "no_ded_number": "-",
+                    "error": "!",
+                    "corpus_headword_match": "○",
+                    "meaning_match": "○",
+                }.get(validation["match_status"], "·")
+                
+                print(
+                    f"  [{current}/{total} ({current/total*100:.1f}%)] "
+                    f"{status_symbol} {validation['starling_id']}: "
+                    f"{validation['match_status']} | "
+                    f"Rate: {rate:.1f}/s | ETA: {eta_minutes:.1f}m"
+                )
+        
+        # Save checkpoint after each batch
+        self.save_checkpoint()
     
-    def validate_all(self, batch_size: int = 20):
-        """Validate all entries"""
+    def validate_all(self, batch_size: int = 20, resume: bool = True):
+        """Validate all entries with checkpoint/resume support"""
         df = self._require_data_loaded()
         total = len(df)
         
+        start_idx = 0
+        if resume:
+            start_idx = self.load_checkpoint()
+            if start_idx > 0:
+                print(f"Resuming from entry {start_idx + 1}...")
+        
         print(f"\n{'='*70}")
         print(f"ENHANCED VALIDATION: {total} entries")
-        print(f"{'='*70}")
+        if self.corpus_loaded:
+            print("✓ Using local corpus - NO web requests")
+        else:
+            print("⚠ WARNING: No corpus loaded - will make web requests (SLOW!)")
+        print(f"{'='*70}\n")
         
-        for start in range(0, total, batch_size):
+        overall_start_time = time.time()
+        
+        for start in range(start_idx, total, batch_size):
             end = min(start + batch_size, total)
-            self.validate_batch(start, end)
+            self.validate_batch(start, end, total)
+        
+        total_time = time.time() - overall_start_time
+        print(f"\n{'='*70}")
+        print(f"Validation complete! Processed {total} entries in {total_time/60:.1f} minutes")
+        print(f"Average rate: {total/total_time:.1f} entries/second")
+        print(f"{'='*70}\n")
+        
+        # Clean up checkpoint file on successful completion
+        if self.checkpoint_file.exists():
+            self.checkpoint_file.unlink()
+            print("✓ Checkpoint file removed (validation complete)")
         
         self.save_results()
     
+    def _build_user_friendly_df(self) -> pd.DataFrame:
+        """Build a DataFrame with clear column names and Burrow language as abbrev (e.g. Ka., Ta.)."""
+        rows = []
+        status_display = {
+            "full_match": "Full match",
+            "no_attestation_match": "No attestation match",
+            "ded_not_found": "DED not found",
+            "no_ded_number": "No DED number",
+            "parse_failed": "Parse failed",
+            "error": "Error",
+            "corpus_headword_match": "Match (corpus, headword)",
+            "meaning_match": "Match (meaning search)",
+            "not_validated": "Not validated",
+        }
+        for r in self.validation_results:
+            att = r.get("burrow_attestation")
+            if att:
+                lang_abbrev = get_burrow_abbrev_for_display(
+                    att.get("language", ""), att.get("language_abbrev")
+                )
+                burrow_headwords = ", ".join(att.get("headwords") or [])
+                burrow_gloss = att.get("gloss") or ""
+            else:
+                lang_abbrev = ""
+                burrow_headwords = ""
+                burrow_gloss = ""
+            notes = r.get("notes") or []
+            notes_str = " | ".join(str(n) for n in notes) if notes else ""
+            ded = r.get("starling_ded_number")
+            ded_display = "" if (ded is None or pd.isna(ded)) else ded
+            rows.append({
+                "ID (Starling)": r.get("starling_id", ""),
+                "Headword": r.get("starling_headword", ""),
+                "Meaning": r.get("starling_meaning", ""),
+                "Language (Starling)": r.get("starling_language", ""),
+                "Number in DED": ded_display,
+                "Match status": status_display.get(
+                    r.get("match_status", ""), r.get("match_status", "")
+                ),
+                "Burrow language": lang_abbrev,
+                "Burrow headwords": burrow_headwords,
+                "Burrow gloss": burrow_gloss,
+                "Notes": notes_str,
+            })
+        return pd.DataFrame(rows)
+
     def save_results(self):
-        """Save validation results"""
+        """Save validation results (CSV, JSON, and user-friendly Excel)."""
         results_df = pd.DataFrame(self.validation_results)
-        
+
         csv_file = self.output_dir / "enhanced_validation_results.csv"
         results_df.to_csv(csv_file, index=False, encoding="utf-8-sig")
         print(f"\nResults saved: {csv_file}")
-        
+
         json_file = self.output_dir / "enhanced_validation_results.json"
         with open(json_file, "w", encoding="utf-8-sig") as f:
             json.dump(self.validation_results, f, ensure_ascii=False, indent=2)
         print(f"JSON saved: {json_file}")
-        
+
+        # User-friendly Excel: Burrow language as original abbrev (Ka., Ta., etc.)
+        excel_df = self._build_user_friendly_df()
+        xlsx_file = self.output_dir / "enhanced_validation_results.xlsx"
+        excel_df.to_excel(xlsx_file, index=False, engine="openpyxl")
+        print(f"Excel (user-friendly): {xlsx_file}")
+
         self.generate_summary()
     
     def generate_summary(self):
@@ -590,12 +803,28 @@ def main():
     parser.add_argument(
         "--test", action="store_true", help="Test with first 10 entries"
     )
+    parser.add_argument(
+        "--no-resume", action="store_true", help="Don't resume from checkpoint (start fresh)"
+    )
+    parser.add_argument(
+        "--auto-corpus", action="store_true",
+        help="Automatically load corpus from validation_output/burrow_cache/burrow_corpus.json if it exists"
+    )
     
     args = parser.parse_args()
     
     workflow = EnhancedValidationWorkflow(args.csv_file, args.output_dir)
 
-    if args.burrow_corpus:
+    # Auto-load corpus if requested and available
+    if args.auto_corpus:
+        default_corpus = Path("validation_output/burrow_cache/burrow_corpus.json")
+        if default_corpus.exists():
+            print(f"Auto-loading corpus from: {default_corpus}")
+            workflow.load_burrow_corpus(str(default_corpus))
+        else:
+            print(f"⚠ Auto-corpus requested but not found at: {default_corpus}")
+            print("  Run with --burrow-corpus to specify a different path")
+    elif args.burrow_corpus:
         workflow.load_burrow_corpus(args.burrow_corpus)
 
     workflow.load_data()
@@ -604,7 +833,7 @@ def main():
         print("\n*** TEST MODE: First 10 entries only ***")
         workflow.df = workflow._require_data_loaded().head(10)
     
-    workflow.validate_all(batch_size=args.batch_size)
+    workflow.validate_all(batch_size=args.batch_size, resume=not args.no_resume)
 
 
 if __name__ == "__main__":
