@@ -9,37 +9,37 @@
 ## 1. Burrow abbreviation → StarlingDB language
 
 | Burrow (DED) | StarlingDB language |
-|--------------|---------------------|
-| ĀlKu. | Ālu Kuṟumba |
-| Bel. | Belari |
-| Br. | Brahui |
-| Dr. | Proto-Dravidian |
-| PDr. | Proto-Dravidian |
-| Ga. | Gadba |
-| Go. | Gondi |
-| Ir. | Iruḷa |
-| Ka. | Kannada |
-| Ko. | Kota |
-| Koḍ. | Kodagu |
-| Kol. | Kolami |
-| Kor. | Koraga |
-| Kur. | Kurukh |
-| Kurub. | Beṭṭa Kuruba |
-| Ma. | Malayalam |
-| Malt. | Malto |
-| Manḍ. | Manda |
-| Nk. | Naikri |
-| Nk. (Ch.) | Naiki |
-| Pa. | Parji |
-| PālKu. | Pālu Kuṟumba |
-| Pe. | Pengo |
-| Ta. | Tamil |
-| Te. | Telugu |
-| To. | Toda |
-| Tu. | Tulu |
-| Konḍa | Konda |
-| Kui | Kui |
-| Kuwi | Kuwi (Schulze) |
+| ------------ | ------------------- |
+| ĀlKu.        | Ālu Kuṟumba         |
+| Bel.         | Belari              |
+| Br.          | Brahui              |
+| Dr.          | Proto-Dravidian     |
+| PDr.         | Proto-Dravidian     |
+| Ga.          | Gadba               |
+| Go.          | Gondi               |
+| Ir.          | Iruḷa               |
+| Ka.          | Kannada             |
+| Ko.          | Kota                |
+| Koḍ.         | Kodagu              |
+| Kol.         | Kolami              |
+| Kor.         | Koraga              |
+| Kur.         | Kurukh              |
+| Kurub.       | Beṭṭa Kuruba        |
+| Ma.          | Malayalam           |
+| Malt.        | Malto               |
+| Manḍ.        | Manda               |
+| Nk.          | Naikri              |
+| Nk. (Ch.)    | Naiki               |
+| Pa.          | Parji               |
+| PālKu.       | Pālu Kuṟumba        |
+| Pe.          | Pengo               |
+| Ta.          | Tamil               |
+| Te.          | Telugu              |
+| To.          | Toda                |
+| Tu.          | Tulu                |
+| Konḍa        | Konda               |
+| Kui          | Kui                 |
+| Kuwi         | Kuwi (Schulze)      |
 
 *Total: 31 Burrow abbreviations.*
 
@@ -99,36 +99,36 @@ For display in validation output we show Burrow-style abbreviations (e.g. Ka., T
 **Full name → Burrow abbreviation** (first occurrence only when multiple Burrow codes map to same name):
 
 | StarlingDB language | Burrow (display) |
-|---------------------|------------------|
-| Proto-Dravidian | Dr. |
-| Ālu Kuṟumba | ĀlKu. |
-| Belari | Bel. |
-| Brahui | Br. |
-| Gadba | Ga. |
-| Gondi | Go. |
-| Iruḷa | Ir. |
-| Kannada | Ka. |
-| Kota | Ko. |
-| Kodagu | Koḍ. |
-| Kolami | Kol. |
-| Koraga | Kor. |
-| Kurukh | Kur. |
-| Beṭṭa Kuruba | Kurub. |
-| Malayalam | Ma. |
-| Malto | Malt. |
-| Manda | Manḍ. |
-| Naikri | Nk. |
-| Naiki | Nk. (Ch.) |
-| Parji | Pa. |
-| Pālu Kuṟumba | PālKu. |
-| Pengo | Pe. |
-| Tamil | Ta. |
-| Telugu | Te. |
-| Toda | To. |
-| Tulu | Tu. |
-| Konda | Konḍa |
-| Kui | Kui |
-| Kuwi (Schulze) | Kuwi |
+| ------------------- | ---------------- |
+| Proto-Dravidian     | Dr.              |
+| Ālu Kuṟumba         | ĀlKu.            |
+| Belari              | Bel.             |
+| Brahui              | Br.              |
+| Gadba               | Ga.              |
+| Gondi               | Go.              |
+| Iruḷa               | Ir.              |
+| Kannada             | Ka.              |
+| Kota                | Ko.              |
+| Kodagu              | Koḍ.             |
+| Kolami              | Kol.             |
+| Koraga              | Kor.             |
+| Kurukh              | Kur.             |
+| Beṭṭa Kuruba        | Kurub.           |
+| Malayalam           | Ma.              |
+| Malto               | Malt.            |
+| Manda               | Manḍ.            |
+| Naikri              | Nk.              |
+| Naiki               | Nk. (Ch.)        |
+| Parji               | Pa.              |
+| Pālu Kuṟumba        | PālKu.           |
+| Pengo               | Pe.              |
+| Tamil               | Ta.              |
+| Telugu              | Te.              |
+| Toda                | To.              |
+| Tulu                | Tu.              |
+| Konda               | Konḍa            |
+| Kui                 | Kui              |
+| Kuwi (Schulze)      | Kuwi             |
 
 Variant names (e.g. Maria Gondi) use the base language’s abbreviation (e.g. Go.) for display.
 
@@ -136,12 +136,12 @@ Variant names (e.g. Maria Gondi) use the base language’s abbreviation (e.g. Go
 
 ## 5. Test cases for validation
 
-| Burrow | StarlingDB | Expected match? |
-|--------|------------|-----------------|
-| Go. | Maria Gondi | ✓ Yes |
-| Kuwi | Kuwi (Schulze) | ✓ Yes |
-| Ta. | Tamil | ✓ Yes |
-| Te. | Telugu (Krishnamurti) | ✓ Yes |
-| Ka. | Telugu | ✗ No |
+| Burrow | StarlingDB            | Expected match? |
+| ------ | --------------------- | --------------- |
+| Go.    | Maria Gondi           | ✓ Yes           |
+| Kuwi   | Kuwi (Schulze)        | ✓ Yes           |
+| Ta.    | Tamil                 | ✓ Yes           |
+| Te.    | Telugu (Krishnamurti) | ✓ Yes           |
+| Ka.    | Telugu                | ✗ No            |
 
 

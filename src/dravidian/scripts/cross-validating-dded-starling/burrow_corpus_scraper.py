@@ -1,8 +1,17 @@
 """
 Burrow DED corpus scraper.
 
-Scrapes Burrow & Emeneau DED pages 1–514 into a local JSON corpus of entries
+Scrapes Burrow & Emeneau DED pages 1-514 into a local JSON corpus of entries
 and language attestations for offline cross-validation.
+
+Edition handling:
+  Pages 1-508  -> DEDR (main dictionary, entries 1-5557)
+  Pages 509-514 -> Appendix (IA/non-Dravidian items, entries App.1-61)
+  Pages 515+   -> Indexes (not scraped as entries)
+
+The Appendix restarts numbering from 1, so entries are prefixed "App." to
+prevent collisions with DEDR entry numbers. Starling's "Number in DED"
+refers exclusively to DEDR numbers.
 """
 
 from __future__ import annotations
@@ -11,6 +20,7 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 import json
+import re
 import time
 
 import requests
@@ -18,6 +28,32 @@ from bs4 import BeautifulSoup
 from bs4.element import Tag
 
 from burrow_entry_parser import BurrowEntryParser, LanguageAttestation
+
+# Page boundary between DEDR main dictionary and Appendix.
+# Derived from the CONTENTS in the frontmatter: "Appendix (1-61) 509"
+APPENDIX_START_PAGE = 509
+
+
+def classify_edition(page: int) -> str:
+    """Return 'DEDR' or 'Appendix' based on the page number."""
+    return "Appendix" if page >= APPENDIX_START_PAGE else "DEDR"
+
+
+def detect_edition_from_text(full_text: str) -> Optional[str]:
+    """
+    Heuristic fallback: detect edition from cross-reference markers in the
+    entry text itself.
+
+    Appendix entries point forward to DEDR, e.g. "[DEDR 4054]" or "DEDR 4054".
+    DEDR entries point backward to older editions, e.g. "DED(S) 2913" or "DEDS 8".
+    """
+    # Appendix entries contain forward refs like [DEDR NNNN]
+    if re.search(r"\[DEDR\s+\d+\]", full_text):
+        return "Appendix"
+    # DEDR entries end with backward refs like "DED(S, N) 56" or "DEDS 8"
+    if re.search(r"DED(\(S(?:,\s*N)?\)|S)\s+\d+", full_text):
+        return "DEDR"
+    return None
 
 
 class BurrowCorpusScraper:
@@ -28,6 +64,7 @@ class BurrowCorpusScraper:
     - Fetches the page listing.
     - For each entry-like block, extracts the per-entry HTML.
     - Uses BurrowEntryParser to extract language attestations.
+    - Tags each entry with its edition (DEDR or Appendix).
     - Stores entries and attestations into a JSON corpus file.
     - Maintains a checkpoint so long runs can be resumed.
     """
@@ -87,7 +124,7 @@ class BurrowCorpusScraper:
             if isinstance(entries, list):
                 self.entries = entries
                 print(f"Loaded existing corpus with {len(self.entries)} entries.")
-        except Exception as exc:  # pragma: no cover - defensive
+        except Exception as exc:
             print(f"Could not load existing corpus: {exc}")
 
     def _save_corpus(self) -> None:
@@ -120,7 +157,7 @@ class BurrowCorpusScraper:
                 f"Loaded checkpoint: {len(self.completed_pages)} pages completed, "
                 f"{checkpoint.get('total_entries', 0)} entries."
             )
-        except Exception as exc:  # pragma: no cover - defensive
+        except Exception as exc:
             print(f"Could not load checkpoint: {exc}")
 
     def _save_checkpoint(self) -> None:
@@ -145,9 +182,7 @@ class BurrowCorpusScraper:
         """Fetch URL with exponential-backoff retry."""
         for attempt in range(self.max_retries):
             try:
-                response = self.session.get(
-                    url, params=params, timeout=self.timeout
-                )
+                response = self.session.get(url, params=params, timeout=self.timeout)
                 response.raise_for_status()
                 return response
             except requests.exceptions.Timeout:
@@ -179,19 +214,15 @@ class BurrowCorpusScraper:
     ) -> List[Dict[str, Any]]:
         """
         Extract per-entry HTML chunks and language attestations from a single
-        <div class=\"hw_result\"> block on a page.
+        <div class="hw_result"> block on a page.
         """
         entries: List[Dict[str, Any]] = []
+        edition_from_page = classify_edition(page)
 
-        # Some pages contain a single blockquote; others contain multiple
-        # nested <div> blocks each representing a DED entry.
         nested_divs = result_div.find_all("div", recursive=False)
 
         if nested_divs:
-            # Page-style results with multiple nested entries.
-            candidate_divs: List[Tag] = [
-                d for d in nested_divs if isinstance(d, Tag)
-            ]
+            candidate_divs: List[Tag] = [d for d in nested_divs if isinstance(d, Tag)]
             for div in candidate_divs:
                 number_tag = div.find("number")
                 ded_number: Optional[str]
@@ -200,7 +231,6 @@ class BurrowCorpusScraper:
                 else:
                     ded_number = None
 
-                # Wrap into a hw_result container so BurrowEntryParser can work.
                 entry_html = f"<div class='hw_result'>{str(div)}</div>"
 
                 attestations = self.parser.parse_language_sections(
@@ -209,23 +239,33 @@ class BurrowCorpusScraper:
                 if not attestations:
                     continue
 
-                full_text = BeautifulSoup(
-                    entry_html, "html.parser"
-                ).get_text(" ", strip=True)
+                full_text = BeautifulSoup(entry_html, "html.parser").get_text(
+                    " ", strip=True
+                )
+
+                # Determine edition: page-based primary, text-based fallback
+                edition = edition_from_page
+                text_edition = detect_edition_from_text(full_text)
+                if text_edition and text_edition != edition:
+                    edition = text_edition
+
+                # For Appendix entries, prefix the number to avoid collisions
+                display_number = ded_number
+                if edition == "Appendix" and ded_number is not None:
+                    display_number = f"App.{ded_number}"
 
                 entries.append(
                     {
                         "page": page,
-                        "ded_number": ded_number,
+                        "ded_number": display_number,
+                        "ded_number_raw": ded_number,
+                        "edition": edition,
                         "raw_html": entry_html,
                         "full_text": full_text,
-                        "attestations": [
-                            asdict(att) for att in attestations
-                        ],
+                        "attestations": [asdict(att) for att in attestations],
                     }
                 )
         else:
-            # Simpler hw_result with a single blockquote.
             blockquote = result_div.find("blockquote")
             if not isinstance(blockquote, Tag):
                 return entries
@@ -238,20 +278,29 @@ class BurrowCorpusScraper:
 
             entry_html = f"<div class='hw_result'>{str(blockquote)}</div>"
 
-            attestations = self.parser.parse_language_sections(
-                entry_html, ded_number
-            )
+            attestations = self.parser.parse_language_sections(entry_html, ded_number)
             if not attestations:
                 return entries
 
-            full_text = BeautifulSoup(
-                entry_html, "html.parser"
-            ).get_text(" ", strip=True)
+            full_text = BeautifulSoup(entry_html, "html.parser").get_text(
+                " ", strip=True
+            )
+
+            edition = edition_from_page
+            text_edition = detect_edition_from_text(full_text)
+            if text_edition and text_edition != edition:
+                edition = text_edition
+
+            display_number = ded_number
+            if edition == "Appendix" and ded_number is not None:
+                display_number = f"App.{ded_number}"
 
             entries.append(
                 {
                     "page": page,
-                    "ded_number": ded_number,
+                    "ded_number": display_number,
+                    "ded_number_raw": ded_number,
+                    "edition": edition,
                     "raw_html": entry_html,
                     "full_text": full_text,
                     "attestations": [asdict(att) for att in attestations],
@@ -265,8 +314,9 @@ class BurrowCorpusScraper:
             print(f"Skipping page {page} (already completed).")
             return
 
+        edition_label = classify_edition(page)
         print(f"\n{'=' * 70}")
-        print(f"SCRAPING PAGE {page}")
+        print(f"SCRAPING PAGE {page} [{edition_label}]")
         print(f"{'=' * 70}")
 
         params = {"page": page}
@@ -286,7 +336,12 @@ class BurrowCorpusScraper:
             extracted = self._extract_entries_from_result_div(result_div, page)
             new_entries.extend(extracted)
 
-        print(f"Extracted {len(new_entries)} entries from page {page}.")
+        dedr_count = sum(1 for e in new_entries if e.get("edition") == "DEDR")
+        app_count = sum(1 for e in new_entries if e.get("edition") == "Appendix")
+        print(
+            f"Extracted {len(new_entries)} entries from page {page} "
+            f"(DEDR: {dedr_count}, Appendix: {app_count})."
+        )
 
         if new_entries:
             self.entries.extend(new_entries)
@@ -295,19 +350,24 @@ class BurrowCorpusScraper:
         self._save_corpus()
         self._save_checkpoint()
 
-        # Polite delay between pages.
         time.sleep(1.0)
 
     def scrape_all(self) -> None:
-        print(f"Starting Burrow corpus scrape: pages {self.start_page}–{self.end_page}")
+        print(f"Starting Burrow corpus scrape: pages {self.start_page}-{self.end_page}")
         print(f"Output directory: {self.output_dir}")
+        print(f"Appendix starts at page {APPENDIX_START_PAGE}")
 
         for page in range(self.start_page, self.end_page + 1):
             self.scrape_page(page)
 
+        dedr_total = sum(1 for e in self.entries if e.get("edition") == "DEDR")
+        app_total = sum(1 for e in self.entries if e.get("edition") == "Appendix")
+
         print(f"\n{'=' * 70}")
         print("BURROW CORPUS SCRAPE COMPLETE")
-        print(f"Total entries in corpus: {len(self.entries)}")
+        print(
+            f"Total entries: {len(self.entries)} (DEDR: {dedr_total}, Appendix: {app_total})"
+        )
         print(f"{'=' * 70}")
 
 
@@ -347,4 +407,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
