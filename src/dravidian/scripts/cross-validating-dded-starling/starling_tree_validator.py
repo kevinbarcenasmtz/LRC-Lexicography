@@ -149,9 +149,10 @@ def _parse_node(data: Dict[str, Any], depth: int = 0) -> TreeNode:
     """Parse a Starling JSON object into a TreeNode."""
     proto_key = None
     proto_headword = ""
+
     for key, val in data.items():
         if _is_proto_key(key) and isinstance(val, str) and val.strip():
-            if proto_key is None or val.startswith("*"):
+            if proto_key is None:  # ← FIX: only set if not already set
                 proto_key = key
                 proto_headword = val
 
@@ -388,38 +389,131 @@ def validate_record(
     results: List[ValidationResult] = []
 
     def _walk(node: TreeNode) -> None:
+        # If this node has a DED number and is not root, validate it
         if node.ded_number and node.depth > 0:
-            results.extend(
-                _validate_branch(
-                    node,
-                    record_num,
-                    pd_headword,
-                    pd_meaning,
-                    burrow_by_ded,
-                    strict=strict,
-                )
-            )
-        else:
-            for child in node.children:
-                _walk(child)
-            if node.depth > 0 and node.language_entries:
-                for entry in node.language_entries:
-                    results.append(
-                        ValidationResult(
-                            record_num=record_num,
-                            pd_headword=pd_headword,
-                            pd_meaning=pd_meaning,
-                            branch_label=node.label,
-                            branch_headword=node.headword,
-                            ded_number=None,
-                            language=entry.language,
-                            starling_headword=entry.headword,
-                            branch_status="no_ded_number",
-                            notes="Parent branch has no DED number",
-                        )
+            # Validate only DIRECT language entries (not descendants)
+            if node.language_entries:
+                results.extend(
+                    _validate_branch_direct(
+                        node,
+                        record_num,
+                        pd_headword,
+                        pd_meaning,
+                        burrow_by_ded,
+                        strict=strict,
                     )
+                )
+
+        # ALWAYS recurse to children to find nested branches
+        for child in node.children:
+            _walk(child)
+
+        # Report orphan language entries (node has no DED, not root)
+        if not node.ded_number and node.depth > 0 and node.language_entries:
+            for entry in node.language_entries:
+                results.append(
+                    ValidationResult(
+                        record_num=record_num,
+                        pd_headword=pd_headword,
+                        pd_meaning=pd_meaning,
+                        branch_label=node.label,
+                        branch_headword=node.headword,
+                        ded_number=None,
+                        language=entry.language,
+                        starling_headword=entry.headword,
+                        branch_status="no_ded_number",
+                        notes="Parent branch has no DED number",
+                    )
+                )
 
     _walk(tree)
+    return results
+
+
+def _validate_branch_direct(
+    branch: TreeNode,
+    record_num: int,
+    pd_headword: str,
+    pd_meaning: str,
+    burrow_by_ded: Dict[str, List[LanguageAttestation]],
+    strict: bool = False,
+) -> List[ValidationResult]:
+    """Validate a proto-branch using ONLY its direct language entries (not descendants)."""
+    ded = branch.ded_number
+    direct_entries = branch.language_entries  # Only direct children, not recursive
+
+    if not direct_entries:
+        return []
+
+    burrow_atts = burrow_by_ded.get(ded, []) if ded else []
+    burrow_langs = {att.language_name for att in burrow_atts}
+
+    results: List[ValidationResult] = []
+    matched_count = 0
+
+    for entry in direct_entries:
+        vr = ValidationResult(
+            record_num=record_num,
+            pd_headword=pd_headword,
+            pd_meaning=pd_meaning,
+            branch_label=branch.label,
+            branch_headword=branch.headword,
+            ded_number=ded,
+            language=entry.language,
+            starling_headword=entry.headword,
+        )
+
+        if not ded:
+            vr.notes = "Branch has no DED number"
+            results.append(vr)
+            continue
+
+        if not burrow_atts:
+            vr.notes = f"DED {ded} not found in Burrow corpus"
+            results.append(vr)
+            continue
+
+        matched, match_type, confidence, att, notes = _match_entry(
+            entry, burrow_atts, strict=strict
+        )
+
+        vr.matched = matched
+        vr.match_type = match_type
+        vr.match_confidence = confidence
+        vr.notes = notes
+
+        if att:
+            vr.burrow_headword = ", ".join(att.headwords)
+            vr.burrow_gloss = att.gloss[:200]
+            vr.burrow_language_abbrev = att.language_abbrev
+
+        if not matched and match_type != "language_only" and burrow_atts:
+            vr.notes = (
+                f"{entry.language} not in DED {ded}; "
+                f"Burrow has: {', '.join(sorted(burrow_langs))}"
+            )
+
+        if matched:
+            matched_count += 1
+
+        results.append(vr)
+
+    # Roll up branch status based on direct entries only
+    total = len(direct_entries)
+    if not ded:
+        status = "no_ded_number"
+    elif not burrow_atts:
+        status = "ded_not_in_corpus"
+    elif matched_count == total:
+        status = "fully_attested"
+    elif matched_count > 0:
+        status = f"partially_attested ({matched_count}/{total})"
+    else:
+        status = "not_attested"
+
+    for vr in results:
+        vr.branch_status = status
+
     return results
 
 
