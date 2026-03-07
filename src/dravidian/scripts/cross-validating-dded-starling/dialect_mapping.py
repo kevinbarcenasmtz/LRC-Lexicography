@@ -471,6 +471,66 @@ def get_dialects(base_language: str) -> List[str]:
     return info.dialects if info else []
 
 
+# ---------------------------------------------------------------------------
+# Gondi inline abbreviations
+# ---------------------------------------------------------------------------
+# Burrow consolidates all Gondi dialects under a single "Go." attestation and
+# encodes dialect/source distinctions as parenthetical inline markers within
+# the gloss, e.g.:
+#   Go. accānā (Tr.) to be cut; (Mu.) acc- to split; (Tr. W.) askānā ...
+#
+# Key:   Burrow inline abbreviation (as it appears in the gloss)
+# Value: Starling dialect name(s) that correspond to that source/dialect
+#
+# Sources (per colleague research):
+#   Tr.  = C. G. Chenevix Trench — Betul district data (1919–21)
+#   W.   = H. D. Williamson — Mandla dialect (1890)
+#   Ph.  = Phailbus — Mandla dialect (1963)
+#   Mu.  = Muria Gondi (dialect)
+#   Ma.  = Maria Gondi (dialect)
+#   A.   = Adilabad Gondi (dialect / Burrow & Bhattacharya 1951 fieldnotes)
+#   Ch.  = Chindwara Gondi (dialect)
+GONDI_INLINE_ABBREVS: Dict[str, List[str]] = {
+    "Tr.": ["Betul Gondi"],
+    "W.": ["Mandla Gondi (Williamson)"],
+    "Ph.": ["Mandla Gondi (Phailbus)"],
+    "Mu.": ["Muria Gondi"],
+    "Ma.": [
+        "Maria Gondi",
+        "Maria Gondi (Mitchell)",
+        "Maria Gondi (Lind)",
+        "Maria Gondi (Smith)",
+    ],
+    "A.": ["Adilabad Gondi"],
+    "Ch.": ["Chindwara Gondi"],
+}
+
+# Reverse index: Starling dialect name → inline abbreviation(s)
+_DIALECT_TO_INLINE_ABBREVS: Dict[str, List[str]] = {}
+
+
+def _build_gondi_inline_index() -> None:
+    global _DIALECT_TO_INLINE_ABBREVS
+    for abbrev, dialects in GONDI_INLINE_ABBREVS.items():
+        for dialect in dialects:
+            _DIALECT_TO_INLINE_ABBREVS.setdefault(dialect, []).append(abbrev)
+
+
+_build_gondi_inline_index()
+
+
+def get_inline_abbrevs_for_starling_dialect(starling_dialect: str) -> List[str]:
+    """
+    Return the Burrow inline abbreviations for a Starling Gondi dialect.
+
+    e.g. 'Betul Gondi'              → ['Tr.']
+         'Mandla Gondi (Williamson)' → ['W.']
+         'Maria Gondi'               → ['Ma.']
+    Returns an empty list for non-Gondi or unmapped dialects.
+    """
+    return _DIALECT_TO_INLINE_ABBREVS.get(starling_dialect, [])
+
+
 def get_branch(language: str) -> Optional[LanguageBranch]:
     """Get the language branch for a given language."""
     info = get_language_info(language)
