@@ -98,3 +98,5 @@ nahuatl_processor.ipynb
 
 # Csv Files, better practice to not track these
 *.csv
+*.json
+*.xlsx
