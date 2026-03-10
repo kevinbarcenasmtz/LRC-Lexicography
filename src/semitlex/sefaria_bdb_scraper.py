@@ -16,7 +16,7 @@ from urllib.parse import quote
 
 import pandas as pd
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 
 from sefaria_config import API_CONFIG, HEADERS, SCRAPER_CONFIG
 from sefaria_words_client import SefariaWordsClient
@@ -56,7 +56,7 @@ def extract_citations_from_segments(segments: Sequence[str]) -> List[str]:
     for segment in segments:
         soup = BeautifulSoup(segment, "html.parser")
         for anchor in soup.find_all("a"):
-            ref = anchor.get("data-ref")
+            ref = anchor.get("data-ref") if isinstance(anchor, Tag) else None
             if isinstance(ref, str) and ref and ref not in seen:
                 seen.add(ref)
                 citations.append(ref)
@@ -181,6 +181,7 @@ class SefariaBdbScraper:
 
     def _api_get_json(self, url: str) -> Dict[str, Any]:
         """GET JSON with retry/backoff."""
+        last_err: Optional[Exception] = None
         for attempt in range(self.max_retries):
             try:
                 response = self.session.get(url, timeout=self.timeout_seconds)
@@ -190,12 +191,12 @@ class SefariaBdbScraper:
                     return payload
                 return {"payload": payload}
             except requests.RequestException as err:
+                last_err = err
                 if attempt == self.max_retries - 1:
                     raise
                 wait = self.retry_base_wait_seconds * (self.backoff_multiplier**attempt)
                 jitter = random.uniform(0.1, 0.6)
                 time.sleep(wait + jitter)
-                last_err = err
         raise RuntimeError(f"Unexpected request retry flow for URL: {url}") from last_err
 
     def ping_index(self) -> Dict[str, Any]:
