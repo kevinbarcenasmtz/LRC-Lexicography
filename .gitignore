@@ -100,3 +100,5 @@ nahuatl_processor.ipynb
 *.csv
 *.json
 *.xlsx
+
+lrc_venv/
