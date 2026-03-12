@@ -139,6 +139,7 @@ class SefariaBdbScraper:
         self,
         output_dir: Optional[str] = None,
         subset_size: Optional[int] = None,
+        full_run: bool = False,
         request_delay_seconds: Optional[float] = None,
     ):
         self.output_dir = Path(output_dir or SCRAPER_CONFIG["default_output_dir"])
@@ -160,9 +161,12 @@ class SefariaBdbScraper:
             if request_delay_seconds is not None
             else SCRAPER_CONFIG["request_delay_seconds"]
         )
-        self.subset_size = (
-            subset_size if subset_size is not None else SCRAPER_CONFIG["subset_size"]
-        )
+        if full_run:
+            self.subset_size = None
+        else:
+            self.subset_size = (
+                subset_size if subset_size is not None else SCRAPER_CONFIG["subset_size"]
+            )
 
         self.checkpoint_path = self.output_dir / SCRAPER_CONFIG["checkpoint_filename"]
         self.output_json_path = self.output_dir / SCRAPER_CONFIG["output_json_filename"]
@@ -432,6 +436,14 @@ class SefariaBdbScraper:
                 if isinstance(seen_refs, list):
                     self.seen_refs = {str(ref) for ref in seen_refs}
                 self.started_at = str(checkpoint.get("started_at", self.started_at))
+                # Restore subset_size only when the constructor left it at the
+                # config default (i.e. the caller did not explicitly pass one).
+                # Use a sentinel so we can distinguish "key absent" from "key=null"
+                # (null means the original run was a full run → restore as None).
+                _MISSING = object()
+                saved_subset = checkpoint.get("subset_size", _MISSING)
+                if self.subset_size == SCRAPER_CONFIG["subset_size"] and saved_subset is not _MISSING:
+                    self.subset_size = int(saved_subset) if isinstance(saved_subset, int) else None
 
             if self.output_json_path.exists():
                 with open(self.output_json_path, "r", encoding="utf-8") as handle:
@@ -477,6 +489,12 @@ class SefariaBdbScraper:
                         error=str(err),
                     )
                 )
+                print(
+                    f"[WARN] Failed to fetch ref '{self.current_ref}' after retries: {err}. "
+                    "Saving checkpoint — re-run to resume from this ref."
+                )
+                self.save_outputs()
+                self.save_checkpoint()
                 break
 
             entry_record = self.build_entry_record(text_payload)
@@ -484,10 +502,9 @@ class SefariaBdbScraper:
             self.seen_refs.add(self.current_ref)
 
             next_ref = text_payload.get("next")
-            if entry_record.get("ref") == self.end_ref:
+            entry_ref = normalize_whitespace(str(entry_record.get("ref", "")))
+            if entry_ref == normalize_whitespace(self.end_ref):
                 self.current_ref = None
-                self.save_outputs()
-                self.save_checkpoint()
                 break
             self.current_ref = str(next_ref) if isinstance(next_ref, str) else None
 
@@ -499,6 +516,17 @@ class SefariaBdbScraper:
                 self.save_checkpoint()
 
             time.sleep(self.request_delay_seconds)
+
+        else:
+            # Loop exited because current_ref became None (no `next` link) without
+            # ever matching end_ref — warn so misconfigured end_ref is obvious.
+            if self.current_ref is None and self.entries:
+                last_ref = self.entries[-1].get("ref", "")
+                if normalize_whitespace(last_ref) != normalize_whitespace(self.end_ref):
+                    print(
+                        f"[WARN] Traversal ended (no `next` link) but end_ref "
+                        f"'{self.end_ref}' was never matched. Last ref: '{last_ref}'."
+                    )
 
         self.save_outputs()
         self.save_checkpoint()
@@ -549,6 +577,7 @@ if __name__ == "__main__":
     scraper = SefariaBdbScraper(
         output_dir=args.output_dir,
         subset_size=subset_size,
+        full_run=args.full,
         request_delay_seconds=args.request_delay,
     )
     summary = scraper.scrape()
