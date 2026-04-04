@@ -105,6 +105,32 @@ def repair_corpus(data: Dict[str, Any]) -> Dict[str, Any]:
                 att["gloss"] = repaired
                 changed += 1
 
+    # Second pass: resolve "id." (idem) glosses within each entry.
+    for entry in entries:
+        attestations = entry.get("attestations", [])
+        if not isinstance(attestations, list):
+            continue
+        last_real_gloss = ""
+        for att in attestations:
+            if not isinstance(att, dict):
+                continue
+            g = (att.get("gloss", "") or "").strip()
+            if g.lower() == "id.":
+                if last_real_gloss:
+                    att["gloss"] = last_real_gloss
+                    changed += 1
+            elif g.lower().startswith("id."):
+                if last_real_gloss:
+                    suffix = g[3:].lstrip(";").strip()
+                    new_gloss = f"{last_real_gloss}; {suffix}" if suffix else last_real_gloss
+                    if new_gloss != g:
+                        att["gloss"] = new_gloss
+                        changed += 1
+                    g = att["gloss"]
+                last_real_gloss = g
+            else:
+                last_real_gloss = g
+
     data["_repair_meta"] = {
         "repaired_attestations": changed,
         "total_attestations": total_attestations,

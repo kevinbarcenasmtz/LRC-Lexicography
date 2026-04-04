@@ -306,6 +306,22 @@ class BurrowEntryParser:
                 )
             )
 
+        # Resolve lexicographic "id." glosses (idem = same as previous attestation).
+        last_real_gloss = ""
+        for att in attestations:
+            g = att.gloss.strip()
+            if g.lower() == "id.":
+                if last_real_gloss:
+                    att.gloss = last_real_gloss
+            elif g.lower().startswith("id."):
+                # e.g. "id.; extra note" → "<prev gloss>; extra note"
+                if last_real_gloss:
+                    suffix = g[3:].lstrip(";").strip()
+                    att.gloss = f"{last_real_gloss}; {suffix}" if suffix else last_real_gloss
+                last_real_gloss = att.gloss
+            else:
+                last_real_gloss = att.gloss
+
         return attestations
 
     # ------------------------------------------------------------------ #
