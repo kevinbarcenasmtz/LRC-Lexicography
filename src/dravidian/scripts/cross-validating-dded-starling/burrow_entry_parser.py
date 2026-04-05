@@ -8,6 +8,8 @@ Handles multiple HTML structures found on the DSAL site:
   Pattern B: <i>Lang.</i> <b>headword</b>        (italic lang, bold headword)
   Pattern C: <i><b>Lang.</b></i> <b>headword</b> (bold inside italic for lang)
   Pattern D: <i>Lang</i> <b>headword</b>         (no period, e.g. Konḍa, Kui)
+  Pattern E: <i>Lang.</i> headword               (plain-text headword, no <b> wrapper;
+                                                   e.g. inside <b><i>fem.</i> … <i>Ko.</i> aṛy</b>)
 
 Optional qualifiers like (S.2), (A.), (Tr.), (F) may appear between
 the language abbreviation and the headword.
@@ -79,6 +81,17 @@ _PATTERNS = [
     # Allows optional qualifiers like (S.2), (A.), (Tr.) between lang and headword
     re.compile(
         r"<i>(" + _LANG_CHAR + r"\.?)</i>" r"\s*(?:\([^)]*\)\s*)*" r"<b>([^<]+)</b>",
+        re.DOTALL,
+    ),
+    # Pattern E: <i>Lang.</i> plain-text-headword (no <b> wrapper on headword)
+    # Handles cases where a grammatical qualifier (fem., pl., etc.) opens an outer
+    # <b> block and the language marker + headword appear as plain text inside it,
+    # e.g. <b><i>fem.</i> aṭiyātti. <i>Ko.</i> aṛy</b>
+    # Negative lookbehind avoids re-matching <b><i>Lang.</i> headword</b> (Pattern A).
+    re.compile(
+        r"(?<!<b>)<i>(" + _LANG_CHAR + r"\.?)</i>"
+        r"\s*(?:\([^)]*\)\s*)*"
+        r"([^\s<;(][^<;(]*?)(?=\s*[;<(]|\s*</?[bi])",
         re.DOTALL,
     ),
 ]
@@ -418,10 +431,23 @@ if __name__ == "__main__":
     </div>
     """
 
+    # Test Pattern E: <i>Lang.</i> plain-text headword inside outer <b> opened by fem.
+    sample_e = """
+    <div class='hw_result'>
+    <div>
+    <number>72</number> <b><i>Ta.</i> aṭi</b> foot (of a person).
+    <b><i>fem.</i> aṭiyātti. <i>Ko.</i> aṛy</b> foot (measure);
+    <b>ac</b> place below; <b>acgaṛ</b> place beneath an object.
+    <b><i>Ma.</i> aṭi</b> foot, lower part.
+    </div>
+    </div>
+    """
+
     test_cases = [
         ("DED 45 (mixed patterns B/D)", sample_b, "45"),
         ("DED 63 (patterns A/C)", sample_a, "63"),
         ("DED 46 (pattern A only)", sample_c, "46"),
+        ("DED 72 (pattern E: plain-text headword inside fem. block)", sample_e, "72"),
     ]
 
     for label, html, ded in test_cases:
