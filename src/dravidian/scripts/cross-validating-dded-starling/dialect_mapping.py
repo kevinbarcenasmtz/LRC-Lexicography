@@ -482,25 +482,31 @@ def get_dialects(base_language: str) -> List[str]:
 # Key:   Burrow inline abbreviation (as it appears in the gloss)
 # Value: Starling dialect name(s) that correspond to that source/dialect
 #
-# Sources (per colleague research):
+# Sources confirmed from DEDR frontmatter §31 and Voc. sigilla
+# (Burrow & Bhattacharya, 'A comparative vocabulary of the Gondi dialects',
+# JAS 2.73-251, 1960 — cited as Voc. / CVOTGD in Starling):
+#
 #   Tr.  = C. G. Chenevix Trench — Betul district data (1919–21)
 #   W.   = H. D. Williamson — Mandla dialect (1890)
-#   Ph.  = Phailbus — Mandla dialect (1963)
+#   Ph.  = Phailbus — Mandla dialect (1963)  [NOT listed in §31; uncertain]
 #   Mu.  = Muria Gondi (dialect)
-#   Ma.  = Maria Gondi (dialect)
-#   A.   = Adilabad Gondi (dialect / Burrow & Bhattacharya 1951 fieldnotes)
+#   Ma.  = Maria Gondi (Hill-Maria) — plain Maria only, per §55
+#   M.   = A. N. Mitchell — Maria Gondi, Bison Horn/Dandami Marias of Bastar (1942)
+#   L.   = Abraham A. Lind — Maria dialect (1913)
+#   G.   = Stephen A. Tyler — Gommu dialect of Koya (1969)
+#   Ko.  = Koya Gondi (DGG, Subrahmanyam 1968); distinct from top-level Ko. = Kota
+#   A.   = Adilabad fieldnotes (Burrow & Bhattacharya 1951) / Adilabad dialect
 #   Ch.  = Chindwara Gondi (dialect)
 GONDI_INLINE_ABBREVS: Dict[str, List[str]] = {
     "Tr.": ["Betul Gondi"],
     "W.": ["Mandla Gondi (Williamson)"],
-    "Ph.": ["Mandla Gondi (Phailbus)"],
+    "Ph.": ["Mandla Gondi (Phailbus)"],  # not in §31; retained as uncertain
     "Mu.": ["Muria Gondi"],
-    "Ma.": [
-        "Maria Gondi",
-        "Maria Gondi (Mitchell)",
-        "Maria Gondi (Lind)",
-        "Maria Gondi (Smith)",
-    ],
+    "Ma.": ["Maria Gondi"],
+    "M.": ["Maria Gondi (Mitchell)"],
+    "L.": ["Maria Gondi (Lind)"],
+    "G.": ["Gommu Gondi"],
+    "Ko.": ["Koya Gondi"],
     "A.": ["Adilabad Gondi"],
     "Ch.": ["Chindwara Gondi"],
 }

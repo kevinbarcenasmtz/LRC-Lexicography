@@ -494,12 +494,17 @@ def _recover_attestation_gloss_from_full_text(
         return fallback_gloss
 
     normalized = re.sub(r"\s+", " ", full_text).strip()
-    marker = f"{source_abbrev.strip()} {source_headword.strip()}"
-    marker_pos = normalized.lower().find(marker.lower())
-    if marker_pos < 0:
+    abbrev_esc = re.escape(source_abbrev.strip())
+    hw_esc = re.escape(source_headword.strip())
+    marker_re = re.compile(
+        rf"{abbrev_esc}\s+(?:\([^)]*\)\s*)*{hw_esc}",
+        re.IGNORECASE,
+    )
+    m_marker = marker_re.search(normalized)
+    if not m_marker:
         return fallback_gloss
 
-    tail = normalized[marker_pos + len(marker) :].strip()
+    tail = normalized[m_marker.end() :].strip()
     # Stop at the next top-level language token (e.g. "Malt.", "Ka.") so
     # one attestation does not consume following language segments.
     ignore_tokens = {
