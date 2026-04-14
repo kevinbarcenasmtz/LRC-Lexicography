@@ -1,6 +1,6 @@
 # Basic data processing
 numpy==2.3.0
-pandas==2.3.0
+pandas==3.0.2
 
 # Excel file processing
 openpyxl==3.1.2  # Modern Excel (.xlsx) files
