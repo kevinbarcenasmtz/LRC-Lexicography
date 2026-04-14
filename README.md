@@ -24,6 +24,7 @@ LRC-Lexicography/
 │   │   ├── data_given_to_us_db_files/
 │   │   └── raw/
 │   ├── dravidian/
+│   ├── indo-iranian/
 │   ├── romani/
 │   ├── iranian/
 │   └── ielex/
@@ -37,6 +38,7 @@ LRC-Lexicography/
 │   │   ├── scripts/          # StarlingDB scrapers
 │   │   ├── notebooks/        # Data processing
 │   │   └── docs/
+│   ├── indo-iranian/         # Starling intake routed under the Indo-Iranian project slice
 │   ├── romlex/               # RomLex scraping tools
 │   ├── iranian/
 │   └── requirements.txt      # Shared Python dependencies
