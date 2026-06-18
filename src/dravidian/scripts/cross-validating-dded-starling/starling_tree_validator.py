@@ -571,6 +571,12 @@ def _recover_attestation_gloss_from_full_text(
     tail = normalized[m_marker.end() :].strip()
     # Stop at the next top-level language token (e.g. "Malt.", "Ka.") so
     # one attestation does not consume following language segments.
+    # Konḍa/Kui/Kuwi are the only language names in the whole inventory
+    # written WITHOUT a trailing period, so the main alternative (which
+    # requires one) silently walks past them -- added explicitly so
+    # attestations followed by one of these three still get bounded
+    # correctly (kept in sync with the identical function in
+    # repair_burrow_corpus_glosses.py).
     ignore_tokens = {
         "Tr.",
         "W.",
@@ -584,11 +590,20 @@ def _recover_attestation_gloss_from_full_text(
         "e.g.",
     }
     for m in re.finditer(
-        r"\s([A-Z][A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+\.)\s+\S",
+        r"\s([A-Z][A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+\.|Konḍa|Kui|Kuwi)\s+\S",
         tail,
     ):
         tok = m.group(1)
         if tok in ignore_tokens:
+            continue
+        # Konḍa/Kui/Kuwi (unlike the period-bearing tokens above) can also
+        # appear as an ordinary cross-reference mid-sentence, e.g. DED 3246's
+        # "...(cf. Kui trēba; with loss of t-)..." inside Kuwi's OWN gloss --
+        # not a new attestation. A real attestation-introducing mention is
+        # never preceded by "cf.".
+        if tok in ("Konḍa", "Kui", "Kuwi") and re.search(
+            r"\bcf\.\s*$", tail[: m.start()], re.IGNORECASE
+        ):
             continue
         tail = tail[: m.start()].strip()
         break
