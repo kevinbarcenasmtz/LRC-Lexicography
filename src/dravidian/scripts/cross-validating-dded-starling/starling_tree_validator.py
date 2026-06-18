@@ -91,6 +91,12 @@ def _extract_inline_meaning(value: str) -> str:
 # Two confusable dots occur in the corpus (U+0387 dominant, U+00B7), plus IPA length marks.
 _LENGTH_DOTS = {ord(c): None for c in "\u00b7\u0387\u02d0\u02d1"}
 
+# Starling writes the velar nasal as eng (\u014b); Burrow uses \u1e45 (n + combining dot
+# above), which NFKD reduces to plain "n". Both are notational variants of the
+# same phoneme /\u014b/, so fold eng to "n" to reconcile the two orthographies.
+# Kept in sync with burrow_entry_parser._ENG_FOLD.
+_ENG_FOLD = {ord("\u014b"): "n", ord("\u014a"): "n"}  # \u014b, \u014a -> n
+
 
 def _normalize_for_match(text: str) -> str:
     # Underscores are removed so Starling's ASCII diacritic notation (``in_r_u``
@@ -105,6 +111,7 @@ def _normalize_for_match(text: str) -> str:
         .strip()
         .lower()
         .translate(_LENGTH_DOTS)
+        .translate(_ENG_FOLD)
     )
     decomposed = unicodedata.normalize("NFKD", base)
     filtered = "".join(ch for ch in decomposed if not unicodedata.combining(ch))

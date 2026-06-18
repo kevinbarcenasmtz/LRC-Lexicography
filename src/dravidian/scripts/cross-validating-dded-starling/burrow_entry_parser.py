@@ -201,6 +201,12 @@ def _is_valid_lang(abbrev: str) -> bool:
 # Kept in sync with starling_tree_validator._LENGTH_DOTS.
 _LENGTH_DOTS = {ord(c): None for c in "\u00b7\u0387\u02d0\u02d1"}
 
+# Starling writes the velar nasal as eng (\u014b); Burrow uses \u1e45 (n + combining dot
+# above), which NFKD reduces to plain "n". Both are notational variants of the
+# same phoneme /\u014b/, so fold eng to "n" to reconcile the two orthographies.
+# Kept in sync with starling_tree_validator._ENG_FOLD.
+_ENG_FOLD = {ord("\u014b"): "n", ord("\u014a"): "n"}  # \u014b, \u014a -> n
+
 
 def _normalize_for_match(text: str) -> str:
     """Normalize headwords for robust matching: strip diacritics, stars, hyphens.
@@ -211,6 +217,9 @@ def _normalize_for_match(text: str) -> str:
 
     Length dots (Burrow's raised-dot vowel-length mark) are stripped so they
     reconcile with Starling's macron notation -- see ``_LENGTH_DOTS``.
+
+    Eng (ŋ) is folded to "n" so Starling's IPA velar-nasal notation reconciles
+    with Burrow's ṅ (which NFKD reduces to "n") -- see ``_ENG_FOLD``.
     """
     base = (
         text.replace("*", "")
@@ -221,6 +230,7 @@ def _normalize_for_match(text: str) -> str:
         .strip()
         .lower()
         .translate(_LENGTH_DOTS)
+        .translate(_ENG_FOLD)
     )
     decomposed = unicodedata.normalize("NFKD", base)
     filtered = "".join(ch for ch in decomposed if not unicodedata.combining(ch))
