@@ -111,7 +111,37 @@ languages (verified by faithful in-memory sim). **+392** matched — biggest sin
 
 ---
 
-## 3. Corpus version history
+## 3. Worked examples — where to verify each fix
+
+For a live demo, pick one DED number per fix and open it on each side.
+
+- **DDSA (Burrow):** `https://dsal.uchicago.edu/cgi-bin/app/burrow_query.py?qs=<DED#>` — searches
+  the Burrow DED; the result links straight to the dictionary page.
+- **Starling:** browse the Dravidian etymology at `starlingdb.org` and search by the **proto-form
+  or meaning** (Starling entries are keyed by their own text number, not by DED#).
+- **Your xlsx (`tree_validation_results.xlsx`):** filter the **`Validation DED #`** column to the
+  number, then read **`Starling lexical headword`**, **`Matched Burrow form`**, **`Match`**, and
+  **`Validation note`**.
+
+| # | Fix | DED # | Burrow / DDSA shows | Starling shows | What the fix demonstrates |
+|---|---|---|---|---|---|
+| 1 | DED-0 sentinel | — | n/a (Burrow has no DED 0) | sub-entries with `Number in DED = 0` | No longer surface as false "DED 0 not found" rows in the xlsx |
+| 2 | Pattern E false positives | 144 | `Ta. atti … Ficus glomerata` (italic genus) | Tamil `atti` "country fig" | The italic genus `Ficus` is no longer mis-listed as a "language" |
+| 3 | Sub-entry / Tamil-missing | 990 | `(a) Ta. oru` "one" | Tamil `oru` | Tamil (glued to the `(a)` marker) is now extracted and matches |
+| 4 | Underscore normalization | 410 | Tamil `iṉṟu` | Tamil `in_r_u` | Same form — ASCII-underscore vs diacritic — now reconciled |
+| 5 | Length-dot normalization | 2891 | Kota `te·l` (raised dot) | Kota `tēl` (macron) | Raised-dot length mark = macron — now matches |
+| 6 | Eng (ŋ) velar-nasal | 2591 | Tulu `ediṅke` (ṅ) | Tulu `ediŋke` (ŋ) | Two notations of /ŋ/ — now matches |
+| 7 | DED letter-suffix | 4896 | numbered **`4896(a)`** (and listed twice); Tamil `mukku` | DED 4896, Tamil `mukku` | `4896(a)` now indexes under `4896`; all 12 rows recovered |
+| 8 | Naiki dialect abbrev | 5154 | `Nk. (Ch.) ām(e)` (= Naiki) | Naiki `ām(e)` | `Nk. (Ch.)` (space in the abbrev) is now parsed as its own language |
+| 9 | Nested tag in headword | 1 | Tulu `āye … (obl. ay-)`; also DED 62 Ma. `aṭakkā-maṇiyan` (ital. *Sphaeranthus indicus*) | Tulu `āye` | A nested `(obl.)`/italic-species/`<at>` tag no longer truncates the entry |
+
+**Most obvious for colleagues:** DED **4896** (the `(a)` suffix is visible right next to the
+number on the DDSA page) and DED **5154** (the `Nk. (Ch.)` marker is plainly in the text) — both
+show the discrepancy at a glance without needing the xlsx.
+
+---
+
+## 4. Corpus version history
 
 Matcher-side fixes change only comparison logic — no regen. Parser-side fixes rewrite the
 ~5,685-entry cleaned corpus.
@@ -130,7 +160,7 @@ Matcher-side fixes change only comparison logic — no regen. Parser-side fixes 
 
 ---
 
-## 4. Still open / deferred
+## 5. Still open / deferred
 
 | Item | Class | Side | Est. impact | Notes |
 |---|---|---|---|---|
