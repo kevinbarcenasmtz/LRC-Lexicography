@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import sys
 import unicodedata
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -1714,6 +1715,12 @@ def run_validation(
 
 
 def main() -> None:
+    # Language abbreviations contain diacritics (e.g. "Koḍ.", "Manḍ.").
+    # On Windows the default console codec (cp1252) cannot encode these, so
+    # force UTF-8 output before any print() calls.
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
     parser = argparse.ArgumentParser(
         description="Tree-based Starling-to-Burrow DED paragraph validator"
     )
