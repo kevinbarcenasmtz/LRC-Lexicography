@@ -124,6 +124,19 @@ _OPT_SUBENTRY = r"(?:\(\s*[a-z]\s*\)\s*)?"
 # attestations across the corpus.
 _OPT_LANG_QUALIFIER = r"(?:\s*\([^)<]*\))?"
 
+# A grammatical/sense qualifier glued onto the FRONT of a language marker
+# inside the same <i> tag, e.g. "<b><i>(tr.). Ka.</i> headword</b>" (Burrow
+# attaches voice/transitivity/locative qualifiers -- (tr.), (intr.), (loc.)
+# -- to the PRECEDING headword's sense, but the markup glues the closing
+# "). " onto the FOLLOWING language marker's own <i> span instead of closing
+# before it). _LANG_CHAR must start uppercase, so without this every
+# _PATTERNS entry fails to anchor inside the <i> tag and the whole language
+# is silently dropped (97 across the corpus). A rarer sibling shape leaks
+# the opening "(" just outside the <i> tag instead of inside it (e.g.
+# "<b>(<i>intr.). Ka.</i>") -- handled by the optional `\(?` in Pattern A's
+# opener below, not here.
+_OPT_LEADING_QUALIFIER = r"(?:\(?[^()<>]*\)\.\s*)?"
+
 # Abbreviation capture group reused by every pattern below: a language
 # abbreviation (_LANG_CHAR), an optional trailing period, and an optional
 # in-marker parenthetical qualifier (_OPT_LANG_QUALIFIER).
@@ -138,7 +151,8 @@ _PATTERNS = [
     # scientific name, or <at>…</at> encoding artifact) otherwise breaks the
     # match and silently drops the language (~613 across the corpus).
     re.compile(
-        r"<b><i>" + _OPT_SUBENTRY + _LANG_ABBREV + r"</i>\s+([^<]+)(?=<)",
+        r"<b>\(?<i>" + _OPT_LEADING_QUALIFIER + _OPT_SUBENTRY + _LANG_ABBREV
+        + r"</i>\s+([^<]+)(?=<)",
         re.DOTALL,
     ),
     # Pattern C: <i><b>Lang.</b></i> <b>headword</b>
