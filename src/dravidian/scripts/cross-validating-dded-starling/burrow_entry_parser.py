@@ -40,7 +40,9 @@ class LanguageAttestation:
     source_text: str
 
 
-# Burrow abbreviations that are NOT language markers
+# Burrow abbreviations that are NOT language markers.
+# Compared against the period/paren-stripped form produced by _is_valid_lang,
+# so entries are stored bare (e.g. "Voc", not "Voc.").
 _INVALID_LANG_ABBREVS = {
     "Voc",
     "CDIAL",
@@ -57,6 +59,36 @@ _INVALID_LANG_ABBREVS = {
     "H",
     "Mar",
     "Pers",
+    # Pattern E false positives that the length guard does not catch
+    # (see docs/issues/issue_pattern_e_false_positives.md).
+    # Section-heading artifact and short bibliographic abbreviations.
+    "Language",
+    "Gramm",
+    "Divy",
+    "Nachträge",
+    "Uṇ",
+    # Sanskrit / Old Kannada text and lexicon titles (≤10 chars, so not
+    # caught by the length guard; the longer ones are also covered by it).
+    "Mahāpūrāṇa",
+    "Mahāpurāṇa",
+    "Śabdaratnākara",
+    "Yaśastilaka",
+    "Jasaharacariu",
+    # Botanical genus names (too short for the length guard). The first four
+    # are from the issue doc's table; the rest were surfaced by the v5 reparse
+    # diff (same class of false positive).
+    "Ficus",
+    "Oxalis",
+    "Physalis",
+    "Tribulum",
+    "Anaphilis",
+    "Avicennia",
+    "Leucas",
+    "Oryza",
+    "Phlomis",
+    "Phoenix",
+    "Polygala",
+    "Stromatens",
 }
 
 # Character class for language abbreviation characters (including diacritics)
@@ -122,11 +154,24 @@ def _clean_lang_abbrev(raw: str) -> str:
 
 
 def _is_valid_lang(abbrev: str) -> bool:
-    """Check if an abbreviation looks like a real language marker."""
-    clean = abbrev.rstrip(".").strip()
+    """Check if an abbreviation looks like a real language marker.
+
+    Pattern E matches plain-text headwords with no <b> wrapper, so without
+    these guards it picks up capitalised non-language tokens (text titles,
+    botanical names, bibliographic abbreviations). See
+    docs/issues/issue_pattern_e_false_positives.md.
+    """
+    # Strip trailing periods AND parentheses so "Gramm.)" -> "Gramm",
+    # "Uṇ." -> "Uṇ", "Divy." -> "Divy" all match the block-list and so a
+    # stray ")" left in the abbreviation by the source HTML is ignored.
+    clean = abbrev.strip().rstrip(".)(").strip()
+    if not clean:
+        return False
     if clean in _INVALID_LANG_ABBREVS:
         return False
-    if not clean:
+    # Real Dravidian abbreviations are 2–6 chars; long tokens are text titles
+    # or species strings (e.g. "Wrightiaantidysenterica" is 23 chars).
+    if len(clean) > 10:
         return False
     if not clean[0].isupper():
         return False

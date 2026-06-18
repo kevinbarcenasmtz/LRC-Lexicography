@@ -3,8 +3,30 @@ type: issue
 topics: [dravidian, cross-validating, burrow&ded, parser]
 title: pattern_e_false_positive_lang_markers
 date: 04-05-2026
-status: open
+status: resolved
+resolved: 06-18-2026
 ---
+
+## Resolution
+
+Fixed in `burrow_entry_parser.py` via **Option A + Option B** (Option C deferred):
+
+- `_is_valid_lang` now strips trailing `.`/`)`/`(` before comparison (also fixes
+  the secondary stray-`)` issue on `Gramm.)`) and rejects any cleaned abbreviation
+  longer than 10 characters.
+- `_INVALID_LANG_ABBREVS` extended with `Language`, `Gramm`, `Divy`, `Nachträge`,
+  `Uṇ`, the Sanskrit/Old Kannada titles, and the botanical genus names.
+
+The v5 reparse surfaced eight more botanical genera not in the table below
+(`Anaphilis`, `Avicennia`, `Leucas`, `Oryza`, `Phlomis`, `Phoenix`, `Polygala`,
+`Stromatens`); these were added to the block-list as the same class of false
+positive. After the fix the reparse diff shows **0 lost attestations** and **none**
+of the listed false-positive tokens are gained.
+
+Residual / deferred: single-letter dialect qualifiers (`P.`, `A.`) captured by
+Pattern E (e.g. DED 2617, 1617) remain ambiguous and are left for the deferred
+**Option C** (structural restriction to inside an outer `<b>` block) rather than
+block-listed, since single letters can be genuine markers elsewhere.
 
 ## Summary
 
