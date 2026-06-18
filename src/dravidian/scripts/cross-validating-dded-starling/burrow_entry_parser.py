@@ -10,6 +10,11 @@ Handles multiple HTML structures found on the DSAL site:
   Pattern D: <i>Lang</i> <b>headword</b>         (no period, e.g. Konḍa, Kui)
   Pattern E: <i>Lang.</i> headword               (plain-text headword, no <b> wrapper;
                                                    e.g. inside <b><i>fem.</i> … <i>Ko.</i> aṛy</b>)
+  Pattern F: <i>Lang.</i></b> headword</b>      (lang marker closes a stray
+                                                  outer <b> opened by the
+                                                  previous language's leftover
+                                                  gloss text; headword is in
+                                                  a fresh <b> right after)
 
 Optional qualifiers like (S.2), (A.), (Tr.), (F) may appear between
 the language abbreviation and the headword.
@@ -148,6 +153,17 @@ _PATTERNS = [
     re.compile(
         r"<i>" + _OPT_SUBENTRY + _LANG_ABBREV + r"</i>"
         r"\s*(?:\([^)]*\)\s*)*" r"<b>([^<]+)</b>",
+        re.DOTALL,
+    ),
+    # Pattern F: <i>Lang.</i></b> ... <b>headword</b>
+    # The previous language's leftover gloss text leaks into an outer <b>
+    # span that doesn't close until just past this language's <i>Lang</i>
+    # marker (e.g. Kui's "(obl. for all mā-)." sits inside a <b> that closes
+    # right after "<i>Kuwi</i>"); the headword is in a fresh <b> after.
+    re.compile(
+        r"<i>" + _OPT_SUBENTRY + _LANG_ABBREV + r"</i>\s*</b>"
+        r"\s*(?:\([^)]*\)\s*)*"
+        r"<b>([^<]+)</b>",
         re.DOTALL,
     ),
     # Pattern E: <i>Lang.</i> plain-text-headword (no <b> wrapper on headword)
