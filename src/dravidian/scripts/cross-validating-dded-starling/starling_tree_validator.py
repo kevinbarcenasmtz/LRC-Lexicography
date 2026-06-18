@@ -394,6 +394,39 @@ def _clean_inline_meaning(meaning_text: str) -> str:
     return meaning_text.strip()
 
 
+# A dialect/citation marker group like "Tr.", "Ph.", "Tr. W.", "A. Ch. Mu.
+# Ma." -- as opposed to an ordinary gloss parenthetical. Shared by
+# _extract_gloss_forms_for_abbrevs and _truncate_gloss_before_first_marker.
+_DIALECT_MARKER_GROUP_RE = re.compile(r"^(?:[A-Za-z]+\.)+(?:\s+[A-Za-z]+\.)*$")
+
+
+def _truncate_gloss_before_first_marker(gloss: str) -> str:
+    """
+    Trim a consolidated Burrow entry's gloss at the first dialect/citation
+    marker, e.g. Kuwi's "(F.) vegu" form stores its gloss as
+    ", (Su. Isr.) vegu (pl. veska), (P.) vergu (pl. verka) id.; (S.) weggu,
+    weska dry wood." -- text that genuinely belongs to OTHER dialects'
+    citations, not the primary (F.) form being matched here.
+
+    Used only when the primary headword is matched directly (the
+    gloss_dialect_* path in _match_entry already extracts a dialect-specific
+    meaning and never reaches this function) -- the primary form's own
+    marker (e.g. "(F.)") was already consumed during parsing as a headword
+    qualifier, so it never appears in the gloss for this function to find;
+    there is no way to recover its true distinct meaning, only to stop
+    displaying unrelated dialects' text in its place. Returns an empty
+    string when there's no text before the first marker (the common case --
+    primary forms are often grouped under a single shared "id." at the end),
+    which is more honest than showing irrelevant content, and avoids a
+    false meaning-mismatch flag (since _is_meaning_mismatch treats an empty
+    side as "nothing to compare", not a mismatch).
+    """
+    for marker_match in re.finditer(r"\(([^)]+)\)\s*", gloss):
+        if _DIALECT_MARKER_GROUP_RE.match(marker_match.group(1).strip()):
+            return gloss[: marker_match.start()].strip(" ;,")
+    return gloss
+
+
 def _extract_gloss_forms_for_abbrevs(
     primary_headword: str,
     gloss: str,
@@ -419,9 +452,9 @@ def _extract_gloss_forms_for_abbrevs(
     marker_matches = []
     for marker_match in re.finditer(r"\(([^)]+)\)\s*", gloss):
         marker_text = marker_match.group(1).strip()
-        # Keep only dialect/citation marker groups like "Tr.", "Ph.",
-        # "Tr. W.", "A. Ch. Mu. Ma." and skip gloss parentheticals.
-        if re.match(r"^(?:[A-Za-z]+\.)+(?:\s+[A-Za-z]+\.)*$", marker_text):
+        # Keep only dialect/citation marker groups and skip gloss
+        # parentheticals.
+        if _DIALECT_MARKER_GROUP_RE.match(marker_text):
             marker_matches.append(marker_match)
     for i, marker_match in enumerate(marker_matches):
         group_text = marker_match.group(1)
@@ -707,8 +740,19 @@ def _match_entry(
             att.gloss,
         )
 
+        # entry.language is a specific named dialect of a consolidated
+        # Burrow language (e.g. "Kuwi (Fitzgerald)", "Gommu Gondi") whose
+        # OWN marker was consumed during parsing as a headword qualifier
+        # (see _truncate_gloss_before_first_marker) -- so a direct headword
+        # match here would otherwise display unrelated dialects' citation
+        # text as this dialect's "meaning". Generic/base-language matches
+        # (e.g. plain "Gondi") have no inline_abbrevs and are unaffected.
+        direct_match_gloss = att_gloss
+        if get_inline_abbrevs_for_starling_dialect(entry.language):
+            direct_match_gloss = _truncate_gloss_before_first_marker(att_gloss)
+
         candidate_headword_forms: List[Tuple[str, str, bool]] = [
-            (hw.strip(), att_gloss, False) for hw in att.headwords if hw.strip()
+            (hw.strip(), direct_match_gloss, False) for hw in att.headwords if hw.strip()
         ]
         for form, meaning in _extract_id_reference_forms(
             att_gloss,
@@ -856,7 +900,15 @@ def _match_entry(
     if best_headword_match and best_att:
         matched_burrow_lang = best_att.language_abbrev
         matched_burrow_form = best_headword_match_form or ", ".join(best_att.headwords)
-        matched_burrow_gloss = best_headword_match_gloss or best_att.gloss
+        # An empty best_headword_match_gloss can mean either "no gloss
+        # available" (fall back to the raw attestation gloss) or "this
+        # dialect's marker was deliberately truncated to nothing" (see
+        # _truncate_gloss_before_first_marker) -- the latter must NOT fall
+        # back, or it would re-display the unrelated full blob it was
+        # trimmed to avoid.
+        matched_burrow_gloss = best_headword_match_gloss or (
+            "" if get_inline_abbrevs_for_starling_dialect(entry.language) else best_att.gloss
+        )
         matched_burrow_segments = [
             (headword, meaning, False)
             for headword in best_att.headwords
@@ -1169,7 +1221,20 @@ def _validate_branch(
             vr.burrow_language_abbrev = matched_burrow_lang or att.language_abbrev
             vr.burrow_source = att.source_text
             vr.burrow_gloss_parsed = parsed_gloss
-            if matched_burrow_gloss:
+            # For a tracked Gondi/Kuwi/Kui dialect, matched_burrow_gloss was
+            # always computed by dialect-aware logic in _match_entry (either
+            # the gloss_dialect_* extraction or the deliberately-truncated
+            # primary-form path -- see _truncate_gloss_before_first_marker),
+            # which can legitimately be "" (no distinct meaning recoverable
+            # for this dialect). Falling back to att.gloss in that case would
+            # silently re-display unrelated dialects' full citation text, so
+            # use matched_burrow_gloss unconditionally here. Generic matches
+            # (no inline_abbrevs) keep the truthy-check fallback, since "" is
+            # ambiguous there (could mean "not computed" rather than
+            # "deliberately empty").
+            if get_inline_abbrevs_for_starling_dialect(entry.language):
+                vr.burrow_gloss = matched_burrow_gloss
+            elif matched_burrow_gloss:
                 vr.burrow_gloss = matched_burrow_gloss
 
         if not matched and match_type != "language_only" and burrow_atts:
@@ -1351,7 +1416,14 @@ def _validate_branch_direct(
             vr.burrow_gloss = att.gloss
             vr.burrow_language_abbrev = matched_burrow_lang or att.language_abbrev
             vr.burrow_gloss_parsed = parsed_gloss
-            if matched_burrow_gloss:
+            # See the matching comment in _validate_branch: for a tracked
+            # Gondi/Kuwi/Kui dialect, "" from matched_burrow_gloss is
+            # deliberate (see _truncate_gloss_before_first_marker), not
+            # "not computed" -- use it unconditionally rather than falling
+            # back to the unrelated-dialect-bleeding att.gloss.
+            if get_inline_abbrevs_for_starling_dialect(entry.language):
+                vr.burrow_gloss = matched_burrow_gloss
+            elif matched_burrow_gloss:
                 vr.burrow_gloss = matched_burrow_gloss
 
         if not matched and match_type != "language_only" and burrow_atts:
