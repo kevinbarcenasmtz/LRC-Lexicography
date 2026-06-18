@@ -196,9 +196,15 @@ def _is_valid_lang(abbrev: str) -> bool:
 
 
 def _normalize_for_match(text: str) -> str:
-    """Normalize headwords for robust matching: strip diacritics, stars, hyphens."""
+    """Normalize headwords for robust matching: strip diacritics, stars, hyphens.
+
+    Underscores are removed too: Starling encodes diacritics in ASCII with a
+    trailing underscore (``in_r_u`` for Burrow's ``iṉṟu``), so stripping ``_``
+    here lets that notation reconcile with Burrow's diacritic forms after NFKD.
+    """
     base = (
         text.replace("*", "")
+        .replace("_", "")
         .replace("-", " ")
         .replace("(", " ")
         .replace(")", " ")

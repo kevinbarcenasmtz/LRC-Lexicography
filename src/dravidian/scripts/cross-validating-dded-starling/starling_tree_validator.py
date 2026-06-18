@@ -87,8 +87,12 @@ def _extract_inline_meaning(value: str) -> str:
 
 
 def _normalize_for_match(text: str) -> str:
+    # Underscores are removed so Starling's ASCII diacritic notation (``in_r_u``
+    # for Burrow's ``iṉṟu``) reconciles with Burrow's diacritic forms post-NFKD.
+    # Kept in sync with burrow_entry_parser._normalize_for_match.
     base = (
         text.replace("*", "")
+        .replace("_", "")
         .replace("-", " ")
         .replace("(", " ")
         .replace(")", " ")
