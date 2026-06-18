@@ -96,8 +96,13 @@ _INVALID_LANG_ABBREVS = {
     "Stromatens",
 }
 
+# Character class for a language abbreviation's first letter -- reused on its
+# own (not just inside _LANG_CHAR below) by _HEADWORD_SPAN_ACROSS_NESTED to
+# recognise the start of a DIFFERENT language's <i> marker.
+_LANG_CHAR_FIRST = r"[A-ZÀ-ÖØ-öø-ÿĀ-žḀ-ỹ]"
+
 # Character class for language abbreviation characters (including diacritics)
-_LANG_CHAR = r"[A-ZÀ-ÖØ-öø-ÿĀ-žḀ-ỹ]" r"[a-zÀ-ÖØ-öø-ÿĀ-žḀ-ỹ.()]*"
+_LANG_CHAR = _LANG_CHAR_FIRST + r"[a-zÀ-ÖØ-öø-ÿĀ-žḀ-ỹ.()]*"
 
 # Leading lettered sub-entry marker glued onto the first language of a
 # sub-entry inside the same <i> tag, e.g. "<i>(a) Ta.</i>". The DSAL HTML
@@ -152,6 +157,40 @@ _LANG_ABBREV = r"(" + _LANG_CHAR + r"\.?" + _OPT_LANG_QUALIFIER + r")"
 # silently discarding the whole attestation (Go. in DED 107, Kuwi in DED 83).
 _OPT_HEADWORD_QUALIFIER = r"\s*(?:\([^)]*\)\s*)*"
 
+# Headword content for Patterns B/D, C, F, allowed to span across a nested
+# non-<b> tag (grammatical <i>pl.</i>/<i>obl.</i> qualifier, <at>...</at>
+# artifact) instead of stopping at it. Unlike Pattern A (fixed for the same
+# underlying issue via a `(?=<)` lookahead -- safe there because Pattern A's
+# headword has no closing tag of its own to lean on), these three patterns'
+# headword sits in its OWN bounded <b>...</b> span, so naively stopping at
+# the first tag truncates real headword content that comes after the nested
+# tag closes (e.g. DED 5440's Kuwi "vegū (<i>pl.</i> veska)" would become
+# just "vegū (", losing "veska)"). `<(?!/b>)` consumes any "<" that doesn't
+# start the literal closing "</b>", so the capture spans transparently over
+# nested tag-pairs and stops only at the headword's real closing tag.
+# (Verified corpus-wide: no nested <b>...</b> pair ever occurs inside a
+# B/D, C, or F headword span, so this can't be fooled by a genuinely nested
+# bold span closing the capture early.) The captured text can now contain
+# nested-tag markup (stripped by _HTML_TAG_RE in _find_all_lang_spans).
+#
+# Also excludes spanning into a bare <i>Uppercase...</i> -- a DIFFERENT
+# language's own marker, not a grammatical qualifier -- which a plain
+# `<(?!/b>)` would otherwise swallow whole when the previous language's
+# headword <b> span doesn't close until after the next language's <i>
+# marker (e.g. DED 4900: "<b>muŋgi pōtu. <i>Go.</i></b>" -- Ga.'s headword
+# bold span stays open across Go.'s entire marker). Grammatical qualifiers
+# (<i>pl.</i>, <i>obl.</i>) are always lowercase, so this only blocks real
+# language transitions.
+_HEADWORD_SPAN_ACROSS_NESTED = (
+    r"(?:[^<]|<(?!/b>)(?!i>" + _LANG_CHAR_FIRST + r"))+"
+)
+
+# Strips nested-tag markup a headword capture may now contain (see
+# _HEADWORD_SPAN_ACROSS_NESTED above), e.g. "vegū (<i>pl.</i> veska)" ->
+# "vegū (pl. veska)". A no-op for patterns whose capture never contains "<"
+# in the first place (A, E), so applied unconditionally to every match.
+_HTML_TAG_RE = re.compile(r"<[^>]+>")
+
 # Compiled patterns for language markers in order of specificity.
 # Each yields (lang_abbrev, headword_text, match_object).
 _PATTERNS = [
@@ -181,14 +220,14 @@ _PATTERNS = [
     re.compile(
         r"<i><b>" + _OPT_SUBENTRY + _LANG_ABBREV + r"</b></i>"
         + _OPT_HEADWORD_QUALIFIER
-        + r"<b>([^<]+)</b>",
+        + r"<b>(" + _HEADWORD_SPAN_ACROSS_NESTED + r")</b>",
         re.DOTALL,
     ),
     # Pattern B/D: <i>Lang.</i> ... <b>headword</b>
     # Allows optional qualifiers like (S.2), (A.), (Tr.) between lang and headword
     re.compile(
         r"<i>" + _OPT_SUBENTRY + _LANG_ABBREV + r"</i>"
-        + _OPT_HEADWORD_QUALIFIER + r"<b>([^<]+)</b>",
+        + _OPT_HEADWORD_QUALIFIER + r"<b>(" + _HEADWORD_SPAN_ACROSS_NESTED + r")</b>",
         re.DOTALL,
     ),
     # Pattern F: <i>Lang.</i></b> ... <b>headword</b>
@@ -199,7 +238,7 @@ _PATTERNS = [
     re.compile(
         r"<i>" + _OPT_SUBENTRY + _LANG_ABBREV + r"</i>\s*</b>"
         + _OPT_HEADWORD_QUALIFIER
-        + r"<b>([^<]+)</b>",
+        + r"<b>(" + _HEADWORD_SPAN_ACROSS_NESTED + r")</b>",
         re.DOTALL,
     ),
     # Pattern E: <i>Lang.</i> plain-text-headword (no <b> wrapper on headword)
@@ -390,7 +429,7 @@ class BurrowEntryParser:
         for pattern in _PATTERNS:
             for m in pattern.finditer(entry_html):
                 lang_abbrev = _clean_lang_abbrev(m.group(1))
-                headword_text = m.group(2).strip()
+                headword_text = _HTML_TAG_RE.sub("", m.group(2)).strip()
 
                 if not _is_valid_lang(lang_abbrev):
                     continue
