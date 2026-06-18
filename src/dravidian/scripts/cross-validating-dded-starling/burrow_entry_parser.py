@@ -142,6 +142,16 @@ _OPT_LEADING_QUALIFIER = r"(?:\(?[^()<>]*\)\.\s*)?"
 # in-marker parenthetical qualifier (_OPT_LANG_QUALIFIER).
 _LANG_ABBREV = r"(" + _LANG_CHAR + r"\.?" + _OPT_LANG_QUALIFIER + r")"
 
+# A parenthetical qualifier between the closing language marker and the
+# headword, e.g. "<i>Ga.</i> (S.²) <b>dona</b>" or
+# "<b><i>Go.</i> (Tr.) aḍrai id.</b>". Patterns B/C/F already skipped this
+# before their separate <b>headword</b>; Pattern A lacked it, so when the
+# qualifier and headword share Pattern A's single <b> span (no tag boundary
+# to stop at) the qualifier got glued onto the captured headword text --
+# and the headword-cleanup filter drops any string starting with "(",
+# silently discarding the whole attestation (Go. in DED 107, Kuwi in DED 83).
+_OPT_HEADWORD_QUALIFIER = r"\s*(?:\([^)]*\)\s*)*"
+
 # Compiled patterns for language markers in order of specificity.
 # Each yields (lang_abbrev, headword_text, match_object).
 _PATTERNS = [
@@ -150,23 +160,35 @@ _PATTERNS = [
     # inside the bold span (grammatical <i>obl.</i> qualifier, italicised
     # scientific name, or <at>…</at> encoding artifact) otherwise breaks the
     # match and silently drops the language (~613 across the corpus).
+    # The mandatory \s+ right after </i> (rather than folding into the
+    # shared _OPT_HEADWORD_QUALIFIER, which allows zero whitespace) matters
+    # here specifically: Patterns B/C/F anchor on a literal <b> right after
+    # the optional qualifier, so a zero-whitespace qualifier-skip can't run
+    # away into ordinary prose -- if there's no <b> immediately there, the
+    # match just fails. Pattern A's capture has no such anchor (it runs to
+    # the next tag of any kind), so without this boundary it swallowed
+    # italicised non-language tokens glued directly to following punctuation
+    # with no space, e.g. "<i>Artocarpus</i>; avekka" or
+    # "<i>Cyprinus</i>; kayyan" (scientific names) and
+    # "<i>Grammar</i>) xalxnā" (a citation-title qualifier) as bogus
+    # languages.
     re.compile(
         r"<b>\(?<i>" + _OPT_LEADING_QUALIFIER + _OPT_SUBENTRY + _LANG_ABBREV
-        + r"</i>\s+([^<]+)(?=<)",
+        + r"</i>\s+" + _OPT_HEADWORD_QUALIFIER + r"([^<]+)(?=<)",
         re.DOTALL,
     ),
     # Pattern C: <i><b>Lang.</b></i> <b>headword</b>
     re.compile(
         r"<i><b>" + _OPT_SUBENTRY + _LANG_ABBREV + r"</b></i>"
-        r"\s*(?:\([^)]*\)\s*)*"
-        r"<b>([^<]+)</b>",
+        + _OPT_HEADWORD_QUALIFIER
+        + r"<b>([^<]+)</b>",
         re.DOTALL,
     ),
     # Pattern B/D: <i>Lang.</i> ... <b>headword</b>
     # Allows optional qualifiers like (S.2), (A.), (Tr.) between lang and headword
     re.compile(
         r"<i>" + _OPT_SUBENTRY + _LANG_ABBREV + r"</i>"
-        r"\s*(?:\([^)]*\)\s*)*" r"<b>([^<]+)</b>",
+        + _OPT_HEADWORD_QUALIFIER + r"<b>([^<]+)</b>",
         re.DOTALL,
     ),
     # Pattern F: <i>Lang.</i></b> ... <b>headword</b>
@@ -176,8 +198,8 @@ _PATTERNS = [
     # right after "<i>Kuwi</i>"); the headword is in a fresh <b> after.
     re.compile(
         r"<i>" + _OPT_SUBENTRY + _LANG_ABBREV + r"</i>\s*</b>"
-        r"\s*(?:\([^)]*\)\s*)*"
-        r"<b>([^<]+)</b>",
+        + _OPT_HEADWORD_QUALIFIER
+        + r"<b>([^<]+)</b>",
         re.DOTALL,
     ),
     # Pattern E: <i>Lang.</i> plain-text-headword (no <b> wrapper on headword)
