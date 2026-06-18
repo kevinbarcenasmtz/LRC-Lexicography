@@ -86,6 +86,12 @@ def _extract_inline_meaning(value: str) -> str:
     return value[open_pos + 1 : close_pos].strip()
 
 
+# Burrow marks vowel length with a raised dot after the vowel (te·l = tēl, twa· = twā);
+# Starling writes the same length as a macron, already removed by NFKD + strip-combining.
+# Two confusable dots occur in the corpus (U+0387 dominant, U+00B7), plus IPA length marks.
+_LENGTH_DOTS = {ord(c): None for c in "\u00b7\u0387\u02d0\u02d1"}
+
+
 def _normalize_for_match(text: str) -> str:
     # Underscores are removed so Starling's ASCII diacritic notation (``in_r_u``
     # for Burrow's ``iṉṟu``) reconciles with Burrow's diacritic forms post-NFKD.
@@ -98,6 +104,7 @@ def _normalize_for_match(text: str) -> str:
         .replace(")", " ")
         .strip()
         .lower()
+        .translate(_LENGTH_DOTS)
     )
     decomposed = unicodedata.normalize("NFKD", base)
     filtered = "".join(ch for ch in decomposed if not unicodedata.combining(ch))

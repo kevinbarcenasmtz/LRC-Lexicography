@@ -195,12 +195,22 @@ def _is_valid_lang(abbrev: str) -> bool:
     return True
 
 
+# Burrow marks vowel length with a raised dot after the vowel (te·l = tEl, twa· = twA);
+# Starling writes the same length as a macron, already removed by NFKD + strip-combining.
+# Two confusable dots occur in the corpus (U+0387 dominant, U+00B7), plus IPA length marks.
+# Kept in sync with starling_tree_validator._LENGTH_DOTS.
+_LENGTH_DOTS = {ord(c): None for c in "\u00b7\u0387\u02d0\u02d1"}
+
+
 def _normalize_for_match(text: str) -> str:
     """Normalize headwords for robust matching: strip diacritics, stars, hyphens.
 
     Underscores are removed too: Starling encodes diacritics in ASCII with a
     trailing underscore (``in_r_u`` for Burrow's ``iṉṟu``), so stripping ``_``
     here lets that notation reconcile with Burrow's diacritic forms after NFKD.
+
+    Length dots (Burrow's raised-dot vowel-length mark) are stripped so they
+    reconcile with Starling's macron notation -- see ``_LENGTH_DOTS``.
     """
     base = (
         text.replace("*", "")
@@ -210,6 +220,7 @@ def _normalize_for_match(text: str) -> str:
         .replace(")", " ")
         .strip()
         .lower()
+        .translate(_LENGTH_DOTS)
     )
     decomposed = unicodedata.normalize("NFKD", base)
     filtered = "".join(ch for ch in decomposed if not unicodedata.combining(ch))
