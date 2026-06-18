@@ -105,10 +105,14 @@ def _clean_ded_number(raw: Any) -> Optional[str]:
     if raw is None:
         return None
     try:
-        return str(int(float(str(raw).strip())))
+        cleaned = str(int(float(str(raw).strip())))
     except (ValueError, TypeError):
         s = str(raw).strip()
         return s if s else None
+    # Starling uses a literal "0" as its own sentinel for "no Burrow DED
+    # correspondence"; Burrow's DED numbering starts at 1, so this is never
+    # a real entry and should be treated the same as a missing DED number.
+    return cleaned if cleaned != "0" else None
 
 
 @dataclass
@@ -1500,7 +1504,12 @@ def coverage_analysis(
 
 
 def _normalize_meaning_text(text: Any) -> str:
-    value = str(text or "").strip().lower()
+    # pd.isna catches NaN/None for missing CSV cells; plain `text or ""` does
+    # not, since a float NaN is truthy in Python and would otherwise become
+    # the literal string "nan" here, falsely registering as a real meaning.
+    if pd.isna(text):
+        return ""
+    value = str(text).strip().lower()
     value = re.sub(r"\s+", " ", value)
     value = value.rstrip(" .;,:")
     return value
