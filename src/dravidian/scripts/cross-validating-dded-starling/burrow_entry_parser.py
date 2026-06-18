@@ -128,8 +128,12 @@ _LANG_ABBREV = r"(" + _LANG_CHAR + r"\.?" + _OPT_LANG_QUALIFIER + r")"
 # Each yields (lang_abbrev, headword_text, match_object).
 _PATTERNS = [
     # Pattern A: <b><i>Lang.</i> headword</b>
+    # Headword run ends at the next tag, not necessarily </b>: a nested tag
+    # inside the bold span (grammatical <i>obl.</i> qualifier, italicised
+    # scientific name, or <at>…</at> encoding artifact) otherwise breaks the
+    # match and silently drops the language (~613 across the corpus).
     re.compile(
-        r"<b><i>" + _OPT_SUBENTRY + _LANG_ABBREV + r"</i>\s+([^<]+)</b>",
+        r"<b><i>" + _OPT_SUBENTRY + _LANG_ABBREV + r"</i>\s+([^<]+)(?=<)",
         re.DOTALL,
     ),
     # Pattern C: <i><b>Lang.</b></i> <b>headword</b>
@@ -421,7 +425,9 @@ class BurrowEntryParser:
         for i, span in enumerate(spans):
             next_span = spans[i + 1] if i + 1 < len(spans) else None
 
-            headwords = [hw.strip() for hw in span.headword_text.split(",")]
+            headwords = [
+                hw.strip().rstrip("( ").strip() for hw in span.headword_text.split(",")
+            ]
             headwords = [
                 hw for hw in headwords if hw and len(hw) > 1 and not hw.startswith("(")
             ]
