@@ -110,17 +110,31 @@ _SUBENTRY_MARKER_RE = re.compile(r"^\(\s*[a-z]\s*\)\s*")
 # between-language qualifiers like "(S.2)"/"(Tr.)".
 _OPT_SUBENTRY = r"(?:\(\s*[a-z]\s*\)\s*)?"
 
+# A parenthetical qualifier glued INSIDE the <i> language marker, e.g.
+# "<b><i>Nk. (Ch.)</i> ōn</b>". For Naiki the inventory knows the marker by
+# this exact form ("Nk. (Ch.)"); for source tags ("Te. (SAN)", "Ka. (DCV)")
+# the parenthetical is bibliographic and _clean_lang_abbrev strips it back to
+# the base abbrev. Without this, _LANG_CHAR (which forbids the internal space)
+# stops at "Nk." and every pattern fails on the " (Ch.)", dropping ~314 Naiki
+# attestations across the corpus.
+_OPT_LANG_QUALIFIER = r"(?:\s*\([^)<]*\))?"
+
+# Abbreviation capture group reused by every pattern below: a language
+# abbreviation (_LANG_CHAR), an optional trailing period, and an optional
+# in-marker parenthetical qualifier (_OPT_LANG_QUALIFIER).
+_LANG_ABBREV = r"(" + _LANG_CHAR + r"\.?" + _OPT_LANG_QUALIFIER + r")"
+
 # Compiled patterns for language markers in order of specificity.
 # Each yields (lang_abbrev, headword_text, match_object).
 _PATTERNS = [
     # Pattern A: <b><i>Lang.</i> headword</b>
     re.compile(
-        r"<b><i>" + _OPT_SUBENTRY + r"(" + _LANG_CHAR + r"\.?)</i>\s+([^<]+)</b>",
+        r"<b><i>" + _OPT_SUBENTRY + _LANG_ABBREV + r"</i>\s+([^<]+)</b>",
         re.DOTALL,
     ),
     # Pattern C: <i><b>Lang.</b></i> <b>headword</b>
     re.compile(
-        r"<i><b>" + _OPT_SUBENTRY + r"(" + _LANG_CHAR + r"\.?)</b></i>"
+        r"<i><b>" + _OPT_SUBENTRY + _LANG_ABBREV + r"</b></i>"
         r"\s*(?:\([^)]*\)\s*)*"
         r"<b>([^<]+)</b>",
         re.DOTALL,
@@ -128,7 +142,7 @@ _PATTERNS = [
     # Pattern B/D: <i>Lang.</i> ... <b>headword</b>
     # Allows optional qualifiers like (S.2), (A.), (Tr.) between lang and headword
     re.compile(
-        r"<i>" + _OPT_SUBENTRY + r"(" + _LANG_CHAR + r"\.?)</i>"
+        r"<i>" + _OPT_SUBENTRY + _LANG_ABBREV + r"</i>"
         r"\s*(?:\([^)]*\)\s*)*" r"<b>([^<]+)</b>",
         re.DOTALL,
     ),
@@ -138,7 +152,7 @@ _PATTERNS = [
     # e.g. <b><i>fem.</i> aṭiyātti. <i>Ko.</i> aṛy</b>
     # Negative lookbehind avoids re-matching <b><i>Lang.</i> headword</b> (Pattern A).
     re.compile(
-        r"(?<!<b>)<i>" + _OPT_SUBENTRY + r"(" + _LANG_CHAR + r"\.?)</i>"
+        r"(?<!<b>)<i>" + _OPT_SUBENTRY + _LANG_ABBREV + r"</i>"
         r"\s*(?:\([^)]*\)\s*)*"
         r"([^\s<;(][^<;(]*?)(?=\s*[;<(]|\s*</?[bi])",
         re.DOTALL,
@@ -165,9 +179,28 @@ def _normalize_language(lang_abbrev: str) -> str:
     return lang_abbrev.rstrip(".")
 
 
+def _is_known_qualified_abbrev(abbrev: str) -> bool:
+    """True if the inventory knows this exact (possibly qualified) abbreviation."""
+    try:
+        from dialect_mapping import normalize_burrow
+
+        return normalize_burrow(abbrev) != abbrev
+    except ImportError:
+        return False
+
+
 def _clean_lang_abbrev(raw: str) -> str:
-    """Normalize whitespace and strip a leading sub-entry marker (e.g. "(a) ")."""
-    return _SUBENTRY_MARKER_RE.sub("", raw.strip()).strip()
+    """Normalize whitespace and strip a leading sub-entry marker (e.g. "(a) ").
+
+    A parenthetical captured inside the <i> marker is kept only when the
+    inventory recognises the full dialect-qualified form ("Nk. (Ch.)" = Naiki);
+    otherwise it is a bibliographic/source tag ("Te. (SAN)", "Ka. (DCV)") and is
+    stripped back to the base abbreviation.
+    """
+    abbrev = _SUBENTRY_MARKER_RE.sub("", raw.strip()).strip()
+    if "(" in abbrev and not _is_known_qualified_abbrev(abbrev):
+        abbrev = re.sub(r"\s*\([^)]*\)\s*$", "", abbrev).strip()
+    return abbrev
 
 
 def _is_valid_lang(abbrev: str) -> bool:
