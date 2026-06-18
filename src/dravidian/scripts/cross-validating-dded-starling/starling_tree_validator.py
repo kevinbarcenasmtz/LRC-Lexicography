@@ -119,13 +119,21 @@ def _normalize_for_match(text: str) -> str:
 
 
 def _clean_ded_number(raw: Any) -> Optional[str]:
-    """Normalize a DED number to a plain integer string: '0047' -> '47'."""
+    """Normalize a DED number to a plain integer string: '0047' -> '47'.
+
+    Burrow occasionally suffixes a DED number with a parenthetical letter
+    (e.g. "4896(a)"/"4896(b)") to mark a split entry, where Starling keys on
+    the plain base number; fold the suffix away so both sides index alike.
+    """
     if raw is None:
         return None
+    s = str(raw).strip()
+    m = re.match(r"^(\d+)\s*\([a-z]\)$", s)
+    if m:
+        s = m.group(1)
     try:
-        cleaned = str(int(float(str(raw).strip())))
+        cleaned = str(int(float(s)))
     except (ValueError, TypeError):
-        s = str(raw).strip()
         return s if s else None
     # Starling uses a literal "0" as its own sentinel for "no Burrow DED
     # correspondence"; Burrow's DED numbering starts at 1, so this is never
