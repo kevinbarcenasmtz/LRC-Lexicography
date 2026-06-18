@@ -511,28 +511,64 @@ GONDI_INLINE_ABBREVS: Dict[str, List[str]] = {
     "Ch.": ["Chindwara Gondi"],
 }
 
+# Kuwi inline source/dialect citations (parallel structure to Gondi above).
+# Burrow consolidates all Kuwi citations under "Kuwi" and tags per-source
+# forms inline, e.g.:
+#   Kuwi (F.) māmbū , (S. Su. P. Isr.) māmbu we (excl.); (F.) mārrō ,
+#   (S. Isr.) māro we (incl.) ... (S.) māpo on our side.
+#
+# Sigil identities are inferred from the DED 5154 paragraph itself plus the
+# Starling dialect names and the abbreviation code table in
+# lang_abbreviations.md (KWF=Fitzgerald, KWS=Schulze, KWI=Israel,
+# SKW=Sunkarametta) — NOT independently confirmed against a DEDR frontmatter
+# sigilla section the way Gondi's §31 citations were.
+#   F.   = Fitzgerald
+#   S.   = Schulze (Starling base "Kuwi (Schulze)")
+#   Su.  = Subrahmanyam — Sunkarametta Kuwi
+#   P.   = Parja Kuwi
+#   Isr. = Israel
+KUWI_INLINE_ABBREVS: Dict[str, List[str]] = {
+    "F.": ["Kuwi (Fitzgerald)"],
+    "S.": ["Kuwi (Schulze)"],
+    "Su.": ["Sunkarametta Kuwi"],
+    "P.": ["Parja Kuwi"],
+    "Isr.": ["Kuwi (Israel)"],
+}
+
+# Kui inline dialect citations.
+#   K. = Khuttia Kui
+KUI_INLINE_ABBREVS: Dict[str, List[str]] = {
+    "K.": ["Khuttia Kui"],
+}
+
+_INLINE_ABBREV_SOURCES = [GONDI_INLINE_ABBREVS, KUWI_INLINE_ABBREVS, KUI_INLINE_ABBREVS]
+
 # Reverse index: Starling dialect name → inline abbreviation(s)
 _DIALECT_TO_INLINE_ABBREVS: Dict[str, List[str]] = {}
 
 
-def _build_gondi_inline_index() -> None:
+def _build_inline_abbrev_index() -> None:
     global _DIALECT_TO_INLINE_ABBREVS
-    for abbrev, dialects in GONDI_INLINE_ABBREVS.items():
-        for dialect in dialects:
-            _DIALECT_TO_INLINE_ABBREVS.setdefault(dialect, []).append(abbrev)
+    for source in _INLINE_ABBREV_SOURCES:
+        for abbrev, dialects in source.items():
+            for dialect in dialects:
+                _DIALECT_TO_INLINE_ABBREVS.setdefault(dialect, []).append(abbrev)
 
 
-_build_gondi_inline_index()
+_build_inline_abbrev_index()
 
 
 def get_inline_abbrevs_for_starling_dialect(starling_dialect: str) -> List[str]:
     """
-    Return the Burrow inline abbreviations for a Starling Gondi dialect.
+    Return the Burrow inline abbreviations for a Starling dialect whose base
+    language consolidates dialect citations inline (Gondi, Kuwi, Kui).
 
     e.g. 'Betul Gondi'              → ['Tr.']
          'Mandla Gondi (Williamson)' → ['W.']
          'Maria Gondi'               → ['Ma.']
-    Returns an empty list for non-Gondi or unmapped dialects.
+         'Kuwi (Fitzgerald)'         → ['F.']
+         'Khuttia Kui'               → ['K.']
+    Returns an empty list for unmapped dialects.
     """
     return _DIALECT_TO_INLINE_ABBREVS.get(starling_dialect, [])
 
