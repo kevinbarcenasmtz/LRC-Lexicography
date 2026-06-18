@@ -94,17 +94,33 @@ _INVALID_LANG_ABBREVS = {
 # Character class for language abbreviation characters (including diacritics)
 _LANG_CHAR = r"[A-ZÀ-ÖØ-öø-ÿĀ-žḀ-ỹ]" r"[a-zÀ-ÖØ-öø-ÿĀ-žḀ-ỹ.()]*"
 
+# Leading lettered sub-entry marker glued onto the first language of a
+# sub-entry inside the same <i> tag, e.g. "<i>(a) Ta.</i>". The DSAL HTML
+# attaches "(a) "/"(b) "/... to the sub-entry-initial language, producing
+# abbreviations like "(a) Ta." that would otherwise fail _is_valid_lang.
+_SUBENTRY_MARKER_RE = re.compile(r"^\(\s*[a-z]\s*\)\s*")
+
+# Inline (non-capturing) version of the sub-entry marker, consumed right after
+# the opening <i> tag in the patterns below so that group(1) captures the bare
+# language abbreviation. The DSAL HTML glues "(a) "/"(b) "/... onto the
+# sub-entry-initial language (e.g. "<b><i>(a) Ta.</i> oru</b>"); without this,
+# Pattern A's _LANG_CHAR -- which must start uppercase -- skips the whole span
+# and Tamil is silently dropped. The class is deliberately narrow (a single
+# parenthesised lowercase letter) so it cannot swallow real abbreviations or
+# between-language qualifiers like "(S.2)"/"(Tr.)".
+_OPT_SUBENTRY = r"(?:\(\s*[a-z]\s*\)\s*)?"
+
 # Compiled patterns for language markers in order of specificity.
 # Each yields (lang_abbrev, headword_text, match_object).
 _PATTERNS = [
     # Pattern A: <b><i>Lang.</i> headword</b>
     re.compile(
-        r"<b><i>(" + _LANG_CHAR + r"\.?)</i>\s+([^<]+)</b>",
+        r"<b><i>" + _OPT_SUBENTRY + r"(" + _LANG_CHAR + r"\.?)</i>\s+([^<]+)</b>",
         re.DOTALL,
     ),
     # Pattern C: <i><b>Lang.</b></i> <b>headword</b>
     re.compile(
-        r"<i><b>(" + _LANG_CHAR + r"\.?)</b></i>"
+        r"<i><b>" + _OPT_SUBENTRY + r"(" + _LANG_CHAR + r"\.?)</b></i>"
         r"\s*(?:\([^)]*\)\s*)*"
         r"<b>([^<]+)</b>",
         re.DOTALL,
@@ -112,7 +128,8 @@ _PATTERNS = [
     # Pattern B/D: <i>Lang.</i> ... <b>headword</b>
     # Allows optional qualifiers like (S.2), (A.), (Tr.) between lang and headword
     re.compile(
-        r"<i>(" + _LANG_CHAR + r"\.?)</i>" r"\s*(?:\([^)]*\)\s*)*" r"<b>([^<]+)</b>",
+        r"<i>" + _OPT_SUBENTRY + r"(" + _LANG_CHAR + r"\.?)</i>"
+        r"\s*(?:\([^)]*\)\s*)*" r"<b>([^<]+)</b>",
         re.DOTALL,
     ),
     # Pattern E: <i>Lang.</i> plain-text-headword (no <b> wrapper on headword)
@@ -121,7 +138,7 @@ _PATTERNS = [
     # e.g. <b><i>fem.</i> aṭiyātti. <i>Ko.</i> aṛy</b>
     # Negative lookbehind avoids re-matching <b><i>Lang.</i> headword</b> (Pattern A).
     re.compile(
-        r"(?<!<b>)<i>(" + _LANG_CHAR + r"\.?)</i>"
+        r"(?<!<b>)<i>" + _OPT_SUBENTRY + r"(" + _LANG_CHAR + r"\.?)</i>"
         r"\s*(?:\([^)]*\)\s*)*"
         r"([^\s<;(][^<;(]*?)(?=\s*[;<(]|\s*</?[bi])",
         re.DOTALL,
@@ -149,8 +166,8 @@ def _normalize_language(lang_abbrev: str) -> str:
 
 
 def _clean_lang_abbrev(raw: str) -> str:
-    """Normalize whitespace and strip trailing period for comparison."""
-    return raw.strip()
+    """Normalize whitespace and strip a leading sub-entry marker (e.g. "(a) ")."""
+    return _SUBENTRY_MARKER_RE.sub("", raw.strip()).strip()
 
 
 def _is_valid_lang(abbrev: str) -> bool:
