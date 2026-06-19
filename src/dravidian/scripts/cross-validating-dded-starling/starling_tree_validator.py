@@ -427,6 +427,35 @@ def _truncate_gloss_before_first_marker(gloss: str) -> str:
     return gloss
 
 
+_INLINE_PAREN_NOISE_RE = re.compile(r"^\([^)]*\)\s*(?:id\.?)?$", re.IGNORECASE)
+_INLINE_BARE_WORD_RE = re.compile(r"^[^\s,()]+\.?$")
+
+
+def _is_inline_citation_noise(meaning_text: str) -> bool:
+    """
+    True when an inline dialect marker's leftover "meaning" text is really
+    just citation noise -- a bare grammatical-number parenthetical like
+    "(pl. veska)", a trailing "id." cross-reference, or a second alternate
+    headword spelling -- rather than a genuine gloss.
+
+    The hard case is a bare single word with no parens/commas: that shape
+    is identical whether it's a leaked Dravidian headword variant (noise,
+    e.g. "veẖki") or a real one-word English gloss (real data, e.g.
+    "shelter") -- pure syntax can't tell them apart. Burrow's English
+    glosses are always plain ASCII; only the transliterated Dravidian forms
+    carry diacritics, so a bare word is only treated as noise when it
+    contains a non-ASCII character. This fails safe: an ASCII-only leaked
+    form (e.g. "ukka") is left unfixed rather than risk discarding a real
+    gloss (confirmed against real data: an unguarded bare-word check
+    wrongly emptied 364 genuine ASCII glosses out of 457 cases).
+    """
+    if _INLINE_PAREN_NOISE_RE.match(meaning_text):
+        return True
+    if _INLINE_BARE_WORD_RE.match(meaning_text) and not meaning_text.isascii():
+        return True
+    return meaning_text.rstrip(".,; )").lower() == "id"
+
+
 def _extract_gloss_forms_for_abbrevs(
     primary_headword: str,
     gloss: str,
@@ -478,8 +507,6 @@ def _extract_gloss_forms_for_abbrevs(
         if meaning_text and meaning_text[0] in ")]":
             meaning_text = meaning_text[1:].strip()
         meaning_text = meaning_text.strip(" ;,")
-        following_token, meaning_text = _split_attached_to(following_token, meaning_text)
-        meaning_text = _clean_inline_meaning(meaning_text)
 
         normalized_marker = " ".join(part.strip().strip(".") + "." for part in group_text.split())
 
@@ -492,13 +519,32 @@ def _extract_gloss_forms_for_abbrevs(
             if part:
                 group_abbrevs.add(part)
 
-        if not target_set.isdisjoint(group_abbrevs):
-            if following_token.lower() not in _GLOSS_STOPWORDS:
-                forms.append((following_token, False, normalized_marker, meaning_text))
-            elif primary_headword:
-                # No distinct form token for this marker; use the primary
-                # headword, but this is not an id. reference.
-                forms.append((primary_headword, False, normalized_marker, meaning_text))
+        if target_set.isdisjoint(group_abbrevs):
+            continue
+
+        if following_token.lower() in _GLOSS_STOPWORDS:
+            # No distinct form token for this marker; use the primary
+            # headword, but this is not an id. reference.
+            if not primary_headword:
+                continue
+            _, fallback_meaning = _split_attached_to(following_token, meaning_text)
+            fallback_meaning = _clean_inline_meaning(fallback_meaning)
+            forms.append((primary_headword, False, normalized_marker, fallback_meaning))
+            continue
+
+        used_id = False
+        if meaning_text and _is_inline_citation_noise(meaning_text):
+            # Citation noise, not real prose -- comparing it against
+            # Starling's gloss produces a false meaning mismatch, so treat
+            # it as nothing to show instead (same convention as
+            # _truncate_gloss_before_first_marker).
+            used_id = meaning_text.rstrip(".,; )").lower().endswith("id")
+            meaning_text = ""
+        else:
+            following_token, meaning_text = _split_attached_to(following_token, meaning_text)
+            meaning_text = _clean_inline_meaning(meaning_text)
+
+        forms.append((following_token, used_id, normalized_marker, meaning_text))
 
     return forms
 
