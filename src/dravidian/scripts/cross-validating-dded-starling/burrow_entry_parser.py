@@ -110,6 +110,26 @@ _LANG_CHAR = _LANG_CHAR_FIRST + r"[a-zÀ-ÖØ-öø-ÿĀ-žḀ-ỹ.()]*"
 # abbreviations like "(a) Ta." that would otherwise fail _is_valid_lang.
 _SUBENTRY_MARKER_RE = re.compile(r"^\(\s*[a-z]\s*\)\s*")
 
+# A grammatical/sense qualifier glued onto the FRONT of an "id." (idem)
+# lexicographic reference, e.g. "(pl.) id." or "(obl. -r) id., arrowhead".
+# Burrow attaches the qualifier to the SAME gloss as the "id." reference
+# rather than treating it as a distinct meaning, so the simpler "id."/
+# "id.;..." cases below never match (their gloss isn't exactly "id." and
+# doesn't start with "id."), and the chained-back real meaning never gets
+# substituted in -- the attestation is left showing the bare qualifier
+# plus a literal "id." placeholder instead of its real sense.
+_QUALIFIED_ID_RE = re.compile(r"^\(([^)]*)\)\s*id\.\s*(.*)$", re.IGNORECASE)
+
+# Matches a leading qualifier on an ALREADY-chained-back gloss (e.g. the
+# preceding attestation in the SAME chain also resolved a qualified "id."
+# and itself starts with "(its own qualifier) real meaning"). Stripped
+# before re-prepending the CURRENT attestation's own qualifier, so a chain
+# of several qualified "id." attestations (Konḍa -> Pe. -> Manḍ. in DED
+# 5440) each show "(own qualifier) real meaning" rather than accumulating
+# every earlier link's qualifier too (which would also break Starling's
+# substring-meaning-match check downstream).
+_LEADING_PAREN_RE = re.compile(r"^\([^)]*\)\s*")
+
 # Inline (non-capturing) version of the sub-entry marker, consumed right after
 # the opening <i> tag in the patterns below so that group(1) captures the bare
 # language abbreviation. The DSAL HTML glues "(a) "/"(b) "/... onto the
@@ -542,9 +562,22 @@ class BurrowEntryParser:
         last_real_gloss = ""
         for att in attestations:
             g = att.gloss.strip()
+            m_qualified_id = _QUALIFIED_ID_RE.match(g)
             if g.lower() == "id.":
                 if last_real_gloss:
                     att.gloss = last_real_gloss
+            elif m_qualified_id:
+                # e.g. "(pl.) id." -> "(pl.) <prev gloss>". Strip any
+                # leading qualifier already on last_real_gloss first (it may
+                # naturally have one of its own, e.g. Konḍa's own gloss is
+                # "(pl. veRku) firewood, fuel.") so chained qualifiers don't
+                # accumulate across multiple attestations.
+                qualifier = m_qualified_id.group(1).strip()
+                suffix = m_qualified_id.group(2).strip().lstrip(";").strip()
+                if last_real_gloss:
+                    bare_gloss = _LEADING_PAREN_RE.sub("", last_real_gloss).strip()
+                    combined = f"({qualifier}) {bare_gloss}" if qualifier else bare_gloss
+                    att.gloss = f"{combined}; {suffix}" if suffix else combined
             elif g.lower().startswith("id."):
                 # e.g. "id.; extra note" → "<prev gloss>; extra note"
                 if last_real_gloss:

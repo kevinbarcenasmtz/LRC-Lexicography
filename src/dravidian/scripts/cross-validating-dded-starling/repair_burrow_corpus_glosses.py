@@ -92,6 +92,25 @@ def _normalize_spacing(gloss: str) -> str:
     return g
 
 
+# A grammatical/sense qualifier glued onto the FRONT of an "id." (idem)
+# lexicographic reference, e.g. "(pl.) id." or "(obl. -r) id., arrowhead".
+# Burrow attaches the qualifier to the SAME gloss as the "id." reference
+# rather than treating it as a distinct meaning, so the simpler "id."/
+# "id.;..." cases in the second pass below never match (kept in sync with
+# the identical pattern in burrow_entry_parser.py's parse_language_sections,
+# which runs the same resolution earlier but can miss this shape when the
+# leading "(" was consumed into the headword capture during parsing and
+# only restored here by _recover_attestation_gloss_from_full_text above).
+_QUALIFIED_ID_RE = re.compile(r"^\(([^)]*)\)\s*id\.\s*(.*)$", re.IGNORECASE)
+
+# Strips a leading qualifier off an already-resolved last_real_gloss before
+# re-prepending the CURRENT attestation's own qualifier, so a chain of
+# several qualified "id." attestations (Konḍa -> Pe. -> Manḍ. in DED 5440)
+# each show "(own qualifier) real meaning" instead of accumulating every
+# earlier link's qualifier too (kept in sync with burrow_entry_parser.py).
+_LEADING_PAREN_RE = re.compile(r"^\([^)]*\)\s*")
+
+
 def repair_corpus(data: Dict[str, Any]) -> Dict[str, Any]:
     entries: List[Dict[str, Any]] = data.get("entries", [])
     total_attestations = 0
@@ -137,10 +156,26 @@ def repair_corpus(data: Dict[str, Any]) -> Dict[str, Any]:
             if not isinstance(att, dict):
                 continue
             g = (att.get("gloss", "") or "").strip()
+            m_qualified_id = _QUALIFIED_ID_RE.match(g)
             if g.lower() == "id.":
                 if last_real_gloss:
                     att["gloss"] = last_real_gloss
                     changed += 1
+            elif m_qualified_id:
+                # e.g. "(pl.) id." -> "(pl.) <prev gloss>". Strip any
+                # leading qualifier already on last_real_gloss first (it may
+                # naturally have one of its own, e.g. Konḍa's own gloss is
+                # "(pl. veRku) firewood, fuel.") so chained qualifiers don't
+                # accumulate across multiple attestations.
+                qualifier = m_qualified_id.group(1).strip()
+                suffix = m_qualified_id.group(2).strip().lstrip(";").strip()
+                if last_real_gloss:
+                    bare_gloss = _LEADING_PAREN_RE.sub("", last_real_gloss).strip()
+                    combined = f"({qualifier}) {bare_gloss}" if qualifier else bare_gloss
+                    new_gloss = f"{combined}; {suffix}" if suffix else combined
+                    if new_gloss != g:
+                        att["gloss"] = new_gloss
+                        changed += 1
             elif g.lower().startswith("id."):
                 if last_real_gloss:
                     suffix = g[3:].lstrip(";").strip()
