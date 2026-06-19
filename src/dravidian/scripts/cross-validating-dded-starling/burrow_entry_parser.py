@@ -274,6 +274,37 @@ _PATTERNS = [
     ),
 ]
 
+# Patterns that scan INTO an <i> span (not anchored on "<i>Abbrev" at the span
+# start) and so require the stricter _is_known_lang_abbrev gate in
+# _find_all_lang_spans, not just _is_valid_lang.
+#
+# To.-type: a language marker buried at the END of an <i> span, after lowercase
+# qualifier/scientific-name text, with NO <b> (or "<b>(") immediately before the
+# <i> -- malformed DSAL markup where the closing </i> lands after the abbrev
+# instead of before it. Two real shapes:
+#   DED 5154  "...am<-> <i>incl.). To.</i> em</b>"  (sense qualifier before abbrev)
+#   DED 5     "<i>Tu.</i> agase-mara <i>Agati grandiflora. Te.</i></b> (B) <b>agase-...">
+#             (scientific name before abbrev; headword in a fresh <b> after a source tag)
+# No other _PATTERNS entry can anchor here -- they all need the abbrev at the
+# <i> span start. The leading "(?<!<b>)(?<!<b>\()" excludes Pattern A and the
+# leading-qualifier shape (which keep the abbrev at the <i> start, just behind a
+# <b> or "<b>("), so this only fires on the genuinely-embedded case.
+#
+# Bold-headword shape ONLY (headword in its own <b>...</b>): the plain-text
+# headword variant is deliberately omitted because where a form is elided the
+# marker is followed directly by the English gloss (e.g. DED 814 Ma.
+# "<i>Calotropis gigantea. Ma.</i> gigantic swallow-wort..."), which a text
+# capture would wrongly store as the headword.
+_TOTYPE_NOT_BOLD = r"(?<!<b>)(?<!<b>\()"
+_TOTYPE_PRE = r"<i>[^<]*?[a-z][^<]*?"
+_STRICT_PATTERNS = [
+    re.compile(
+        _TOTYPE_NOT_BOLD + _TOTYPE_PRE + _LANG_ABBREV + r"</i>(?:\s*</b>)?"
+        + _OPT_HEADWORD_QUALIFIER + r"<b>(" + _HEADWORD_SPAN_ACROSS_NESTED + r")</b>",
+        re.DOTALL,
+    ),
+]
+
 
 def _normalize_language(lang_abbrev: str) -> str:
     """
@@ -341,6 +372,27 @@ def _is_valid_lang(abbrev: str) -> bool:
     if not clean[0].isupper():
         return False
     return True
+
+
+def _is_known_lang_abbrev(abbrev: str) -> bool:
+    """True only if the abbreviation resolves to a KNOWN language/dialect name.
+
+    Stricter than _is_valid_lang (which merely block-lists known non-languages
+    and accepts any other capitalised 2-10 char token). Used to gate the
+    To.-type pattern (_STRICT_PATTERNS): because that pattern scans INTO an <i>
+    span after arbitrary lowercase text, it lacks the "<i>Abbrev" structural
+    anchor every other pattern relies on to stay on a real language marker, so
+    italic citation titles/botanical authorities (Volume, Sanskrit, Linn.)
+    would otherwise be captured as bogus languages.
+    """
+    try:
+        from dialect_mapping import normalize_burrow
+    except ImportError:
+        return True  # fail open, matching _normalize_language's tolerance
+    cl = abbrev.strip()
+    if not cl:
+        return False
+    return normalize_burrow(cl) != cl or normalize_burrow(cl.rstrip(".")) != cl.rstrip(".")
 
 
 # Burrow marks vowel length with a raised dot after the vowel (te·l = tEl, twa· = twA);
@@ -455,6 +507,25 @@ class BurrowEntryParser:
                     continue
 
                 # De-duplicate: keep the first pattern that matched this position
+                if m.start() not in seen_starts:
+                    seen_starts[m.start()] = _LangSpan(
+                        lang_abbrev=lang_abbrev,
+                        headword_text=headword_text,
+                        start=m.start(),
+                        end=m.end(),
+                    )
+
+        # Strict patterns (To.-type) scan into an <i> span, so they additionally
+        # require a KNOWN language abbreviation -- not merely a valid-looking one.
+        # Run after _PATTERNS so a position already claimed by an anchored
+        # pattern wins (these only fire on genuinely-embedded markers no other
+        # pattern reaches).
+        for pattern in _STRICT_PATTERNS:
+            for m in pattern.finditer(entry_html):
+                lang_abbrev = _clean_lang_abbrev(m.group(1))
+                if not _is_valid_lang(lang_abbrev) or not _is_known_lang_abbrev(lang_abbrev):
+                    continue
+                headword_text = _HTML_TAG_RE.sub("", m.group(2)).strip()
                 if m.start() not in seen_starts:
                     seen_starts[m.start()] = _LangSpan(
                         lang_abbrev=lang_abbrev,
