@@ -326,7 +326,7 @@ def load_burrow_corpus(
                 repaired_gloss = _recover_attestation_gloss_from_full_text(
                     paragraph.full_text,
                     att.language_abbrev,
-                    (att.headwords[0] if att.headwords else ""),
+                    att.headwords,
                     att.gloss,
                 )
                 if repaired_gloss:
@@ -593,19 +593,24 @@ def _extract_id_reference_from_full_text(
 def _recover_attestation_gloss_from_full_text(
     full_text: str,
     source_abbrev: str,
-    source_headword: str,
+    source_headwords: List[str],
     fallback_gloss: str,
 ) -> str:
     """
     Recover a fuller attestation gloss from paragraph full_text when cached
     attestation glosses are truncated.
     """
-    if not full_text or not source_abbrev or not source_headword:
+    headwords = [h.strip() for h in (source_headwords or []) if h and h.strip()]
+    if not full_text or not source_abbrev or not headwords:
         return fallback_gloss
 
     normalized = re.sub(r"\s+", " ", full_text).strip()
     abbrev_esc = re.escape(source_abbrev.strip())
-    hw_esc = re.escape(source_headword.strip())
+    # Anchor on the FULL comma-separated headword chain, not just the first
+    # form -- anchoring on one token alone leaves the remaining alternate
+    # spellings (e.g. Ka. "matti, maddi, mar̤ti") dangling in the
+    # recovered tail, ahead of the real gloss prose.
+    hw_esc = r"\s*,\s*".join(re.escape(h) for h in headwords)
     marker_re = re.compile(
         rf"{abbrev_esc}\s+(?:\([^)]*\)\s*)*{hw_esc}",
         re.IGNORECASE,
@@ -797,7 +802,7 @@ def _match_entry(
         att_gloss = _recover_attestation_gloss_from_full_text(
             attestation_full_text,
             att.language_abbrev,
-            (att.headwords[0] if att.headwords else ""),
+            att.headwords,
             att.gloss,
         )
 
@@ -871,7 +876,7 @@ def _match_entry(
             best_att_gloss = _recover_attestation_gloss_from_full_text(
                 attestation_full_text,
                 best_att.language_abbrev,
-                primary_hw,
+                best_att.headwords,
                 best_att.gloss,
             )
             gloss_forms = _extract_gloss_forms_for_abbrevs(
@@ -977,7 +982,7 @@ def _match_entry(
                 _recover_attestation_gloss_from_full_text(
                     attestation_full_text,
                     best_att.language_abbrev,
-                    (best_att.headwords[0] if best_att.headwords else ""),
+                    best_att.headwords,
                     best_att.gloss,
                 )
             ]
@@ -987,7 +992,7 @@ def _match_entry(
                 _recover_attestation_gloss_from_full_text(
                     attestation_full_text,
                     best_att.language_abbrev,
-                    (best_att.headwords[0] if best_att.headwords else ""),
+                    best_att.headwords,
                     best_att.gloss,
                 ),
                 source_abbrev=best_att.language_abbrev,
@@ -1033,7 +1038,7 @@ def _match_entry(
             best_att_gloss = _recover_attestation_gloss_from_full_text(
                 attestation_full_text,
                 best_att.language_abbrev,
-                primary_hw,
+                best_att.headwords,
                 best_att.gloss,
             )
             inline_candidates = _extract_gloss_forms_for_abbrevs(

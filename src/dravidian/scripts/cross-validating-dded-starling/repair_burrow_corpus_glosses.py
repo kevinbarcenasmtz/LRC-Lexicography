@@ -23,15 +23,18 @@ from typing import Any, Dict, List
 def _recover_attestation_gloss_from_full_text(
     full_text: str,
     source_abbrev: str,
-    source_headword: str,
+    source_headwords: List[str],
     fallback_gloss: str,
 ) -> str:
-    if not full_text or not source_abbrev or not source_headword:
+    headwords = [h.strip() for h in (source_headwords or []) if h and h.strip()]
+    if not full_text or not source_abbrev or not headwords:
         return fallback_gloss
 
     normalized = re.sub(r"\s+", " ", full_text).strip()
     abbrev_esc = re.escape(source_abbrev.strip())
-    hw_esc = re.escape(source_headword.strip())
+    # Anchor on the FULL comma-separated headword chain, not just the first
+    # form (kept in sync with the identical fix in starling_tree_validator.py).
+    hw_esc = r"\s*,\s*".join(re.escape(h) for h in headwords)
     marker_re = re.compile(
         rf"{abbrev_esc}\s+(?:\([^)]*\)\s*)*{hw_esc}",
         re.IGNORECASE,
@@ -129,15 +132,15 @@ def repair_corpus(data: Dict[str, Any]) -> Dict[str, Any]:
 
             abbrev = str(att.get("language_abbrev", "") or "")
             headwords = att.get("headwords", [])
-            headword = ""
-            if isinstance(headwords, list) and headwords:
-                headword = str(headwords[0] or "")
+            if not isinstance(headwords, list):
+                headwords = []
+            headwords = [str(h or "") for h in headwords]
             old_gloss = str(att.get("gloss", "") or "")
 
             repaired = _recover_attestation_gloss_from_full_text(
                 full_text,
                 abbrev,
-                headword,
+                headwords,
                 old_gloss,
             )
             repaired = _normalize_spacing(repaired)
