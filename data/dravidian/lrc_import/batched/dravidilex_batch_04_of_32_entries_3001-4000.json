@@ -21,6 +21,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "PW_DU",
   "Starling ID": "PDR228",
   "Notes": "The North Dravidian form does not look like a regular correspondence.",
   "Number in DED": "4316",
@@ -205,6 +206,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "PA_MD",
   "Starling ID": "PDR229",
   "Number in DED": "4357",
   "Depth": "0"
@@ -349,6 +351,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "CA_CO",
   "Starling ID": "PDR230",
   "Number in DED": "4366",
   "Depth": "0"
@@ -522,6 +525,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "PA_SH",
   "Starling ID": "PDR231",
   "Number in DED": "2421",
   "Depth": "0"
@@ -727,6 +731,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "EM_PL",
   "Starling ID": "PDR232",
   "Number in DED": "2322",
   "Depth": "0"
@@ -915,6 +920,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "PA_SR",
   "Starling ID": "PDR233",
   "Number in DED": "2433",
   "Depth": "0"
@@ -1357,6 +1363,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "PW_SR",
   "Starling ID": "PDR234",
   "Notes": "NDR only.",
   "Number in DED": "2435",
@@ -1423,6 +1430,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "FD_SB",
   "Starling ID": "PDR235",
   "Notes": "Assimilation in PGn (or in PKK). If Parjikēd'broth' belongs here (and it could well do), the root is to be reconstructed with *k̂-.",
   "Number in DED": "2484",
@@ -1657,6 +1665,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "PA_RU",
   "Starling ID": "PDR236",
   "Number in DED": "2448",
   "Depth": "0"
@@ -1809,6 +1818,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "MO_AR",
   "Starling ID": "PDR237",
   "Number in DED": "2460",
   "Depth": "0"
@@ -1952,6 +1962,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "LM_AN",
   "Starling ID": "PDR238",
   "Number in DED": "2486",
   "Depth": "0"
@@ -2095,6 +2106,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "MK_SW",
   "Starling ID": "PDR239",
   "Number in DED": "2783",
   "Depth": "0"
@@ -2389,6 +2401,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "AN_IN",
   "Starling ID": "PDR240",
   "Number in DED": "2562",
   "Depth": "0"
@@ -2529,6 +2542,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "MO_EN",
   "Starling ID": "PDR241",
   "Notes": "Complicated case: if NDR belongs here,*ker-could be expected. On the other hand, if we assume that Kannadaserkuis re-borrowed from Tamil, the SDR protoform can point to*ker-, in which case everything is regular.",
   "Number in DED": "2778, 2786",
@@ -2728,6 +2742,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "CA_CL",
   "Starling ID": "PDR242",
   "Number in DED": "2796",
   "Depth": "0"
@@ -2854,6 +2869,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "FD_SS",
   "Starling ID": "PDR243",
   "Notes": "Dubious root (possibility of borrowing from Telugu into CDR; also, PGn*c-is irregular).",
   "Number in DED": "2711, 2794, 2795",
@@ -3084,6 +3100,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "PW_MU",
   "Starling ID": "PDR244",
   "Number in DED": "2770",
   "Depth": "0"
@@ -3198,6 +3215,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "AV_BN",
   "Starling ID": "PDR245",
   "Notes": "Irregular -e- in PKG.",
   "Number in DED": "2587",
@@ -3369,6 +3387,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "SR_HK",
   "Starling ID": "PDR246",
   "Number in DED": "2498",
   "Depth": "0"
@@ -3709,6 +3728,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "PW_MH",
   "Starling ID": "PDR247",
   "Number in DED": "2544",
   "Depth": "0"
@@ -3819,6 +3839,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "PA_GO",
   "Starling ID": "PDR248",
   "Number in DED": "2596",
   "Depth": "0"
@@ -3962,6 +3983,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "MO_DR",
   "Starling ID": "PDR249",
   "Notes": "Kannada has *ǯ- maybe by contamination with similar *ǯ-roots.",
   "Number in DED": "2520",
@@ -4105,6 +4127,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "TI_EV",
   "Starling ID": "PDR250",
   "Notes": "A PKG isogloss.",
   "Number in DED": "2528",
@@ -4188,6 +4211,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "TI_YD",
   "Starling ID": "PDR251",
   "Notes": "A phonetically good PKG-NDR isogloss (NDR *-e- by umlaut < *cir-ō).",
   "Number in DED": "2553, 2779",
@@ -4372,6 +4396,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "PA_TE",
   "Starling ID": "PDR252",
   "Number in DED": "2491",
   "Depth": "0"
@@ -4701,6 +4726,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "PW_DA",
   "Starling ID": "PDR253",
   "Number in DED": "2604",
   "Depth": "0"
@@ -4982,6 +5008,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "FD_CU",
   "Starling ID": "PDR254",
   "Number in DED": "2619",
   "Depth": "0"
@@ -5140,6 +5167,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "2",
+  "Semantic Tag (Buck)": "FD_SU",
   "Starling ID": "PDR255",
   "Number in DED": "2621",
   "Depth": "0"
@@ -5304,6 +5332,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "3",
+  "Semantic Tag (Buck)": "AN_CH",
   "Starling ID": "PDR256",
   "Depth": "0"
  },
@@ -5325,6 +5354,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "PA_NA",
   "Starling ID": "PDR257",
   "Number in DED": "2601",
   "Depth": "0"
@@ -5480,6 +5510,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "BP_NO",
   "Starling ID": "PDR258",
   "Notes": "The North Drav. form is dubious (*c->0-is generally irregular).",
   "Number in DED": "537, 2618",
@@ -5918,6 +5949,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "EM_GR",
   "Starling ID": "PDR259",
   "Number in DED": "2639",
   "Depth": "0"
@@ -6029,6 +6061,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "BP_SN",
   "Starling ID": "PDR260",
   "Notes": "Irregular reflexes in many of the subgroups (particularly Telugu and PKG); probably due to the expressivity of the root.",
   "Number in DED": "2865",
@@ -6430,6 +6463,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "AN_AD",
   "Starling ID": "PDR261",
   "Number in DED": "2840",
   "Depth": "0"
@@ -6513,6 +6547,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "FD_SP",
   "Starling ID": "PDR262",
   "Number in DED": "2847",
   "Depth": "0"
@@ -6612,6 +6647,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "MO_FL",
   "Starling ID": "PDR263",
   "Number in DED": "2883",
   "Depth": "0"
@@ -6917,6 +6953,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "FD_WI",
   "Starling ID": "PDR264",
   "Notes": "The Telugu forms might be borrowed, ass-is not expected here.",
   "Number in DED": "2690",
@@ -7044,6 +7081,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "EM_PD",
   "Starling ID": "PDR265",
   "Number in DED": "2853",
   "Depth": "0"
@@ -7279,6 +7317,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "EM_SA",
   "Starling ID": "PDR266",
   "Number in DED": "2838",
   "Depth": "0"
@@ -7574,6 +7613,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "MO_DR",
   "Starling ID": "PDR267",
   "Number in DED": "2835",
   "Depth": "0"
@@ -7732,6 +7772,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "AV_LE",
   "Starling ID": "PDR268",
   "Number in DED": "2875",
   "Depth": "0"
@@ -7815,6 +7856,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "CA_LE",
   "Starling ID": "PDR269",
   "Number in DED": "2834",
   "Depth": "0"
@@ -7926,6 +7968,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "FD_SU",
   "Starling ID": "PDR270",
   "Notes": "Vowel length is sporadic here; maybe due to the 'expressive' character of the root.",
   "Number in DED": "2621",
@@ -8334,6 +8377,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "BP_NK",
   "Starling ID": "PDR271",
   "Number in DED": "2696",
   "Depth": "0"
@@ -8462,6 +8506,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "PW_ST",
   "Starling ID": "PDR272",
   "Notes": "The SDR forms are probably borrowed from Telugu; in any case, affricate correspondences are irregular.",
   "Number in DED": "2646",
@@ -8931,6 +8976,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "AN_MO",
   "Starling ID": "PDR273",
   "Number in DED": "2675",
   "Depth": "0"
@@ -9234,6 +9280,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "TI_DW",
   "Starling ID": "PDR274",
   "Number in DED": "2651",
   "Depth": "0"
@@ -9346,6 +9393,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "AN_MO",
   "Starling ID": "PDR275",
   "Notes": "Irregular reflexes in many of the subgroups due to assimilative processes; however, PKG and PNDR forms are especially dubious.",
   "Number in DED": "2661",
@@ -9614,6 +9662,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "BP_SW",
   "Starling ID": "PDR276",
   "Number in DED": "2662",
   "Depth": "0"
@@ -9726,6 +9775,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "BP_SL",
   "Starling ID": "PDR277",
   "Notes": "Unclear cluster in the anlaut.",
   "Number in DED": "3291",
@@ -10245,6 +10295,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "EM_SA",
   "Starling ID": "PDR278",
   "Number in DED": "2686",
   "Depth": "0"
@@ -10445,6 +10496,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "AN_BE",
   "Starling ID": "PDR279",
   "Notes": "Irregular-r-in SDR (only Tamil).",
   "Number in DED": "2689",
@@ -10697,6 +10749,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "CA_SN",
   "Starling ID": "PDR280",
   "Notes": "The Gondwan forms seem to be borrowed from Telugu.",
   "Number in DED": "2715",
@@ -11019,6 +11072,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "BP_PR",
   "Starling ID": "PDR281",
   "Notes": "Cf. NDR-Bra.*kōl-\"belly, womb\" - < PDR*k̂Ūl?",
   "Number in DED": "2733",
@@ -11178,6 +11232,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "EM_GL",
   "Starling ID": "PDR282",
   "Number in DED": "2729",
   "Depth": "0"
@@ -11303,6 +11358,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "LJ_PY",
   "Starling ID": "PDR283",
   "Number in DED": "2730",
   "Depth": "0"
@@ -11476,6 +11532,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "PA_SH",
   "Starling ID": "PDR284",
   "Notes": "Irregular *s- in Tel.",
   "Number in DED": "2300",
@@ -11577,6 +11634,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "2",
+  "Semantic Tag (Buck)": "EM_TC",
   "Starling ID": "PDR285",
   "Number in DED": "2301",
   "Depth": "0"
@@ -11655,6 +11713,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "MT_IR",
   "Starling ID": "PDR286",
   "Number in DED": "2327",
   "Depth": "0"
@@ -11767,6 +11826,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "AN_GS",
   "Starling ID": "PDR287",
   "Number in DED": "2275",
   "Depth": "0"
@@ -11848,6 +11908,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "TI_SP",
   "Starling ID": "PDR288",
   "Notes": "Irregular vocalism in Telugu.",
   "Number in DED": "2367",
@@ -11998,6 +12059,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "TI_MG",
   "Starling ID": "PDR289",
   "Number in DED": "2408",
   "Depth": "0"
@@ -12208,6 +12270,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "MO_JL",
   "Starling ID": "PDR290",
   "Number in DED": "2285",
   "Depth": "0"
@@ -12322,6 +12385,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "BP_HN",
   "Starling ID": "PDR291",
   "Number in DED": "2335",
   "Depth": "0"
@@ -12600,6 +12664,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "SR_FL",
   "Starling ID": "PDR292",
   "Number in DED": "2331",
   "Depth": "0"
@@ -12771,6 +12836,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "PA_RC",
   "Starling ID": "PDR293",
   "Notes": "Cf. PDR *ćarac-.",
   "Number in DED": "2356, 2358",
@@ -12967,6 +13033,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "PW_SR",
   "Starling ID": "PDR294",
   "Number in DED": "2308",
   "Depth": "0"
@@ -13109,6 +13176,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "2",
+  "Semantic Tag (Buck)": "PW_WD",
   "Starling ID": "PDR295",
   "Number in DED": "2304",
   "Depth": "0"
@@ -13160,6 +13228,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "3",
+  "Semantic Tag (Buck)": "TI_SI",
   "Starling ID": "PDR296",
   "Depth": "0"
  },
@@ -13193,6 +13262,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "4",
+  "Semantic Tag (Buck)": "PA_SH",
   "Starling ID": "PDR297",
   "Number in DED": "2296",
   "Depth": "0"
@@ -13300,6 +13370,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "FD_PO",
   "Starling ID": "PDR298",
   "Number in DED": "2306",
   "Depth": "0"
@@ -13441,6 +13512,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "BP_BW",
   "Starling ID": "PDR299",
   "Number in DED": "2436",
   "Depth": "0"
@@ -13523,6 +13595,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "MO_TU",
   "Starling ID": "PDR300",
   "Number in DED": "2456",
   "Depth": "0"
@@ -13635,6 +13708,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "PW_AS",
   "Starling ID": "PDR301",
   "Number in DED": "2453",
   "Depth": "0"
@@ -13704,6 +13778,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "PA_CS",
   "Starling ID": "PDR302",
   "Notes": "Actually a Kan.-Tulu isogloss (the Telugu form is dubious phonetically and could be a dialectal borrowing).",
   "Number in DED": "2445",
@@ -13799,6 +13874,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "PA_AX",
   "Starling ID": "PDR303",
   "Notes": "The PKG forms are probably re-borrowed from Tel.",
   "Number in DED": "2452",
@@ -14057,6 +14133,7 @@
   "Language": "Proto-Dravidian",
   "IsEtymon": "1",
   "HomographNumber": "1",
+  "Semantic Tag (Buck)": "PA_NA",
   "Starling ID": "PDR304",
   "Notes": "See also NDR*cak-to sharpen.",
   "Number in DED": "2748",
