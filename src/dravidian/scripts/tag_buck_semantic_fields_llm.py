@@ -137,11 +137,14 @@ def main():
         done = min(start + BATCH_SIZE, len(etyma))
         print(f"  {done}/{len(etyma)} classified", flush=True)
 
+    labels = {f["abbr"]: f["label"] for f in fields}
     n_v1_agree = n_v2_agree = n_all_agree = n_missing = 0
     with open(OUT_CSV, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        writer.writerow(["Starling ID", "Headwords", "Gloss", "chosen_abbr",
-                         "llm_second", "v1_choice", "v2_choice",
+        writer.writerow(["Starling ID", "Headwords", "Gloss", "review_tier",
+                         "chosen_abbr", "chosen_field",
+                         "llm_second", "second_field",
+                         "v1_choice", "v1_field", "v2_choice", "v2_field",
                          "agrees_v1", "agrees_v2"])
         for e in etyma:
             abbr, second = results.get(e["id"], ("", ""))
@@ -154,8 +157,19 @@ def main():
             n_v1_agree += bool(a1)
             n_v2_agree += bool(a2)
             n_all_agree += bool(a1 and a2)
-            writer.writerow([e["id"], e["headwords"], e["gloss"], abbr, second,
-                             v1, v2, a1, a2])
+            if not abbr:
+                tier = "4-unclassified"
+            elif a1 and a2:
+                tier = "1-all-three-agree"
+            elif a1 or a2:
+                tier = "2-llm-plus-one"
+            else:
+                tier = "3-llm-alone"
+            writer.writerow([e["id"], e["headwords"], e["gloss"], tier,
+                             abbr, labels.get(abbr, ""),
+                             second, labels.get(second, ""),
+                             v1, labels.get(v1, ""), v2, labels.get(v2, ""),
+                             a1, a2])
 
     print(f"wrote {OUT_CSV.relative_to(REPO_ROOT)}")
     print(f"agreement: llm=v1 {n_v1_agree}, llm=v2 {n_v2_agree}, "
