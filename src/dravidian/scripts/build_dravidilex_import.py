@@ -110,22 +110,31 @@ SUBFAMILY_LABELS = {
     "Proto-South Dravidian I (South Dravidian)": "Proto-South Dravidian I",
     "Proto-South Dravidian II (South-Central Dravidian)": "Proto-South Dravidian II",
 }
+# Subfamilies that exist only to satisfy the three-tier schema (their family
+# has no real subdivision). Named per the final sidebar review (2026-07-05) so
+# headers read "Central: Central Dravidian" instead of "Central: Central".
+SELF_SUBFAMILY_LABELS = {
+    "Proto-South Dravidian": "Proto-South Dravidian",
+    "Proto-Central Dravidian": "Central Dravidian",
+    "Proto-North Dravidian": "North Dravidian",
+    "Proto-Dravidian": "Proto-Dravidian",
+}
 
 # Intermediate proto-languages reconstructed in Starling but absent from the
 # three-tier tree; placed under the tier they belong to (Krishnamurti 2003).
 # Values are (family label, subfamily label) using the shortened names above.
 PROTO_LANGUAGE_TIERS = {
     "Proto-Dravidian": ("Proto-Dravidian", "Proto-Dravidian"),
-    "Proto-South Dravidian": ("South", "South"),
-    "Proto-Central Dravidian": ("Central", "Central"),
-    "Proto-North Dravidian": ("North", "North"),
+    "Proto-South Dravidian": ("South", "Proto-South Dravidian"),
+    "Proto-Central Dravidian": ("Central", "Central Dravidian"),
+    "Proto-North Dravidian": ("North", "North Dravidian"),
     "Proto-Nilgiri": ("South", "Proto-South Dravidian I"),
     "Proto-Telugu": ("South", "Proto-South Dravidian II"),
     "Proto-Gondi-Kui": ("South", "Proto-South Dravidian II"),
     "Proto-Gondi": ("South", "Proto-South Dravidian II"),
     "Proto-Kui-Kuwi": ("South", "Proto-South Dravidian II"),
     "Proto-Pengo-Manda": ("South", "Proto-South Dravidian II"),
-    "Proto-Kolami-Gadba": ("Central", "Central"),
+    "Proto-Kolami-Gadba": ("Central", "Central Dravidian"),
 }
 
 # The tree spreadsheet writes Tamil's subfamily without the "Proto-" prefix
@@ -263,7 +272,7 @@ def build_languages_csv():
         subfamily = subfamily or family
         subfamily = SUBFAMILY_NORMALIZATION.get(subfamily, subfamily)
         family = FAMILY_LABELS.get(family, family)
-        subfamily = FAMILY_LABELS.get(subfamily, SUBFAMILY_LABELS.get(subfamily, subfamily))
+        subfamily = SELF_SUBFAMILY_LABELS.get(subfamily, SUBFAMILY_LABELS.get(subfamily, subfamily))
         key = (family, subfamily, language)
         if key not in seen:
             seen.add(key)
