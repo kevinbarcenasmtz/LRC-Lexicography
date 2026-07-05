@@ -138,6 +138,22 @@ SUBFAMILY_NORMALIZATION = {
 # nahuatlex JSON through the admin Utilities uploader.
 BATCH_SIZE = 1000
 
+# The unpatched uploader on lrc-test throws on 'Etyma'/'HomographNumber'
+# columns ("Etyma crosslinking not supported yet"). The compat export renames
+# the link columns so they land harmlessly in extra data (displayed on word
+# pages), and a later migration can turn them into real etyma links once the
+# patched code is deployable.
+COMPAT_KEY_RENAMES = {
+    "IsEtymon": "Is Root",
+    "HomographNumber": "Root Homograph",
+    "Etyma": "Root Etymon",
+    "EtymaHomographNumber": "Root Etymon Homograph",
+}
+
+# Optional review output of tag_buck_semantic_fields.py; when present, root
+# rows get a 'Semantic Tag (Buck)' extra-data column.
+BUCK_TAGS_CSV_NAME = "buck_tag_suggestions.csv"
+
 
 def load_starling_rows():
     wb = openpyxl.load_workbook(STARLING_XLSX, read_only=True)
@@ -213,6 +229,20 @@ def propagate_ded_numbers(rows):
     return rows
 
 
+def write_batches(batch_dir, records):
+    batch_dir.mkdir(exist_ok=True)
+    for old in batch_dir.glob("dravidilex_batch_*.json"):
+        old.unlink()
+    n_batches = (len(records) + BATCH_SIZE - 1) // BATCH_SIZE
+    for i in range(n_batches):
+        chunk = records[i * BATCH_SIZE:(i + 1) * BATCH_SIZE]
+        first, last = i * BATCH_SIZE + 1, i * BATCH_SIZE + len(chunk)
+        name = f"dravidilex_batch_{i + 1:02d}_of_{n_batches}_entries_{first}-{last}.json"
+        with open(batch_dir / name, "w", encoding="utf-8") as f:
+            json.dump(chunk, f, ensure_ascii=False, indent=1)
+    print(f"wrote {n_batches} chunks of <={BATCH_SIZE} to {batch_dir.relative_to(REPO_ROOT)}/")
+
+
 def write_xlsx(path, header, rows):
     wb = openpyxl.Workbook(write_only=True)
     ws = wb.create_sheet("Sheet1")
@@ -264,7 +294,20 @@ def etymon_entry(headword):
     return str(headword).strip().lstrip("*")
 
 
-def build_import_rows(header, rows):
+def load_buck_tags():
+    """Starling row ID -> reviewed Buck field abbr, when the tagger has run."""
+    path = OUT_DIR / BUCK_TAGS_CSV_NAME
+    if not path.exists():
+        return {}
+    tags = {}
+    with open(path, encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            if row.get("chosen_abbr"):
+                tags[row["Starling ID"]] = row["chosen_abbr"]
+    return tags
+
+
+def build_import_rows(header, rows, buck_tags):
     """Map tree rows onto the Utilities reflex-upload format.
 
     Parentless rows are marked `IsEtymon` (with a `HomographNumber`, since
@@ -301,6 +344,9 @@ def build_import_rows(header, rows):
         if not row.get("Parent Word ID"):
             record["IsEtymon"] = "1"
             record["HomographNumber"] = str(link[1])
+            tag = buck_tags.get(row["ID"])
+            if tag:
+                record["Semantic Tag (Buck)"] = tag
         elif link:
             record["Etyma"] = link[0]
             record["EtymaHomographNumber"] = str(link[1])
@@ -333,7 +379,10 @@ def main():
         writer.writerows(languages)
     print(f"wrote {lang_path.relative_to(REPO_ROOT)} ({len(languages)} languages)")
 
-    import_rows = build_import_rows(header, rows)
+    buck_tags = load_buck_tags()
+    if buck_tags:
+        print(f"injecting {len(buck_tags)} Buck semantic tags onto root rows")
+    import_rows = build_import_rows(header, rows, buck_tags)
 
     known_languages = {language for _, _, language in languages}
     unmapped = sorted({r["Language"] for r in import_rows} - known_languages)
@@ -347,18 +396,17 @@ def main():
 
     # Chunked copies for the admin Utilities uploader (the nahuatlex-proven
     # pattern) — upload in ascending order so roots precede their reflexes.
-    batch_dir = OUT_DIR / "batched"
-    batch_dir.mkdir(exist_ok=True)
-    for old in batch_dir.glob("dravidilex_batch_*.json"):
-        old.unlink()
-    n_batches = (len(import_rows) + BATCH_SIZE - 1) // BATCH_SIZE
-    for i in range(n_batches):
-        chunk = import_rows[i * BATCH_SIZE:(i + 1) * BATCH_SIZE]
-        first, last = i * BATCH_SIZE + 1, i * BATCH_SIZE + len(chunk)
-        name = f"dravidilex_batch_{i + 1:02d}_of_{n_batches}_entries_{first}-{last}.json"
-        with open(batch_dir / name, "w", encoding="utf-8") as f:
-            json.dump(chunk, f, ensure_ascii=False, indent=1)
-    print(f"wrote {n_batches} chunks of <={BATCH_SIZE} to {batch_dir.relative_to(REPO_ROOT)}/")
+    write_batches(OUT_DIR / "batched", import_rows)
+
+    # Compat variant for the UNPATCHED uploader on lrc-test: link columns are
+    # renamed so they land in extra data instead of triggering the
+    # "Etyma crosslinking not supported yet" exception. Flat import — no
+    # etyma pages — but the tree stays visible/searchable per word.
+    compat_rows = [
+        {COMPAT_KEY_RENAMES.get(key, key): value for key, value in record.items()}
+        for record in import_rows
+    ]
+    write_batches(OUT_DIR / "batched_compat_lrctest", compat_rows)
 
     import_columns = ["Headwords", "Gloss", "Language", "Language (Starling)"]
     for record in import_rows:

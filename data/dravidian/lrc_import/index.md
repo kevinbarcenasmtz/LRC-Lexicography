@@ -76,6 +76,42 @@ from the Obsidian collaboration doc and live in
 `server/app/Console/Commands/import_data/dravidilex/*.html`. The family-tree
 image is a TODO (Akhila is producing a nicer one).
 
+## Import runbook C — unpatched lrc-test, no code deploy (flat, nahuatlex-style)
+
+For when the `dravidilex-pilot` code cannot be deployed (fork push access
+lost). Uses `batched_compat_lrctest/` — identical data, but the etyma link
+columns are renamed (`Is Root`, `Root Homograph`, `Root Etymon`,
+`Root Etymon Homograph`) so the **unpatched** uploader files them as extra
+data instead of throwing "Etyma crosslinking not supported yet".
+
+What you get: a flat NahuatLex-style dictionary — every word (including
+protoforms) gets a page showing gloss + all extra data (DED numbers, parent
+word/language, Starling dialect, Buck tag), browsable by language and
+searchable in the data table. What you don't get: clickable etymon pages,
+reflexes grouped under roots, or real semantic-field pages (tags attach to
+etyma, which don't exist on this path). The renamed columns make a later
+in-place upgrade possible once code can be deployed.
+
+Steps (browser only):
+
+1. **Do NOT use Utilities → Upload Language CSV** — the unpatched page
+   creates a duplicate family/subfamily per CSV row (38 duplicate families).
+   Instead create the tiers manually in admin (not Site-Manager-gated, so
+   Kevin's lrc-test account may suffice): Lex Language Families (4: South,
+   Central, North, Proto-Dravidian) → Lex Language Sub Families (6) → Lex
+   Languages (38), per `dravidilex_languages.csv`.
+2. Create the lexicon in Lex Lexicons (slug starting `dravidilex`), paste the
+   landing-page HTML (TinyMCE), and per-language descriptions in Lex
+   Languages.
+3. Utilities → Upload Reflex CSV (Site Manager, i.e. Todd): the 32 files in
+   `batched_compat_lrctest/`, any order (no linking, so order doesn't matter
+   here).
+4. Lex Lexicons → Data Cache Status → **Regenerate Cache**.
+
+Note the data table on unpatched code shows only Root/Meaning/Language (+
+empty Etymon/Semantic Tag/PoS columns) — the richer dravidilex columns are
+part of the patched branch.
+
 ## Semantic tags — the open blocker
 
 Neither DED nor Starling carries any semantic classification, so tags must be
@@ -84,18 +120,19 @@ assigned, not converted. In the LRC schema tags attach to **etyma**
 matters: it reduces the problem to classifying 2,211 proto-glosses, not 31k
 reflexes.
 
-Options, in rough order of preference:
+Todd approved starting with Buck's tags (2026-07-04). The pipeline is now:
 
-1. **LLM-assisted first pass, human review.** Classify each etymon's English
-   gloss into Buck semantic fields (the Buck category/field CSVs MayaLex used
-   are already in `import_data/` and upload via Utilities → Upload Semantic
-   CSVs). Deliver as a review spreadsheet `Starling ID → field abbr`, then a
-   ~20-line importer (or extend `app:import-dravidilex`) writes the links.
-2. **Manual tagging** in the admin panel — safest but 2,211 entries of
-   scholarly time.
-3. **Ship the pilot untagged** — the data table and etymon pages work without
-   tags; the Semantic Tag column just stays empty.
-
-Also worth deciding: whether Buck's IE-oriented fields are even the right
-scheme for Dravidian, or whether the group wants a custom category set (the
-schema is per-lexicon, so a custom set costs nothing extra).
+1. `src/dravidian/scripts/tag_buck_semantic_fields.py` — zero-shot
+   sentence-transformer (`all-MiniLM-L6-v2`) ranks Buck's 1,098 fields
+   against each of the 2,211 etymon glosses; writes
+   `buck_tag_suggestions.csv` (top-3 + scores, `chosen_abbr` prefilled with
+   the top hit). Run with `lrc_venv/bin/python`.
+2. **Human review** of `chosen_abbr` (edit or blank out). The unreviewed
+   output is parked as `buck_tag_suggestions.pending-review.csv`; rename it
+   to `buck_tag_suggestions.csv` when reviewed — the build only injects from
+   the reviewed filename.
+3. Re-run `build_dravidilex_import.py` — accepted tags are injected as a
+   `Semantic Tag (Buck)` extra-data column on root rows, so they display even
+   on the flat lrc-test path. Once etyma-capable code is deployed, the same
+   column can be promoted to real `lex_etyma_semantic_field` links (Buck
+   category/field CSVs upload via Utilities → Upload Semantic CSVs).
