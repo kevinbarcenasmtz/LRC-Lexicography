@@ -104,7 +104,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "1",
-  "Semantic Tag (Buck)": "SO_CR",
+  "Semantic Tag (Buck)": "MT_ME",
   "Starling ID": "PDR1065",
   "Number in DED": "5133",
   "Depth": "0"
@@ -1183,7 +1183,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "1",
-  "Semantic Tag (Buck)": "EM_TR",
+  "Semantic Tag (Buck)": "PT_SP",
   "Starling ID": "PDR1072",
   "Number in DED": "4903",
   "Depth": "0"
@@ -1283,7 +1283,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "1",
-  "Semantic Tag (Buck)": "PW_DU",
+  "Semantic Tag (Buck)": "QN_PR",
   "Starling ID": "PDR1073",
   "Number in DED": "4962",
   "Depth": "0"
@@ -1542,7 +1542,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "1",
-  "Semantic Tag (Buck)": "AN_AD",
+  "Semantic Tag (Buck)": "BP_BA",
   "Starling ID": "PDR1075",
   "Number in DED": "4942",
   "Depth": "0"
@@ -1778,7 +1778,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "2",
-  "Semantic Tag (Buck)": "QN_TP",
+  "Semantic Tag (Buck)": "BP_SM",
   "Starling ID": "PDR1076",
   "Number in DED": "4919",
   "Depth": "0"
@@ -1982,7 +1982,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "1",
-  "Semantic Tag (Buck)": "TI_FI",
+  "Semantic Tag (Buck)": "TI_EN",
   "Starling ID": "PDR1077",
   "Number in DED": "4922",
   "Depth": "0"
@@ -2549,7 +2549,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "1",
-  "Semantic Tag (Buck)": "AN_HU",
+  "Semantic Tag (Buck)": "LM_SC",
   "Starling ID": "PDR1079",
   "Number in DED": "5013",
   "Depth": "0"
@@ -3107,7 +3107,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "1",
-  "Semantic Tag (Buck)": "AV_FL",
+  "Semantic Tag (Buck)": "SR_SH",
   "Starling ID": "PDR1081",
   "Number in DED": "4893",
   "Depth": "0"
@@ -3329,7 +3329,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "1",
-  "Semantic Tag (Buck)": "TI_FI",
+  "Semantic Tag (Buck)": "TI_EN",
   "Starling ID": "PDR1082",
   "Number in DED": "4891",
   "Depth": "0"
@@ -3444,7 +3444,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "2",
-  "Semantic Tag (Buck)": "MT_MI",
+  "Semantic Tag (Buck)": "SR_TO",
   "Starling ID": "PDR1083",
   "Number in DED": "4888",
   "Depth": "0"
@@ -3632,7 +3632,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "1",
-  "Semantic Tag (Buck)": "CA_VE",
+  "Semantic Tag (Buck)": "SR_CO",
   "Starling ID": "PDR1084",
   "Number in DED": "4915",
   "Depth": "0"
@@ -5217,7 +5217,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "1",
-  "Semantic Tag (Buck)": "PA_BN",
+  "Semantic Tag (Buck)": "PA_WV",
   "Starling ID": "PDR1087",
   "Number in DED": "4896",
   "Depth": "0"
@@ -5390,7 +5390,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "2",
-  "Semantic Tag (Buck)": "AN_HU",
+  "Semantic Tag (Buck)": "FD_EA",
   "Starling ID": "PDR1088",
   "Notes": "Cf.*mōg-?",
   "Depth": "0"
@@ -5413,7 +5413,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "1",
-  "Semantic Tag (Buck)": "PW_DA",
+  "Semantic Tag (Buck)": "FD_VE",
   "Starling ID": "PDR1089",
   "Number in DED": "5004",
   "Depth": "0"
@@ -5525,7 +5525,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "2",
-  "Semantic Tag (Buck)": "WH_SP",
+  "Semantic Tag (Buck)": "AV_PN",
   "Starling ID": "PDR1090",
   "Number in DED": "4995",
   "Depth": "0"
@@ -5826,7 +5826,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "1",
-  "Semantic Tag (Buck)": "PW_TR",
+  "Semantic Tag (Buck)": "AV_PN",
   "Starling ID": "PDR1092",
   "Number in DED": "4982",
   "Depth": "0"
@@ -6058,7 +6058,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "1",
-  "Semantic Tag (Buck)": "BP_FC",
+  "Semantic Tag (Buck)": "SR_SD",
   "Starling ID": "PDR1093",
   "Number in DED": "5020",
   "Depth": "0"
@@ -6694,7 +6694,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "2",
-  "Semantic Tag (Buck)": "EM_HT",
+  "Semantic Tag (Buck)": "EM_AG",
   "Starling ID": "PDR1094",
   "Number in DED": "5021",
   "Depth": "0"
@@ -6792,7 +6792,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "1",
-  "Semantic Tag (Buck)": "PW_SR",
+  "Semantic Tag (Buck)": "PA_NA",
   "Starling ID": "PDR1095",
   "Number in DED": "4948",
   "Depth": "0"
@@ -7089,7 +7089,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "2",
-  "Semantic Tag (Buck)": "AN_FI",
+  "Semantic Tag (Buck)": "PW_LA",
   "Starling ID": "PDR1096",
   "Depth": "0"
  },
@@ -7123,7 +7123,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "1",
-  "Semantic Tag (Buck)": "AN_GS",
+  "Semantic Tag (Buck)": "AN_AN",
   "Starling ID": "PDR1097",
   "Notes": "The cluster here is extremely hard to determine; cf. Alt. *mi̯óńdo 'hare'.",
   "Number in DED": "4968",
@@ -8364,7 +8364,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "1",
-  "Semantic Tag (Buck)": "AN_EW",
+  "Semantic Tag (Buck)": "AN_AN",
   "Starling ID": "PDR1100",
   "Number in DED": "4900",
   "Depth": "0"
@@ -8671,7 +8671,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "1",
-  "Semantic Tag (Buck)": "LM_ST",
+  "Semantic Tag (Buck)": "LM_VO",
   "Starling ID": "PDR1101",
   "Number in DED": "4973",
   "Depth": "0"
@@ -8915,7 +8915,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "2",
-  "Semantic Tag (Buck)": "PW_SA",
+  "Semantic Tag (Buck)": "SP_RG",
   "Starling ID": "PDR1102",
   "Number in DED": "4971",
   "Depth": "0"
@@ -9262,7 +9262,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "5",
-  "Semantic Tag (Buck)": "PA_WA",
+  "Semantic Tag (Buck)": "SP_DR",
   "Starling ID": "PDR1105",
   "Number in DED": "4972",
   "Depth": "0"
@@ -9404,7 +9404,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "1",
-  "Semantic Tag (Buck)": "AV_RI",
+  "Semantic Tag (Buck)": "FD_FD",
   "Starling ID": "PDR1106",
   "Number in DED": "5019",
   "Depth": "0"
@@ -9535,7 +9535,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "1",
-  "Semantic Tag (Buck)": "CA_FR",
+  "Semantic Tag (Buck)": "CA_AD",
   "Starling ID": "PDR1107",
   "Number in DED": "4979",
   "Depth": "0"
@@ -10191,7 +10191,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "1",
-  "Semantic Tag (Buck)": "PA_BN",
+  "Semantic Tag (Buck)": "MO_TU",
   "Starling ID": "PDR1109",
   "Number in DED": "4977, 5012",
   "Depth": "0"
@@ -10513,7 +10513,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "1",
-  "Semantic Tag (Buck)": "BP_TE",
+  "Semantic Tag (Buck)": "PA_BN",
   "Starling ID": "PDR1110",
   "Notes": "Contaminated with*mur-'to turn, twist'.",
   "Number in DED": "5012",
@@ -10659,7 +10659,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "1",
-  "Semantic Tag (Buck)": "SO_SG",
+  "Semantic Tag (Buck)": "MK_RE",
   "Starling ID": "PDR1111",
   "Notes": "Irregular correspondences that make it hard to determine the inlaut consonant.",
   "Number in DED": "5015",
@@ -10799,7 +10799,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "1",
-  "Semantic Tag (Buck)": "PW_TR",
+  "Semantic Tag (Buck)": "AV_TR",
   "Starling ID": "PDR1112",
   "Number in DED": "5006",
   "Depth": "0"
@@ -11165,7 +11165,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "1",
-  "Semantic Tag (Buck)": "SP_RD",
+  "Semantic Tag (Buck)": "AN_IN",
   "Starling ID": "PDR1115",
   "Number in DED": "4906",
   "Depth": "0"
@@ -11518,7 +11518,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "1",
-  "Semantic Tag (Buck)": "SR_HC",
+  "Semantic Tag (Buck)": "SR_CG",
   "Starling ID": "PDR1118",
   "Number in DED": "5018",
   "Depth": "0"
@@ -12116,7 +12116,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "3",
-  "Semantic Tag (Buck)": "BP_EL",
+  "Semantic Tag (Buck)": "BP_KN",
   "Starling ID": "PDR1121",
   "Number in DED": "4935",
   "Depth": "0"
@@ -12225,7 +12225,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "4",
-  "Semantic Tag (Buck)": "PA_KF",
+  "Semantic Tag (Buck)": "PA_TO",
   "Starling ID": "PDR1122",
   "Depth": "0"
  },
@@ -12389,7 +12389,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "2",
-  "Semantic Tag (Buck)": "SO_SQ",
+  "Semantic Tag (Buck)": "EM_AG",
   "Starling ID": "PDR1124",
   "Number in DED": "4991",
   "Depth": "0"
@@ -12487,7 +12487,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "3",
-  "Semantic Tag (Buck)": "BP_EL",
+  "Semantic Tag (Buck)": "SR_MS",
   "Starling ID": "PDR1125",
   "Notes": "Reconstruction uncertain, but reflexation is so complicated one cannot do without an elaborate cluster.",
   "Number in DED": "4990",
@@ -12885,7 +12885,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "4",
-  "Semantic Tag (Buck)": "LM_BS",
+  "Semantic Tag (Buck)": "LM_ST",
   "Starling ID": "PDR1126",
   "Number in DED": "4989",
   "Depth": "0"
@@ -14077,7 +14077,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "1",
-  "Semantic Tag (Buck)": "AN_BR",
+  "Semantic Tag (Buck)": "MT_CA",
   "Starling ID": "PDR1129",
   "Number in DED": "5035",
   "Depth": "0"
@@ -14237,7 +14237,7 @@
   "Language": "Proto-Dravidian",
   "Is Root": "1",
   "Root Homograph": "2",
-  "Semantic Tag (Buck)": "CA_VE",
+  "Semantic Tag (Buck)": "SR_CO",
   "Starling ID": "PDR1130",
   "Depth": "0"
  },
