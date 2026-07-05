@@ -7,12 +7,12 @@ Re-run the script after fixing anything upstream; do not hand-edit these files.
 
 ## Files
 
-| File | What it is |
-|---|---|
-| `dravidian_starling_data.xlsx` | Full Starling tree (31,411 rows). Every protoform row now carries the DED number(s) of **all** reflexes in its subtree; multiple distinct numbers are kept comma-separated (603 protoforms have >1; 958 subtrees have no DED number at all — Starling-only etyma). |
-| `dravidilex_languages.csv` | 38 `Family,Subfamily,Language` rows for the LRC language uploader: the 26 tree languages plus the proto-languages (incl. intermediates like Proto-Nilgiri, Proto-Gondi-Kui) so protoform rows can resolve a Language at import. |
-| `dravidilex_batch_import.json` | 31,411 records in the LRC Utilities reflex-upload format (`Headwords`/`Gloss`/`Language` + everything else → extra data). This is what gets imported. |
-| `dravidilex_batch_import.xlsx` | Same rows as the JSON, for human review in Excel. |
+| File                           | What it is                                                                                                                                                                                                                                                         |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `dravidian_starling_data.xlsx` | Full Starling tree (31,411 rows). Every protoform row now carries the DED number(s) of **all** reflexes in its subtree; multiple distinct numbers are kept comma-separated (152 protoforms have >1; 1,501 subtrees have no DED number at all — Starling-only etyma). Row IDs are now unique — the notebook gave `Proto-North(-)Dravidian` variants the same `PND` prefix, colliding 541 IDs and silently merging subtree pairs (the earlier published stats 603/958 were inflated by this). |
+| `dravidilex_languages.csv`     | 38 `Family,Subfamily,Language` rows for the LRC language uploader: the 26 tree languages plus the proto-languages (incl. intermediates like Proto-Nilgiri, Proto-Gondi-Kui) so protoform rows can resolve a Language at import.                                    |
+| `dravidilex_batch_import.json` | 31,411 records in the LRC Utilities reflex-upload format (`Headwords`/`Gloss`/`Language` + everything else → extra data). This is what gets imported.                                                                                                              |
+| `dravidilex_batch_import.xlsx` | Same rows as the JSON, for human review in Excel.                                                                                                                                                                                                                  |
 
 ## Mapping decisions (flag anything wrong to the group)
 
@@ -32,7 +32,7 @@ Re-run the script after fixing anything upstream; do not hand-edit these files.
   Proto-Telugu, Proto-Gondi-Kui, Proto-Gondi, Proto-Kui-Kuwi,
   Proto-Pengo-Manda → PSD II; Proto-Kolami-Gadba → Proto-Central Dravidian.
 
-## Import runbook (linguistics_research_center, branch `dravidilex-pilot`)
+## Import runbook A — local / anyone with shell access
 
 One command does everything (lexicon, languages, landing pages, etyma+reflexes):
 
@@ -45,12 +45,31 @@ docker compose exec web php artisan app:generate-lexicon-data-cache <printed lex
 
 The command creates **2,211 LexEtyma** — one per Starling record, from the
 parentless root reconstruction (2,210 Proto-Dravidian, 1 Proto-South
-Dravidian), with homograph numbers for repeated roots like `*ac-`. All other
-rows become LexReflex linked to their root etymon via `lex_etyma_reflex`; the
-full tree stays recoverable through the `Starling ID` / `Parent Word ID`
-extra-data keys. Alternatively, run the command with no argument and upload the
-JSON through admin → Utilities → Upload Reflex CSV (that path creates reflexes
-only, no etyma links — the uploader still throws on etyma columns).
+Dravidian), with homograph numbers for repeated roots like `*ac-` (entries are
+stored asterisk-less; the site prepends `*` on display). All other rows become
+LexReflex linked to their root etymon via `lex_etyma_reflex`; the full tree
+stays recoverable through the `Starling ID` / `Parent Word ID` extra-data keys.
+
+## Import runbook B — browser-only, via admin Utilities (for Todd on lrc-test)
+
+Requires the `dravidilex-pilot` branch of linguistics_research_center to be
+deployed first (it patches the two Utilities bugs: duplicate families on
+language upload, and no etyma support on reflex upload). Then, logged in as a
+Site Manager at `/admin/utilities`:
+
+1. Create the lexicon in admin → Lex Lexicons (set slug starting with
+   `dravidilex`, protolanguage name `Proto-Dravidian`, and paste the landing
+   page HTML — TinyMCE field).
+2. Utilities → **Upload Language CSV** → `dravidilex_languages.csv`.
+3. Utilities → **Upload Reflex CSV** → the 32 files in `batched/`, **in
+   ascending order** (roots always precede their reflexes; a reflex whose
+   etymon hasn't been uploaded yet fails with a clear error). The JSON's
+   `IsEtymon`/`HomographNumber` rows create etyma; `Etyma`/
+   `EtymaHomographNumber` columns link reflexes to them.
+4. Language pages: paste the per-language HTML into each language's
+   description (admin → Lex Languages, TinyMCE field).
+5. Admin → Lex Lexicons → the lexicon → **Data Cache Status → Regenerate
+   Cache** (browser button; no shell needed).
 
 Landing pages (main + Proto-Dravidian, Tamil, Telugu, Malayalam, Kannada) come
 from the Obsidian collaboration doc and live in

@@ -1,39 +1,39 @@
 Family,Subfamily,Language
-Proto-South Dravidian,Proto-South Dravidian I (South Dravidian),Tamil
-Proto-South Dravidian,Proto-South Dravidian I (South Dravidian),Malayalam
-Proto-South Dravidian,Proto-South Dravidian I (South Dravidian),Irula
-Proto-South Dravidian,Proto-South Dravidian I (South Dravidian),Kodagu
-Proto-South Dravidian,Proto-South Dravidian I (South Dravidian),Kurumba
-Proto-South Dravidian,Proto-South Dravidian I (South Dravidian),Toda
-Proto-South Dravidian,Proto-South Dravidian I (South Dravidian),Kota
-Proto-South Dravidian,Proto-South Dravidian I (South Dravidian),Badaga
-Proto-South Dravidian,Proto-South Dravidian I (South Dravidian),Kannada
-Proto-South Dravidian,Proto-South Dravidian I (South Dravidian),Koraga
-Proto-South Dravidian,Proto-South Dravidian I (South Dravidian),Tulu
-Proto-South Dravidian,Proto-South Dravidian II (South-Central Dravidian),Telugu
-Proto-South Dravidian,Proto-South Dravidian II (South-Central Dravidian),Gondi
-Proto-South Dravidian,Proto-South Dravidian II (South-Central Dravidian),Konda
-Proto-South Dravidian,Proto-South Dravidian II (South-Central Dravidian),Kui
-Proto-South Dravidian,Proto-South Dravidian II (South-Central Dravidian),Kuvi
-Proto-South Dravidian,Proto-South Dravidian II (South-Central Dravidian),Pengo
-Proto-South Dravidian,Proto-South Dravidian II (South-Central Dravidian),Manda
-Proto-Central Dravidian,Proto-Central Dravidian,Kolami
-Proto-Central Dravidian,Proto-Central Dravidian,Naikri
-Proto-Central Dravidian,Proto-Central Dravidian,Naiki
-Proto-Central Dravidian,Proto-Central Dravidian,Parji
-Proto-Central Dravidian,Proto-Central Dravidian,Ollari
-Proto-Central Dravidian,Proto-Central Dravidian,Gadaba
-Proto-North Dravidian,Proto-North Dravidian,Kurukh
-Proto-North Dravidian,Proto-North Dravidian,Malto
-Proto-North Dravidian,Proto-North Dravidian,Brahui
+South,Proto-South Dravidian I,Tamil
+South,Proto-South Dravidian I,Malayalam
+South,Proto-South Dravidian I,Irula
+South,Proto-South Dravidian I,Kodagu
+South,Proto-South Dravidian I,Kurumba
+South,Proto-South Dravidian I,Toda
+South,Proto-South Dravidian I,Kota
+South,Proto-South Dravidian I,Badaga
+South,Proto-South Dravidian I,Kannada
+South,Proto-South Dravidian I,Koraga
+South,Proto-South Dravidian I,Tulu
+South,Proto-South Dravidian II,Telugu
+South,Proto-South Dravidian II,Gondi
+South,Proto-South Dravidian II,Konda
+South,Proto-South Dravidian II,Kui
+South,Proto-South Dravidian II,Kuvi
+South,Proto-South Dravidian II,Pengo
+South,Proto-South Dravidian II,Manda
+Central,Central,Kolami
+Central,Central,Naikri
+Central,Central,Naiki
+Central,Central,Parji
+Central,Central,Ollari
+Central,Central,Gadaba
+North,North,Kurukh
+North,North,Malto
+North,North,Brahui
 Proto-Dravidian,Proto-Dravidian,Proto-Dravidian
-Proto-South Dravidian,Proto-South Dravidian,Proto-South Dravidian
-Proto-Central Dravidian,Proto-Central Dravidian,Proto-Central Dravidian
-Proto-North Dravidian,Proto-North Dravidian,Proto-North Dravidian
-Proto-South Dravidian,Proto-South Dravidian I (South Dravidian),Proto-Nilgiri
-Proto-South Dravidian,Proto-South Dravidian II (South-Central Dravidian),Proto-Telugu
-Proto-South Dravidian,Proto-South Dravidian II (South-Central Dravidian),Proto-Gondi-Kui
-Proto-South Dravidian,Proto-South Dravidian II (South-Central Dravidian),Proto-Gondi
-Proto-South Dravidian,Proto-South Dravidian II (South-Central Dravidian),Proto-Kui-Kuwi
-Proto-South Dravidian,Proto-South Dravidian II (South-Central Dravidian),Proto-Pengo-Manda
-Proto-Central Dravidian,Proto-Central Dravidian,Proto-Kolami-Gadba
+South,South,Proto-South Dravidian
+Central,Central,Proto-Central Dravidian
+North,North,Proto-North Dravidian
+South,Proto-South Dravidian I,Proto-Nilgiri
+South,Proto-South Dravidian II,Proto-Telugu
+South,Proto-South Dravidian II,Proto-Gondi-Kui
+South,Proto-South Dravidian II,Proto-Gondi
+South,Proto-South Dravidian II,Proto-Kui-Kuwi
+South,Proto-South Dravidian II,Proto-Pengo-Manda
+Central,Central,Proto-Kolami-Gadba

@@ -96,20 +96,36 @@ DIALECT_TO_LANGUAGE = {
     "Kasaba": "Irula",
 }
 
+# Tier labels shown as "Family: Subfamily" headers on the site. Todd asked to
+# shorten these (2026-07-04): "Proto-South Dravidian: Proto-South Dravidian II"
+# reads better as "South: Proto-South Dravidian II". Language names themselves
+# are untouched.
+FAMILY_LABELS = {
+    "Proto-Dravidian": "Proto-Dravidian",
+    "Proto-South Dravidian": "South",
+    "Proto-Central Dravidian": "Central",
+    "Proto-North Dravidian": "North",
+}
+SUBFAMILY_LABELS = {
+    "Proto-South Dravidian I (South Dravidian)": "Proto-South Dravidian I",
+    "Proto-South Dravidian II (South-Central Dravidian)": "Proto-South Dravidian II",
+}
+
 # Intermediate proto-languages reconstructed in Starling but absent from the
 # three-tier tree; placed under the tier they belong to (Krishnamurti 2003).
+# Values are (family label, subfamily label) using the shortened names above.
 PROTO_LANGUAGE_TIERS = {
     "Proto-Dravidian": ("Proto-Dravidian", "Proto-Dravidian"),
-    "Proto-South Dravidian": ("Proto-South Dravidian", "Proto-South Dravidian"),
-    "Proto-Central Dravidian": ("Proto-Central Dravidian", "Proto-Central Dravidian"),
-    "Proto-North Dravidian": ("Proto-North Dravidian", "Proto-North Dravidian"),
-    "Proto-Nilgiri": ("Proto-South Dravidian", "Proto-South Dravidian I (South Dravidian)"),
-    "Proto-Telugu": ("Proto-South Dravidian", "Proto-South Dravidian II (South-Central Dravidian)"),
-    "Proto-Gondi-Kui": ("Proto-South Dravidian", "Proto-South Dravidian II (South-Central Dravidian)"),
-    "Proto-Gondi": ("Proto-South Dravidian", "Proto-South Dravidian II (South-Central Dravidian)"),
-    "Proto-Kui-Kuwi": ("Proto-South Dravidian", "Proto-South Dravidian II (South-Central Dravidian)"),
-    "Proto-Pengo-Manda": ("Proto-South Dravidian", "Proto-South Dravidian II (South-Central Dravidian)"),
-    "Proto-Kolami-Gadba": ("Proto-Central Dravidian", "Proto-Central Dravidian"),
+    "Proto-South Dravidian": ("South", "South"),
+    "Proto-Central Dravidian": ("Central", "Central"),
+    "Proto-North Dravidian": ("North", "North"),
+    "Proto-Nilgiri": ("South", "Proto-South Dravidian I"),
+    "Proto-Telugu": ("South", "Proto-South Dravidian II"),
+    "Proto-Gondi-Kui": ("South", "Proto-South Dravidian II"),
+    "Proto-Gondi": ("South", "Proto-South Dravidian II"),
+    "Proto-Kui-Kuwi": ("South", "Proto-South Dravidian II"),
+    "Proto-Pengo-Manda": ("South", "Proto-South Dravidian II"),
+    "Proto-Kolami-Gadba": ("Central", "Central"),
 }
 
 # The tree spreadsheet writes Tamil's subfamily without the "Proto-" prefix
@@ -117,6 +133,10 @@ PROTO_LANGUAGE_TIERS = {
 SUBFAMILY_NORMALIZATION = {
     "South Dravidian I (South Dravidian)": "Proto-South Dravidian I (South Dravidian)",
 }
+
+# Records per batched upload file — the chunk size that reliably got the
+# nahuatlex JSON through the admin Utilities uploader.
+BATCH_SIZE = 1000
 
 
 def load_starling_rows():
@@ -133,6 +153,29 @@ def load_starling_rows():
         rows.append(row)
     wb.close()
     return header, rows
+
+
+def deduplicate_ids(rows):
+    """Repair colliding row IDs from the destructuring notebook.
+
+    'Proto-North Dravidian' and 'Proto-North-Dravidian' kept separate counters
+    but shared the PND prefix, so 541 IDs collide across records, making
+    Parent Word ID references ambiguous. The notebook always emits a parent
+    row before its children, so each parent reference resolves to the most
+    recent occurrence of that ID; colliding IDs get a '-2' suffix.
+    """
+    counts = {}
+    latest = {}  # original ID -> unique ID of its most recent occurrence
+    for row in rows:
+        parent = row.get("Parent Word ID")
+        if parent:
+            row["Parent Word ID"] = latest.get(parent, parent)
+        old = row["ID"]
+        counts[old] = counts.get(old, 0) + 1
+        new = old if counts[old] == 1 else f"{old}-{counts[old]}"
+        latest[old] = new
+        row["ID"] = new
+    return rows
 
 
 def propagate_ded_numbers(rows):
@@ -189,6 +232,8 @@ def build_languages_csv():
     def add(family, subfamily, language):
         subfamily = subfamily or family
         subfamily = SUBFAMILY_NORMALIZATION.get(subfamily, subfamily)
+        family = FAMILY_LABELS.get(family, family)
+        subfamily = FAMILY_LABELS.get(subfamily, SUBFAMILY_LABELS.get(subfamily, subfamily))
         key = (family, subfamily, language)
         if key not in seen:
             seen.add(key)
@@ -205,14 +250,42 @@ def build_languages_csv():
             add(family.strip(), subfamily.strip() if subfamily else None, language.strip())
 
     for language, (family, subfamily) in PROTO_LANGUAGE_TIERS.items():
-        add(family, subfamily, language)
+        key = (family, subfamily, language)
+        if key not in seen:
+            seen.add(key)
+            entries.append(key)
 
     return entries
 
 
+def etymon_entry(headword):
+    """Etyma entries are stored without the leading asterisk — the site's
+    etymon views prepend <sup>*</sup> themselves (IELex convention)."""
+    return str(headword).strip().lstrip("*")
+
+
 def build_import_rows(header, rows):
-    """Map tree rows onto the Utilities reflex-upload format."""
+    """Map tree rows onto the Utilities reflex-upload format.
+
+    Parentless rows are marked `IsEtymon` (with a `HomographNumber`, since
+    Starling reconstructs many identical roots); every descendant carries
+    `Etyma` + `EtymaHomographNumber` pointing at its root, so the uploader can
+    create the etymon→reflex tree. Roots always precede their descendants in
+    file order, which batching into contiguous chunks preserves.
+    """
     extra_columns = [col for col in header if col not in ("Headword", "Meaning", "Language")]
+
+    root_link = {}  # row ID -> (etymon entry, homograph number)
+    homograph_counts = {}
+    for row in rows:
+        parent_id = row.get("Parent Word ID")
+        if parent_id:
+            root_link[row["ID"]] = root_link.get(parent_id)
+        else:
+            entry = etymon_entry(row["Headword"])
+            homograph_counts[entry] = homograph_counts.get(entry, 0) + 1
+            root_link[row["ID"]] = (entry, homograph_counts[entry])
+
     import_rows = []
     for row in rows:
         starling_language = row["Language"]
@@ -224,6 +297,13 @@ def build_import_rows(header, rows):
         }
         if language != starling_language:
             record["Language (Starling)"] = starling_language
+        link = root_link.get(row["ID"])
+        if not row.get("Parent Word ID"):
+            record["IsEtymon"] = "1"
+            record["HomographNumber"] = str(link[1])
+        elif link:
+            record["Etyma"] = link[0]
+            record["EtymaHomographNumber"] = str(link[1])
         for col in extra_columns:
             value = row.get(col)
             if value is None or str(value).strip() == "":
@@ -238,6 +318,7 @@ def main():
     OUT_DIR.mkdir(exist_ok=True)
 
     header, rows = load_starling_rows()
+    rows = deduplicate_ids(rows)
     rows = propagate_ded_numbers(rows)
 
     tree_path = OUT_DIR / "dravidian_starling_data.xlsx"
@@ -263,6 +344,21 @@ def main():
     with open(json_path, "w", encoding="utf-8") as f:
         json.dump(import_rows, f, ensure_ascii=False, indent=1)
     print(f"wrote {json_path.relative_to(REPO_ROOT)} ({len(import_rows)} records)")
+
+    # Chunked copies for the admin Utilities uploader (the nahuatlex-proven
+    # pattern) — upload in ascending order so roots precede their reflexes.
+    batch_dir = OUT_DIR / "batched"
+    batch_dir.mkdir(exist_ok=True)
+    for old in batch_dir.glob("dravidilex_batch_*.json"):
+        old.unlink()
+    n_batches = (len(import_rows) + BATCH_SIZE - 1) // BATCH_SIZE
+    for i in range(n_batches):
+        chunk = import_rows[i * BATCH_SIZE:(i + 1) * BATCH_SIZE]
+        first, last = i * BATCH_SIZE + 1, i * BATCH_SIZE + len(chunk)
+        name = f"dravidilex_batch_{i + 1:02d}_of_{n_batches}_entries_{first}-{last}.json"
+        with open(batch_dir / name, "w", encoding="utf-8") as f:
+            json.dump(chunk, f, ensure_ascii=False, indent=1)
+    print(f"wrote {n_batches} chunks of <={BATCH_SIZE} to {batch_dir.relative_to(REPO_ROOT)}/")
 
     import_columns = ["Headwords", "Gloss", "Language", "Language (Starling)"]
     for record in import_rows:
