@@ -45,6 +45,23 @@ LANGUAGE_NORMALIZATION = {
     "Proto-North-Dravidian": "Proto-North Dravidian",
 }
 
+# StarlingDB displays the alveolar series with a line below the letter; the
+# scraper flattened that to "letter_" (e.g. ayyan̠ -> "ayyan_"). Map back to
+# the DEDR line-below letters (precomposed where Unicode has them, combining
+# U+0331 otherwise). Applied to every text column except IDs/URLs.
+UNDERSCORE_LETTERS = {
+    "r": "ṟ", "n": "ṉ", "d": "ḏ", "t": "ṯ", "l": "ḻ",
+    "k": "ḵ", "h": "ẖ", "s": "s̱", "g": "g̱",
+    "R": "Ṟ", "N": "Ṉ", "D": "Ḏ", "T": "Ṯ", "L": "Ḻ", "K": "Ḵ",
+}
+UNDERSCORE_RE = re.compile("([" + "".join(UNDERSCORE_LETTERS) + "])_")
+UNDERSCORE_EXEMPT_COLUMNS = {"ID", "Parent Word ID", "URL", "Depth",
+                             "Number in DED", "Number in CVOTGD"}
+
+
+def fix_underscore_letters(text):
+    return UNDERSCORE_RE.sub(lambda m: UNDERSCORE_LETTERS[m.group(1)], text)
+
 # Starling dialect/source-split names -> canonical language in the
 # three-tier tree. The original Starling name is preserved per row in the
 # "Language (Starling)" extra-data field.
@@ -175,6 +192,9 @@ def load_starling_rows():
         for key in ("Language", "Parent Language"):
             if row.get(key) in LANGUAGE_NORMALIZATION:
                 row[key] = LANGUAGE_NORMALIZATION[row[key]]
+        for key, value in row.items():
+            if isinstance(value, str) and "_" in value and key not in UNDERSCORE_EXEMPT_COLUMNS:
+                row[key] = fix_underscore_letters(value)
         rows.append(row)
     wb.close()
     return header, rows
@@ -298,9 +318,10 @@ def build_languages_csv():
 
 
 def etymon_entry(headword):
-    """Etyma entries are stored without the leading asterisk — the site's
-    etymon views prepend <sup>*</sup> themselves (IELex convention)."""
-    return str(headword).strip().lstrip("*")
+    """Etyma entries are stored without asterisks — including on inner
+    variants like "*aḍái ~ *aḍí" — because the site's etymon views prepend a
+    single <sup>*</sup> for the whole entry (IELex convention)."""
+    return str(headword).replace("*", "").strip()
 
 
 def load_buck_tags():
