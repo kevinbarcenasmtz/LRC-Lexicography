@@ -20,9 +20,13 @@ Re-run the script after fixing anything upstream; do not hand-edit these files.
   varieties (17 Gondi dialects, 8 Kuwi sources, 4 Gadba varieties, …) that the
   three-tier tree doesn't have. Each is mapped to its tree language (all Gondi
   dialects → Gondi; Kuwi → Kuvi; Ollari Gadba → Ollari; other Gadbas → Gadaba;
-  Kasaba → Irula; etc.). The original Starling name is preserved per record in
-  the `Language (Starling)` extra-data field, so nothing is lost and the split
+  etc.). The original Starling name is preserved per record in the
+  `Language (Starling)` extra-data field, so nothing is lost and the split
   can be revisited.
+- **Kasaba stays distinct** (Todd, 2026-07-05: err toward granularity on the
+  first pass) — its own language row under South / Proto-South Dravidian I,
+  2 records. Post-pilot wishlist: a way to mark it on the entries as "dialect
+  of Irula (uncertain)" rather than only via tree placement.
 - **`Proto-North-Dravidian`** (hyphenated, Starling inconsistency) is
   normalized to `Proto-North Dravidian`.
 - **Tamil's subfamily** in the tree spreadsheet read `South Dravidian I…` while

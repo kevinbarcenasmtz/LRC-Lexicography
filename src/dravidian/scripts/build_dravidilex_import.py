@@ -109,8 +109,16 @@ DIALECT_TO_LANGUAGE = {
     "Merolu Telugu": "Telugu",
     # Konda sources
     "Konda (Burrow/Bhattacharya)": "Konda",
-    # Kasaba is a Nilgiri variety closest to Irula (DEDR frontmatter)
-    "Kasaba": "Irula",
+    # NOTE: Kasaba deliberately NOT mapped — Todd's call (2026-07-05): keep it
+    # distinct on the first pass, erring toward granularity. It gets its own
+    # language row via EXTRA_LANGUAGES below. Post-pilot: consider a way to
+    # mark it as "dialect of Irula (uncertain)" on the entries themselves.
+}
+
+# Languages in the Starling data that aren't in the three-tier tree xlsx but
+# should stay distinct (not merged into a tree language).
+EXTRA_LANGUAGES = {
+    "Kasaba": ("South", "Proto-South Dravidian I"),
 }
 
 # Tier labels shown as "Family: Subfamily" headers on the site. Todd asked to
@@ -308,7 +316,7 @@ def build_languages_csv():
         if language:
             add(family.strip(), subfamily.strip() if subfamily else None, language.strip())
 
-    for language, (family, subfamily) in PROTO_LANGUAGE_TIERS.items():
+    for language, (family, subfamily) in {**PROTO_LANGUAGE_TIERS, **EXTRA_LANGUAGES}.items():
         key = (family, subfamily, language)
         if key not in seen:
             seen.add(key)
