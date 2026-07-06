@@ -333,15 +333,27 @@ def etymon_entry(headword):
 
 
 def load_buck_tags():
-    """Starling row ID -> reviewed Buck field abbr, when the tagger has run."""
+    """Starling row ID -> (Buck field abbr, human-readable field label)."""
     path = OUT_DIR / BUCK_TAGS_CSV_NAME
     if not path.exists():
         return {}
+
+    labels = {}
+    with open(OUT_DIR / "buck_semantic_category.csv", encoding="utf-8-sig") as f:
+        categories = {r["abbr"]: r["text"] for r in csv.DictReader(f)}
+    with open(OUT_DIR / "buck_semantic_field.csv", encoding="utf-8-sig") as f:
+        for r in csv.DictReader(f):
+            abbr = r["abbr"]
+            if abbr and not abbr.startswith("None"):
+                category = categories.get(abbr.split("_")[0], "")
+                labels[abbr] = f"{category} — {r['text']}" if category else r["text"]
+
     tags = {}
     with open(path, encoding="utf-8") as f:
         for row in csv.DictReader(f):
-            if row.get("chosen_abbr"):
-                tags[row["Starling ID"]] = row["chosen_abbr"]
+            abbr = row.get("chosen_abbr")
+            if abbr:
+                tags[row["Starling ID"]] = (abbr, labels.get(abbr, ""))
     return tags
 
 
@@ -384,7 +396,9 @@ def build_import_rows(header, rows, buck_tags):
             record["HomographNumber"] = str(link[1])
             tag = buck_tags.get(row["ID"])
             if tag:
-                record["Semantic Tag (Buck)"] = tag
+                record["Semantic Tag (Buck)"] = tag[0]
+                if tag[1]:
+                    record["Semantic Field (Buck)"] = tag[1]
         elif link:
             record["Etyma"] = link[0]
             record["EtymaHomographNumber"] = str(link[1])

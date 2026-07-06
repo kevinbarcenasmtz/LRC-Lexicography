@@ -51,6 +51,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "SR_DI",
+  "Semantic Field (Buck)": "Spatial Relations — to Divide",
   "Starling ID": "PDR1397",
   "Number in DED": "3818",
   "Depth": "0"
@@ -199,6 +200,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "PA_CU",
+  "Semantic Field (Buck)": "Physical Acts & Materials — to Cut",
   "Starling ID": "PDR1398",
   "Number in DED": "3962",
   "Depth": "0"
@@ -475,6 +477,7 @@
   "IsEtymon": "1",
   "HomographNumber": "2",
   "Semantic Tag (Buck)": "MO_RU",
+  "Semantic Field (Buck)": "Motion & Transportation — to Run",
   "Starling ID": "PDR1399",
   "Number in DED": "3963",
   "Depth": "0"
@@ -551,6 +554,7 @@
   "IsEtymon": "1",
   "HomographNumber": "3",
   "Semantic Tag (Buck)": "PW_LG",
+  "Semantic Field (Buck)": "Physical World — Light",
   "Starling ID": "PDR1400",
   "Number in DED": "3980",
   "Depth": "0"
@@ -661,6 +665,7 @@
   "IsEtymon": "1",
   "HomographNumber": "4",
   "Semantic Tag (Buck)": "EM_LO",
+  "Semantic Field (Buck)": "Emotion — to Love; Love",
   "Starling ID": "PDR1401",
   "Number in DED": "3964",
   "Depth": "0"
@@ -713,6 +718,7 @@
   "IsEtymon": "1",
   "HomographNumber": "5",
   "Semantic Tag (Buck)": "BP_SS",
+  "Semantic Field (Buck)": "Body Parts & Functions — Sick; Sickness",
   "Starling ID": "PDR1402",
   "Depth": "0"
  },
@@ -747,6 +753,7 @@
   "IsEtymon": "1",
   "HomographNumber": "6",
   "Semantic Tag (Buck)": "PW_SA",
+  "Semantic Field (Buck)": "Physical World — Sand, Grit",
   "Starling ID": "PDR1403",
   "Number in DED": "3959",
   "Depth": "0"
@@ -800,6 +807,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "PT_SE",
+  "Semantic Field (Buck)": "Possession & Trade — to Seek",
   "Starling ID": "PDR1404",
   "Notes": "The alveolar articulation is only found in Kondapaṟbi-, so it would be unwise to base the entire reconstruction on it.",
   "Number in DED": "3956",
@@ -1066,6 +1074,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "FD_DR",
+  "Semantic Field (Buck)": "Food & Drink — to Drink",
   "Starling ID": "PDR1405",
   "Depth": "0"
  },
@@ -1088,6 +1097,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "EM_PR",
+  "Semantic Field (Buck)": "Emotion — Praise (n)",
   "Starling ID": "PDR1406",
   "Number in DED": "3951",
   "Depth": "0"
@@ -1231,6 +1241,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "AN_AN",
+  "Semantic Field (Buck)": "Animals — Animal",
   "Starling ID": "PDR1407",
   "Number in DED": "3955",
   "Depth": "0"
@@ -1658,6 +1669,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "CA_CO",
+  "Semantic Field (Buck)": "Clothing & Adornment — Cotton",
   "Starling ID": "PDR1408",
   "Number in DED": "3976",
   "Depth": "0"
@@ -1934,6 +1946,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "AN_BI",
+  "Semantic Field (Buck)": "Animals — Bird",
   "Starling ID": "PDR1409",
   "Number in DED": "3977",
   "Depth": "0"
@@ -2102,6 +2115,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "FD_VE",
+  "Semantic Field (Buck)": "Food & Drink — Vegetables",
   "Starling ID": "PDR1410",
   "Notes": "Also PKK*pap-, if not borrowed from Telugu.",
   "Number in DED": "3978",
@@ -2200,6 +2214,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "PA_SH",
+  "Semantic Field (Buck)": "Physical Acts & Materials — to Hit, Strike, Beat",
   "Starling ID": "PDR1411",
   "Number in DED": "4023",
   "Depth": "0"
@@ -2507,6 +2522,7 @@
   "IsEtymon": "1",
   "HomographNumber": "2",
   "Semantic Tag (Buck)": "AV_GA",
+  "Semantic Field (Buck)": "Agriculture & Vegetation — Garden, Orchard",
   "Starling ID": "PDR1412",
   "Notes": "Local root.",
   "Number in DED": "4030",
@@ -2578,6 +2594,7 @@
   "IsEtymon": "1",
   "HomographNumber": "3",
   "Semantic Tag (Buck)": "LM_SG",
+  "Semantic Field (Buck)": "Language & Music — to Sing",
   "Starling ID": "PDR1413",
   "Number in DED": "4032",
   "Depth": "0"
@@ -2795,6 +2812,7 @@
   "IsEtymon": "1",
   "HomographNumber": "4",
   "Semantic Tag (Buck)": "LM_ST",
+  "Semantic Field (Buck)": "Language & Music — to Speak, Talk",
   "Starling ID": "PDR1414",
   "Number in DED": "4031",
   "Depth": "0"
@@ -2954,6 +2972,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "QN_NN",
+  "Semantic Field (Buck)": "Quantity & Number — Numerals",
   "Starling ID": "PDR1415",
   "Notes": "Strange form in Tamilpax_tu.",
   "Number in DED": "3918",
@@ -3188,6 +3207,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "MO_FA",
+  "Semantic Field (Buck)": "Motion & Transportation — to Fall",
   "Starling ID": "PDR1416",
   "Number in DED": "3852",
   "Depth": "0"
@@ -3339,6 +3359,7 @@
   "IsEtymon": "1",
   "HomographNumber": "2",
   "Semantic Tag (Buck)": "SR_HC",
+  "Semantic Field (Buck)": "Spatial Relations — to Hide, Conceal",
   "Starling ID": "PDR1417",
   "Number in DED": "3912",
   "Depth": "0"
@@ -3403,6 +3424,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "PT_SG",
+  "Semantic Field (Buck)": "Possession & Trade — to Grasp, Seize, Take Hold of",
   "Starling ID": "PDR1418",
   "Number in DED": "4034",
   "Depth": "0"
@@ -3638,6 +3660,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "SR_FS",
+  "Semantic Field (Buck)": "Spatial Relations — Form, Shape (n)",
   "Starling ID": "PDR1419",
   "Notes": "The PKG form out of*pàṭ-u?",
   "Number in DED": "3878",
@@ -3881,6 +3904,7 @@
   "IsEtymon": "1",
   "HomographNumber": "2",
   "Semantic Tag (Buck)": "PA_BE",
+  "Semantic Field (Buck)": "Physical Acts & Materials — Beam",
   "Starling ID": "PDR1420",
   "Number in DED": "3875",
   "Depth": "0"
@@ -4091,6 +4115,7 @@
   "IsEtymon": "1",
   "HomographNumber": "3",
   "Semantic Tag (Buck)": "DF_DW",
+  "Semantic Field (Buck)": "Dwellings & Furniture — to Live, Dwell",
   "Starling ID": "PDR1421",
   "Depth": "0"
  },
@@ -4125,6 +4150,7 @@
   "IsEtymon": "1",
   "HomographNumber": "4",
   "Semantic Tag (Buck)": "BP_HN",
+  "Semantic Field (Buck)": "Body Parts & Functions — Hand",
   "Starling ID": "PDR1422",
   "Number in DED": "3843",
   "Depth": "0"
@@ -4191,6 +4217,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "SR_FS",
+  "Semantic Field (Buck)": "Spatial Relations — Form, Shape (n)",
   "Starling ID": "PDR1423",
   "Number in DED": "3877",
   "Depth": "0"
@@ -4244,6 +4271,7 @@
   "IsEtymon": "1",
   "HomographNumber": "2",
   "Semantic Tag (Buck)": "PW_TR",
+  "Semantic Field (Buck)": "Physical World — Tree, Oak",
   "Starling ID": "PDR1424",
   "Number in DED": "3876",
   "Depth": "0"
@@ -4309,6 +4337,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "LM_SC",
+  "Semantic Field (Buck)": "Language & Music — to Shout, Cry Out",
   "Starling ID": "PDR1425",
   "Number in DED": "4002",
   "Depth": "0"
@@ -4524,6 +4553,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "TI_OL",
+  "Semantic Field (Buck)": "Time — Old",
   "Starling ID": "PDR1426",
   "Number in DED": "3999",
   "Depth": "0"
@@ -5013,6 +5043,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "BP_RI",
+  "Semantic Field (Buck)": "Body Parts & Functions — Rib",
   "Starling ID": "PDR1427",
   "Number in DED": "4005",
   "Depth": "0"
@@ -5198,6 +5229,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "AV_CH",
+  "Semantic Field (Buck)": "Agriculture & Vegetation — Crop, Harvest",
   "Starling ID": "PDR1428",
   "Number in DED": "4004",
   "Depth": "0"
@@ -5588,6 +5620,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "LM_SG",
+  "Semantic Field (Buck)": "Language & Music — to Sing",
   "Starling ID": "PDR1429",
   "Number in DED": "4065",
   "Depth": "0"
@@ -6136,6 +6169,7 @@
   "IsEtymon": "1",
   "HomographNumber": "2",
   "Semantic Tag (Buck)": "SO_CI",
+  "Semantic Field (Buck)": "Social Relations — Town, City",
   "Starling ID": "PDR1430",
   "Number in DED": "4064",
   "Depth": "0"
@@ -6231,6 +6265,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "AV_RO",
+  "Semantic Field (Buck)": "Agriculture & Vegetation — Root",
   "Starling ID": "PDR1431",
   "Notes": "Isolated PNDR root.",
   "Number in DED": "4077",
@@ -6298,6 +6333,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "MO_FY",
+  "Semantic Field (Buck)": "Motion & Transportation — to Fly",
   "Starling ID": "PDR1432",
   "Number in DED": "4020",
   "Depth": "0"
@@ -6468,6 +6504,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "PA_SH",
+  "Semantic Field (Buck)": "Physical Acts & Materials — to Hit, Strike, Beat",
   "Starling ID": "PDR1433",
   "Number in DED": "4044",
   "Depth": "0"
@@ -6804,6 +6841,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "SR_SE",
+  "Semantic Field (Buck)": "Spatial Relations — to Separate",
   "Starling ID": "PDR1434",
   "Number in DED": "4089",
   "Depth": "0"
@@ -6961,6 +6999,7 @@
   "IsEtymon": "1",
   "HomographNumber": "2",
   "Semantic Tag (Buck)": "MO_JL",
+  "Semantic Field (Buck)": "Motion & Transportation — to Jump, Leap",
   "Starling ID": "PDR1435",
   "Number in DED": "4087",
   "Depth": "0"
@@ -7136,6 +7175,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "FD_MS",
+  "Semantic Field (Buck)": "Food & Drink — Milk",
   "Starling ID": "PDR1436",
   "Number in DED": "4096",
   "Depth": "0"
@@ -7634,6 +7674,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "QN_PR",
+  "Semantic Field (Buck)": "Quantity & Number — Part (n)",
   "Starling ID": "PDR1437",
   "Number in DED": "3991, 4097",
   "Depth": "0"
@@ -7764,6 +7805,7 @@
   "IsEtymon": "1",
   "HomographNumber": "2",
   "Semantic Tag (Buck)": "AV_TR",
+  "Semantic Field (Buck)": "Agriculture & Vegetation — Tree (generic)",
   "Starling ID": "PDR1438",
   "Number in DED": "4100",
   "Depth": "0"
@@ -7901,6 +7943,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "AV_PN",
+  "Semantic Field (Buck)": "Agriculture & Vegetation — Plant, Herb",
   "Starling ID": "PDR1439",
   "Number in DED": "4116",
   "Depth": "0"
@@ -8015,6 +8058,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "AV_PN",
+  "Semantic Field (Buck)": "Agriculture & Vegetation — Plant, Herb",
   "Starling ID": "PDR1440",
   "Notes": "Unclear vowel quantity.",
   "Number in DED": "3996",
@@ -8173,6 +8217,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "AN_SK",
+  "Semantic Field (Buck)": "Animals — Snake",
   "Starling ID": "PDR1441",
   "Number in DED": "4085",
   "Depth": "0"
@@ -8460,6 +8505,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "LM_SG",
+  "Semantic Field (Buck)": "Language & Music — to Sing",
   "Starling ID": "PDR1442",
   "Number in DED": "4068",
   "Depth": "0"
@@ -8741,6 +8787,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "SR_GW",
+  "Semantic Field (Buck)": "Spatial Relations — to Grow",
   "Starling ID": "PDR1443",
   "Number in DED": "3972",
   "Depth": "0"
@@ -8925,6 +8972,7 @@
   "IsEtymon": "1",
   "HomographNumber": "2",
   "Semantic Tag (Buck)": "AV_SP",
+  "Semantic Field (Buck)": "Agriculture & Vegetation — Spade (n)",
   "Starling ID": "PDR1444",
   "Number in DED": "4093",
   "Depth": "0"
@@ -9216,6 +9264,7 @@
   "IsEtymon": "1",
   "HomographNumber": "3",
   "Semantic Tag (Buck)": "SP_LO",
+  "Semantic Field (Buck)": "Sense Perception — to Look",
   "Starling ID": "PDR1445",
   "Depth": "0"
  },
@@ -9250,6 +9299,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "MK_CH",
+  "Semantic Field (Buck)": "Mankind — Child",
   "Starling ID": "PDR1446",
   "Number in DED": "4095",
   "Depth": "0"
@@ -9348,6 +9398,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "PA_SO",
+  "Semantic Field (Buck)": "Physical Acts & Materials — to Strew, Spread Out",
   "Starling ID": "PDR1447",
   "Notes": "Possibility of two roots here.",
   "Number in DED": "3949",
@@ -9675,6 +9726,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "SP_SE",
+  "Semantic Field (Buck)": "Sense Perception — to See",
   "Starling ID": "PDR1448",
   "Number in DED": "4091",
   "Depth": "0"
@@ -9758,6 +9810,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "PA_SO",
+  "Semantic Field (Buck)": "Physical Acts & Materials — to Strew, Spread Out",
   "Starling ID": "PDR1449",
   "Number in DED": "4088",
   "Depth": "0"
@@ -10051,6 +10104,7 @@
   "IsEtymon": "1",
   "HomographNumber": "2",
   "Semantic Tag (Buck)": "SP_BD",
+  "Semantic Field (Buck)": "Sense Perception — Stinking, Bad Smelling",
   "Starling ID": "PDR1450",
   "Number in DED": "3826, 4057",
   "Depth": "0"
@@ -10225,6 +10279,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "AV_GA",
+  "Semantic Field (Buck)": "Agriculture & Vegetation — Garden, Orchard",
   "Starling ID": "PDR1451",
   "Notes": "The consonant correspondences between SDR and Telugu do not match.",
   "Number in DED": "4078",
@@ -10338,6 +10393,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "SR_SZ",
+  "Semantic Field (Buck)": "Spatial Relations — Size (n)",
   "Starling ID": "PDR1452",
   "Number in DED": "4067",
   "Depth": "0"
@@ -10436,6 +10492,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "MO_RA",
+  "Semantic Field (Buck)": "Motion & Transportation — Road",
   "Starling ID": "PDR1453",
   "Number in DED": "4108",
   "Depth": "0"
@@ -10604,6 +10661,7 @@
   "IsEtymon": "1",
   "HomographNumber": "2",
   "Semantic Tag (Buck)": "MT_PU",
+  "Semantic Field (Buck)": "Mind & Thought — Pupil",
   "Starling ID": "PDR1454",
   "Number in DED": "4107",
   "Depth": "0"
@@ -10698,6 +10756,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "AV_PN",
+  "Semantic Field (Buck)": "Agriculture & Vegetation — Plant, Herb",
   "Starling ID": "PDR1455",
   "Number in DED": "4103",
   "Depth": "0"
@@ -10839,6 +10898,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "PW_WD",
+  "Semantic Field (Buck)": "Physical World — Wood, Timber",
   "Starling ID": "PDR1456",
   "Number in DED": "4110",
   "Depth": "0"
@@ -11087,6 +11147,7 @@
   "IsEtymon": "1",
   "HomographNumber": "2",
   "Semantic Tag (Buck)": "RB_TM",
+  "Semantic Field (Buck)": "Religion & Beliefs — Temple",
   "Starling ID": "PDR1457",
   "Depth": "0"
  },
@@ -11109,6 +11170,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "BP_LI",
+  "Semantic Field (Buck)": "Body Parts & Functions — Lip",
   "Starling ID": "PDR1458",
   "Number in DED": "4400",
   "Depth": "0"
@@ -11313,6 +11375,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "PA_SO",
+  "Semantic Field (Buck)": "Physical Acts & Materials — to Strew, Spread Out",
   "Starling ID": "PDR1459",
   "Notes": "Unclear if NDR really belongs here; possible if it goes back to*peṯ-.",
   "Number in DED": "4423, 4446",
@@ -11919,6 +11982,7 @@
   "IsEtymon": "1",
   "HomographNumber": "2",
   "Semantic Tag (Buck)": "BP_BM",
+  "Semantic Field (Buck)": "Body Parts & Functions — to Bear (of Mother)",
   "Starling ID": "PDR1460",
   "Notes": "Both the variants *peḏ- and *peṯ- are present, the latter being the original transitive form.",
   "Number in DED": "4422",
@@ -12120,6 +12184,7 @@
   "IsEtymon": "1",
   "HomographNumber": "3",
   "Semantic Tag (Buck)": "MO_RI",
+  "Semantic Field (Buck)": "Motion & Transportation — to Rise",
   "Starling ID": "PDR1461",
   "Number in DED": "4425",
   "Depth": "0"
@@ -12234,6 +12299,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "SP_CD",
+  "Semantic Field (Buck)": "Sense Perception — Cold, Frigid",
   "Starling ID": "PDR1462",
   "Notes": "The retroflex articulation in Kota is secondary.",
   "Number in DED": "4035",
@@ -12850,6 +12916,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "MK_WO",
+  "Semantic Field (Buck)": "Mankind — Woman",
   "Starling ID": "PDR1463",
   "Notes": "Apparently, the form has to be reconstructed as both*peṇ-and*peṇ-t-or*peṇ-ṭ-, with a dental/retroflex suffix.",
   "Number in DED": "4395",
@@ -13251,6 +13318,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "LM_NA",
+  "Semantic Field (Buck)": "Language & Music — Name",
   "Starling ID": "PDR1464",
   "Number in DED": "4410",
   "Depth": "0"
@@ -13926,6 +13994,7 @@
   "IsEtymon": "1",
   "HomographNumber": "1",
   "Semantic Tag (Buck)": "SR_XL",
+  "Semantic Field (Buck)": "Spatial Relations — Big, Large, Great",
   "Starling ID": "PDR1465",
   "Notes": "PN*pe-because used mostly in compounds where the first -r- of the cluster has fallen out.",
   "Number in DED": "4411",

@@ -80,6 +80,7 @@
   "Is Root": "1",
   "Root Homograph": "2",
   "Semantic Tag (Buck)": "SP_ST",
+  "Semantic Field (Buck)": "Sense Perception — Sweet",
   "Starling ID": "PDR525",
   "Number in DED": "530",
   "Depth": "0"
@@ -242,6 +243,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "TI_DA",
+  "Semantic Field (Buck)": "Time — Day",
   "Starling ID": "PDR526",
   "Notes": "Compound: < *i 'this' + *ńēinḏ 'day'.",
   "Number in DED": "410",
@@ -584,6 +586,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "MO_SI",
+  "Semantic Field (Buck)": "Motion & Transportation — to Sink",
   "Starling ID": "PDR527",
   "Notes": "Used with different suffixes.",
   "Number in DED": "430",
@@ -939,6 +942,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "PT_BG",
+  "Semantic Field (Buck)": "Possession & Trade — Beggar",
   "Starling ID": "PDR528",
   "Number in DED": "472",
   "Depth": "0"
@@ -1110,6 +1114,7 @@
   "Is Root": "1",
   "Root Homograph": "2",
   "Semantic Tag (Buck)": "FD_FD",
+  "Semantic Field (Buck)": "Food & Drink — Food",
   "Starling ID": "PDR529",
   "Number in DED": "490",
   "Depth": "0"
@@ -1177,6 +1182,7 @@
   "Is Root": "1",
   "Root Homograph": "3",
   "Semantic Tag (Buck)": "QN_NN",
+  "Semantic Field (Buck)": "Quantity & Number — Numerals",
   "Starling ID": "PDR530",
   "Number in DED": "474",
   "Depth": "0"
@@ -1817,6 +1823,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "FD_FR",
+  "Semantic Field (Buck)": "Food & Drink — Fruit",
   "Starling ID": "PDR531",
   "Number in DED": "475",
   "Depth": "0"
@@ -2064,6 +2071,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "SR_ST",
+  "Semantic Field (Buck)": "Spatial Relations — to Stand",
   "Starling ID": "PDR532",
   "Notes": "If PKG does belong here, we have to suggest an old (morphological?) alternation in PDr.",
   "Number in DED": "480",
@@ -2130,6 +2138,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "PA_IR",
+  "Semantic Field (Buck)": "Physical Acts & Materials — Iron",
   "Starling ID": "PDR533",
   "Number in DED": "486",
   "Depth": "0"
@@ -2285,6 +2294,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "AV_TR",
+  "Semantic Field (Buck)": "Agriculture & Vegetation — Tree (generic)",
   "Starling ID": "PDR534",
   "Number in DED": "485",
   "Depth": "0"
@@ -2784,6 +2794,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "PA_SH",
+  "Semantic Field (Buck)": "Physical Acts & Materials — to Hit, Strike, Beat",
   "Starling ID": "PDR535",
   "Number in DED": "493",
   "Depth": "0"
@@ -2926,6 +2937,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "AN_FI",
+  "Semantic Field (Buck)": "Animals — Fish (n)",
   "Starling ID": "PDR536",
   "Number in DED": "517",
   "Depth": "0"
@@ -3160,6 +3172,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "SR_SM",
+  "Semantic Field (Buck)": "Spatial Relations — Small, Little",
   "Starling ID": "PDR537",
   "Notes": "Derivative of*i-?",
   "Number in DED": "410",
@@ -3439,6 +3452,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "MO_GO",
+  "Semantic Field (Buck)": "Motion & Transportation — to Go",
   "Starling ID": "PDR538",
   "Number in DED": "469",
   "Depth": "0"
@@ -3523,6 +3537,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "PW_SA",
+  "Semantic Field (Buck)": "Physical World — Sand, Grit",
   "Starling ID": "PDR539",
   "Number in DED": "575",
   "Depth": "0"
@@ -3717,6 +3732,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "AV_TR",
+  "Semantic Field (Buck)": "Agriculture & Vegetation — Tree (generic)",
   "Starling ID": "PDR540",
   "Number in DED": "460",
   "Depth": "0"
@@ -3786,6 +3802,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "BP_FL",
+  "Semantic Field (Buck)": "Body Parts & Functions — Flesh",
   "Starling ID": "PDR541",
   "Number in DED": "529",
   "Depth": "0"
@@ -3943,6 +3960,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "SR_NR",
+  "Semantic Field (Buck)": "Spatial Relations — Narrow",
   "Starling ID": "PDR542",
   "Number in DED": "445",
   "Depth": "0"
@@ -4116,6 +4134,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "MO_FA",
+  "Semantic Field (Buck)": "Motion & Transportation — to Fall",
   "Starling ID": "PDR543",
   "Number in DED": "502",
   "Depth": "0"
@@ -4532,6 +4551,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "SO_ME",
+  "Semantic Field (Buck)": "Social Relations — to Meet",
   "Starling ID": "PDR544",
   "Number in DED": "471",
   "Depth": "0"
@@ -4648,6 +4668,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "TI_YG",
+  "Semantic Field (Buck)": "Time — Young",
   "Starling ID": "PDR545",
   "Number in DED": "513",
   "Depth": "0"
@@ -5154,6 +5175,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "BP_BM",
+  "Semantic Field (Buck)": "Body Parts & Functions — to Bear (of Mother)",
   "Starling ID": "PDR546",
   "Number in DED": "555",
   "Depth": "0"
@@ -5400,6 +5422,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "BP_FE",
+  "Semantic Field (Buck)": "Body Parts & Functions — Feather",
   "Starling ID": "PDR547",
   "Number in DED": "534",
   "Depth": "0"
@@ -5486,6 +5509,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "AN_BE",
+  "Semantic Field (Buck)": "Animals — Bee",
   "Starling ID": "PDR548",
   "Notes": "Unclear if Brahui really belongs here.",
   "Number in DED": "533",
@@ -5761,6 +5785,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "BP_LV",
+  "Semantic Field (Buck)": "Body Parts & Functions — Liver",
   "Starling ID": "PDR549",
   "Notes": "A good SDR root.",
   "Number in DED": "546",
@@ -5874,6 +5899,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "PA_DP",
+  "Semantic Field (Buck)": "Physical Acts & Materials — to Draw, Pull",
   "Starling ID": "PDR550",
   "Number in DED": "504",
   "Depth": "0"
@@ -6254,6 +6280,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "PW_DA",
+  "Semantic Field (Buck)": "Physical World — Darkness",
   "Starling ID": "PDR551",
   "Notes": "An interesting Tamil-NDR isogloss. The Tamil variantseland evenyālamspeak in favour of an original*y-(presumably before a short vowel, since otherwise the general lack of length is hard to explain); if so, the forms are easily comparable to Kur.ellnā. Burrow & Emeneau also draw a comparison with Tam.nallam, based on the presumption of the free variationn- ~ 0-in Dravidian, but this is not at all realistic. On the other hand, the semantic relation between this local root and the more common*ńāḷ-'night' still has to be ascertained. // Present in 2/6 branches.",
   "Number in DED": "235",
@@ -6351,6 +6378,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "LM_SY",
+  "Semantic Field (Buck)": "Language & Music — to Say",
   "Starling ID": "PDR552",
   "Number in DED": "868",
   "Depth": "0"
@@ -6949,6 +6977,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "PA_BI",
+  "Semantic Field (Buck)": "Physical Acts & Materials — to Bind",
   "Starling ID": "PDR553",
   "Number in DED": "5149, 5150",
   "Depth": "0"
@@ -7058,6 +7087,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "MT_IN",
+  "Semantic Field (Buck)": "Mind & Thought — Idea, Notion",
   "Starling ID": "PDR554",
   "Number in DED": "5151",
   "Depth": "0"
@@ -7663,6 +7693,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "SO_RG",
+  "Semantic Field (Buck)": "Social Relations — to Rule, Govern",
   "Starling ID": "PDR555",
   "Number in DED": "5157",
   "Depth": "0"
@@ -7864,6 +7895,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "TI_YR",
+  "Semantic Field (Buck)": "Time — Year",
   "Starling ID": "PDR556",
   "Number in DED": "5153",
   "Depth": "0"
@@ -8384,6 +8416,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "MT_KN",
+  "Semantic Field (Buck)": "Mind & Thought — to Know",
   "Starling ID": "PDR557",
   "Number in DED": "314",
   "Depth": "0"
@@ -8557,6 +8590,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "MO_FL",
+  "Semantic Field (Buck)": "Motion & Transportation — to Flow",
   "Starling ID": "PDR558",
   "Notes": "An interesting SDR root with a possible original*j-(see the discussion in the SDR section) and potential external parallels. // Present in 1/6 branches.",
   "Number in DED": "250",
@@ -8630,6 +8664,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "EM_CW",
+  "Semantic Field (Buck)": "Emotion — to Cry, Weep",
   "Starling ID": "PDR559",
   "Notes": "Initial*je-tentatively reconstructed on the basis of the correspondence \"PSDR*a-: Telugu*e-\" (cf. similarly PDR*jeḏ-'to know'). At least two different stems have to be postulated for PDR: monosyllabic*jeẓ-(> SDR, Telugu, possibly PKG) as well as bisyllabic*jeẓái-(> SDR, PGn, possibly PKG). // Present in 4/6 branches.",
   "Number in DED": "282",
@@ -9198,6 +9233,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "PW_WA",
+  "Semantic Field (Buck)": "Physical World — Water",
   "Starling ID": "PDR560",
   "Number in DED": "5159",
   "Depth": "0"
@@ -9673,6 +9709,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "AN_EL",
+  "Semantic Field (Buck)": "Animals — Elephant",
   "Starling ID": "PDR561",
   "Number in DED": "5161",
   "Depth": "0"
@@ -10115,6 +10152,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "AN_BR",
+  "Semantic Field (Buck)": "Animals — Bear",
   "Starling ID": "PDR562",
   "Notes": "Reconstruction approximate.",
   "Number in DED": "857",
@@ -10561,6 +10599,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "AN_GO",
+  "Semantic Field (Buck)": "Animals — Goat",
   "Starling ID": "PDR563",
   "Number in DED": "5152",
   "Depth": "0"
@@ -10963,6 +11002,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "QN_NN",
+  "Semantic Field (Buck)": "Quantity & Number — Numerals",
   "Starling ID": "PDR564",
   "Notes": "PSDR*jōṛ-should be expected; we have to assume an analogy with*enṭ-'eight'.",
   "Number in DED": "910",
@@ -11411,6 +11451,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "BP_BI",
+  "Semantic Field (Buck)": "Body Parts & Functions — to Bite",
   "Starling ID": "PDR565",
   "Number in DED": "1222",
   "Depth": "0"
@@ -11702,6 +11743,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "EM_AG",
+  "Semantic Field (Buck)": "Emotion — Anger",
   "Starling ID": "PDR566",
   "Notes": "Unclear vowel length in PK. The root is highly unstable in many groups, probably due to contamination with*kas-'bitter'. Especially dubious are the Kolami-Gadba forms, which may all be borrowings from South-Dravidian. Irregular*k-in PNDR, but since the root is expressive (reduplicated), the irregularity is not very significant.",
   "Number in DED": "1089",
@@ -11918,6 +11960,7 @@
   "Is Root": "1",
   "Root Homograph": "2",
   "Semantic Tag (Buck)": "BP_BI",
+  "Semantic Field (Buck)": "Body Parts & Functions — to Bite",
   "Starling ID": "PDR567",
   "Number in DED": "1097",
   "Depth": "0"
@@ -12232,6 +12275,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "SP_BI",
+  "Semantic Field (Buck)": "Sense Perception — Bitter",
   "Starling ID": "PDR568",
   "Notes": "Unclear*-ṭ-in Gondwan (an old accented form as opposed to unaccented forms in other dialects?)",
   "Number in DED": "1135, 1148",
@@ -12613,6 +12657,7 @@
   "Is Root": "1",
   "Root Homograph": "2",
   "Semantic Tag (Buck)": "FD_CO",
+  "Semantic Field (Buck)": "Food & Drink — to Cook",
   "Starling ID": "PDR569",
   "Notes": "Interesting metathese of voice in PNDR.",
   "Number in DED": "1141",
@@ -12845,6 +12890,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "BP_BS",
+  "Semantic Field (Buck)": "Body Parts & Functions — Belly, Stomach",
   "Starling ID": "PDR570",
   "Depth": "0"
  },
@@ -12883,6 +12929,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "PW_SE",
+  "Semantic Field (Buck)": "Physical World — Sea",
   "Starling ID": "PDR571",
   "Number in DED": "1118",
   "Depth": "0"
@@ -13010,6 +13057,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "MO_SH",
+  "Semantic Field (Buck)": "Motion & Transportation — to Shake",
   "Starling ID": "PDR572",
   "Number in DED": "1188",
   "Depth": "0"
@@ -13243,6 +13291,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "MO_RD",
+  "Semantic Field (Buck)": "Motion & Transportation — to Ride",
   "Starling ID": "PDR573",
   "Number in DED": "1133",
   "Depth": "0"
@@ -13371,6 +13420,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "CA_SP",
+  "Semantic Field (Buck)": "Clothing & Adornment — Spindle",
   "Starling ID": "PDR574",
   "Number in DED": "1195",
   "Depth": "0"
@@ -13512,6 +13562,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "AN_AN",
+  "Semantic Field (Buck)": "Animals — Animal",
   "Starling ID": "PDR575",
   "Number in DED": "1132",
   "Depth": "0"
@@ -13719,6 +13770,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "AN_IN",
+  "Semantic Field (Buck)": "Animals — Insect",
   "Starling ID": "PDR576",
   "Number in DED": "1117",
   "Depth": "0"
@@ -14030,6 +14082,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "BP_BI",
+  "Semantic Field (Buck)": "Body Parts & Functions — to Bite",
   "Starling ID": "PDR577",
   "Number in DED": "1390",
   "Depth": "0"
@@ -14129,6 +14182,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "BP_HN",
+  "Semantic Field (Buck)": "Body Parts & Functions — Hand",
   "Starling ID": "PDR578",
   "Notes": "If we assume a final-ɣ, it can explain the \"reduplication\" in NDR.",
   "Number in DED": "2023",

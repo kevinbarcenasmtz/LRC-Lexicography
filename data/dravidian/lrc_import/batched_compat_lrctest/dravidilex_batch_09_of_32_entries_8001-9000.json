@@ -258,6 +258,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "AN_FI",
+  "Semantic Field (Buck)": "Animals — Fish (n)",
   "Starling ID": "PDR579",
   "Number in DED": "1252",
   "Depth": "0"
@@ -414,6 +415,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "AV_FL",
+  "Semantic Field (Buck)": "Agriculture & Vegetation — Flower",
   "Starling ID": "PDR580",
   "Number in DED": "2026",
   "Depth": "0"
@@ -525,6 +527,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "FD_SP",
+  "Semantic Field (Buck)": "Food & Drink — Spoon",
   "Starling ID": "PDR581",
   "Number in DED": "1257",
   "Depth": "0"
@@ -580,6 +583,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "PA_RC",
+  "Semantic Field (Buck)": "Physical Acts & Materials — Rope, Cord",
   "Starling ID": "PDR582",
   "Number in DED": "1254",
   "Depth": "0"
@@ -723,6 +727,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "BP_VO",
+  "Semantic Field (Buck)": "Body Parts & Functions — to Vomit",
   "Starling ID": "PDR583",
   "Number in DED": "1079",
   "Depth": "0"
@@ -1150,6 +1155,7 @@
   "Is Root": "1",
   "Root Homograph": "2",
   "Semantic Tag (Buck)": "AN_IN",
+  "Semantic Field (Buck)": "Animals — Insect",
   "Starling ID": "PDR584",
   "Number in DED": "1423",
   "Depth": "0"
@@ -1263,6 +1269,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "MO_GO",
+  "Semantic Field (Buck)": "Motion & Transportation — to Go",
   "Starling ID": "PDR585",
   "Number in DED": "1300",
   "Depth": "0"
@@ -1438,6 +1445,7 @@
   "Is Root": "1",
   "Root Homograph": "2",
   "Semantic Tag (Buck)": "MO_SH",
+  "Semantic Field (Buck)": "Motion & Transportation — to Shake",
   "Starling ID": "PDR586",
   "Number in DED": "1303",
   "Depth": "0"
@@ -1605,6 +1613,7 @@
   "Is Root": "1",
   "Root Homograph": "3",
   "Semantic Tag (Buck)": "PW_TH",
+  "Semantic Field (Buck)": "Physical World — Noise, Thunder",
   "Starling ID": "PDR587",
   "Number in DED": "1302",
   "Depth": "0"
@@ -1693,6 +1702,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "FD_PO",
+  "Semantic Field (Buck)": "Food & Drink — Pot",
   "Starling ID": "PDR588",
   "Number in DED": "1305",
   "Depth": "0"
@@ -1746,6 +1756,7 @@
   "Is Root": "1",
   "Root Homograph": "4",
   "Semantic Tag (Buck)": "PW_SR",
+  "Semantic Field (Buck)": "Physical World — Rock, Stone",
   "Starling ID": "PDR589",
   "Number in DED": "1298",
   "Depth": "0"
@@ -2141,6 +2152,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "FD_WI",
+  "Semantic Field (Buck)": "Food & Drink — Wine",
   "Starling ID": "PDR590",
   "Number in DED": "1374",
   "Depth": "0"
@@ -2548,6 +2560,7 @@
   "Is Root": "1",
   "Root Homograph": "2",
   "Semantic Tag (Buck)": "AV_TF",
+  "Semantic Field (Buck)": "Agriculture & Vegetation — Threshing-Floor",
   "Starling ID": "PDR591",
   "Number in DED": "1376",
   "Depth": "0"
@@ -3104,6 +3117,7 @@
   "Is Root": "1",
   "Root Homograph": "3",
   "Semantic Tag (Buck)": "PT_ST",
+  "Semantic Field (Buck)": "Possession & Trade — to Steal",
   "Starling ID": "PDR592",
   "Number in DED": "1372",
   "Depth": "0"
@@ -3344,6 +3358,7 @@
   "Is Root": "1",
   "Root Homograph": "4",
   "Semantic Tag (Buck)": "AV_DI",
+  "Semantic Field (Buck)": "Agriculture & Vegetation — to Dig, Delve",
   "Starling ID": "PDR593",
   "Depth": "0"
  },
@@ -3390,6 +3405,7 @@
   "Is Root": "1",
   "Root Homograph": "5",
   "Semantic Tag (Buck)": "MK_AU",
+  "Semantic Field (Buck)": "Mankind — Aunt",
   "Starling ID": "PDR594",
   "Number in DED": "1318",
   "Depth": "0"
@@ -3457,6 +3473,7 @@
   "Is Root": "1",
   "Root Homograph": "2",
   "Semantic Tag (Buck)": "BP_SH",
+  "Semantic Field (Buck)": "Body Parts & Functions — Skin, Hide",
   "Starling ID": "PDR595",
   "Number in DED": "1313",
   "Depth": "0"
@@ -3539,6 +3556,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "BP_BI",
+  "Semantic Field (Buck)": "Body Parts & Functions — to Bite",
   "Starling ID": "PDR596",
   "Notes": "Isolated NDR forms.",
   "Number in DED": "1315",
@@ -3607,6 +3625,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "FD_MX",
+  "Semantic Field (Buck)": "Food & Drink — to Mix, Blend",
   "Starling ID": "PDR597",
   "Number in DED": "1299",
   "Depth": "0"
@@ -3982,6 +4001,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "AV_PN",
+  "Semantic Field (Buck)": "Agriculture & Vegetation — Plant, Herb",
   "Starling ID": "PDR598",
   "Number in DED": "1383",
   "Depth": "0"
@@ -4107,6 +4127,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "MT_LE",
+  "Semantic Field (Buck)": "Mind & Thought — to Learn",
   "Starling ID": "PSD550",
   "Number in DED": "1297",
   "URL": "https://starlingdb.org/cgi-bin/response.cgi?single=1&basename=%2fdata%2fdrav%2fsdret&text_number=1143&root=config",
@@ -4611,6 +4632,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "CA_AD",
+  "Semantic Field (Buck)": "Clothing & Adornment — Adornment (personal)",
   "Starling ID": "PDR600",
   "Number in DED": "0, 1245",
   "Depth": "0"
@@ -4757,6 +4779,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "PA_CO",
+  "Semantic Field (Buck)": "Physical Acts & Materials — Copper, Bronze",
   "Starling ID": "PDR601",
   "Number in DED": "1241",
   "Depth": "0"
@@ -4869,6 +4892,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "SP_VO",
+  "Semantic Field (Buck)": "Sense Perception — to Smell (obj)",
   "Starling ID": "PDR602",
   "Number in DED": "1247",
   "Depth": "0"
@@ -5013,6 +5037,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "EM_AG",
+  "Semantic Field (Buck)": "Emotion — Anger",
   "Starling ID": "PDR603",
   "Number in DED": "1406",
   "Depth": "0"
@@ -5174,6 +5199,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "BP_EY",
+  "Semantic Field (Buck)": "Body Parts & Functions — Eye",
   "Starling ID": "PDR604",
   "Number in DED": "1159",
   "Depth": "0"
@@ -5660,6 +5686,7 @@
   "Is Root": "1",
   "Root Homograph": "2",
   "Semantic Tag (Buck)": "PA_RC",
+  "Semantic Field (Buck)": "Physical Acts & Materials — Rope, Cord",
   "Starling ID": "PDR605",
   "Number in DED": "1184",
   "Depth": "0"
@@ -5788,6 +5815,7 @@
   "Is Root": "1",
   "Root Homograph": "3",
   "Semantic Tag (Buck)": "PA_KF",
+  "Semantic Field (Buck)": "Physical Acts & Materials — Knife (tool)",
   "Starling ID": "PDR606",
   "Number in DED": "1166, 1167",
   "Depth": "0"
@@ -5928,6 +5956,7 @@
   "Is Root": "1",
   "Root Homograph": "2",
   "Semantic Tag (Buck)": "SP_SO",
+  "Semantic Field (Buck)": "Sense Perception — Sound (n)",
   "Starling ID": "PDR607",
   "Number in DED": "1409",
   "Depth": "0"
@@ -6057,6 +6086,7 @@
   "Is Root": "1",
   "Root Homograph": "3",
   "Semantic Tag (Buck)": "EM_PT",
+  "Semantic Field (Buck)": "Emotion — Pity (n)",
   "Starling ID": "PDR608",
   "Number in DED": "1408",
   "Depth": "0"
@@ -6154,6 +6184,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "PW_VA",
+  "Semantic Field (Buck)": "Physical World — Dale, Valley",
   "Starling ID": "PDR609",
   "Number in DED": "1163",
   "Depth": "0"
@@ -6281,6 +6312,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "SR_HL",
+  "Semantic Field (Buck)": "Spatial Relations — Hole",
   "Starling ID": "PDR610",
   "Number in DED": "1214",
   "Depth": "0"
@@ -6438,6 +6470,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "BP_FL",
+  "Semantic Field (Buck)": "Body Parts & Functions — Flesh",
   "Starling ID": "PDR611",
   "Number in DED": "1175",
   "Depth": "0"
@@ -6732,6 +6765,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "PW_BU",
+  "Semantic Field (Buck)": "Physical World — to Burn, Scorch",
   "Starling ID": "PDR612",
   "Number in DED": "1410",
   "Depth": "0"
@@ -6842,6 +6876,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "PW_WD",
+  "Semantic Field (Buck)": "Physical World — Wood, Timber",
   "Starling ID": "PDR613",
   "Number in DED": "1165",
   "Depth": "0"
@@ -7010,6 +7045,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "AN_CF",
+  "Semantic Field (Buck)": "Animals — Calf",
   "Starling ID": "PDR614",
   "Number in DED": "1411",
   "Depth": "0"
@@ -7207,6 +7243,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "MO_SI",
+  "Semantic Field (Buck)": "Motion & Transportation — to Sink",
   "Starling ID": "PDR615",
   "Number in DED": "1211",
   "Depth": "0"
@@ -7264,6 +7301,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "BP_DR",
+  "Semantic Field (Buck)": "Body Parts & Functions — Dream (n)",
   "Starling ID": "PDR616",
   "Number in DED": "1407",
   "Depth": "0"
@@ -7564,6 +7602,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "AN_AN",
+  "Semantic Field (Buck)": "Animals — Animal",
   "Starling ID": "PDR617",
   "Number in DED": "1224",
   "Depth": "0"
@@ -7826,6 +7865,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "AN_IN",
+  "Semantic Field (Buck)": "Animals — Insect",
   "Starling ID": "PDR618",
   "Notes": "Possibly several roots here.",
   "Number in DED": "1216",
@@ -7970,6 +8010,7 @@
   "Is Root": "1",
   "Root Homograph": "2",
   "Semantic Tag (Buck)": "SR_CO",
+  "Semantic Field (Buck)": "Spatial Relations — to Cover",
   "Starling ID": "PDR619",
   "Notes": "Either there are two roots here (*k̂ap-and*kav-), or the former is an old causative form of the latter.",
   "Number in DED": "1221, 1225",
@@ -8256,6 +8297,7 @@
   "Is Root": "1",
   "Root Homograph": "3",
   "Semantic Tag (Buck)": "PT_TX",
+  "Semantic Field (Buck)": "Possession & Trade — Tax (n)",
   "Starling ID": "PDR620",
   "Number in DED": "1218",
   "Depth": "0"
@@ -8350,6 +8392,7 @@
   "Is Root": "1",
   "Root Homograph": "2",
   "Semantic Tag (Buck)": "MO_TU",
+  "Semantic Field (Buck)": "Motion & Transportation — to Turn",
   "Starling ID": "PDR621",
   "Number in DED": "1335, 1344",
   "Depth": "0"
@@ -8531,6 +8574,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "MO_SP",
+  "Semantic Field (Buck)": "Motion & Transportation — Ship",
   "Starling ID": "PDR622",
   "Number in DED": "1219",
   "Depth": "0"
@@ -8657,6 +8701,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "MO_FL",
+  "Semantic Field (Buck)": "Motion & Transportation — to Flow",
   "Starling ID": "PDR623",
   "Number in DED": "1292",
   "Depth": "0"
@@ -9013,6 +9058,7 @@
   "Is Root": "1",
   "Root Homograph": "2",
   "Semantic Tag (Buck)": "SP_SO",
+  "Semantic Field (Buck)": "Sense Perception — Sound (n)",
   "Starling ID": "PDR624",
   "Number in DED": "1291",
   "Depth": "0"
@@ -9200,6 +9246,7 @@
   "Is Root": "1",
   "Root Homograph": "3",
   "Semantic Tag (Buck)": "PW_BU",
+  "Semantic Field (Buck)": "Physical World — to Burn, Scorch",
   "Starling ID": "PDR625",
   "Number in DED": "1278",
   "Depth": "0"
@@ -9432,6 +9479,7 @@
   "Is Root": "1",
   "Root Homograph": "4",
   "Semantic Tag (Buck)": "PW_SH",
+  "Semantic Field (Buck)": "Physical World — Shore, Beach",
   "Starling ID": "PDR626",
   "Notes": "The Brahui form is dubious since it has k- and not x-.",
   "Number in DED": "1293",
@@ -9645,6 +9693,7 @@
   "Is Root": "1",
   "Root Homograph": "5",
   "Semantic Tag (Buck)": "PA_MD",
+  "Semantic Field (Buck)": "Physical Acts & Materials — to Mold, Form",
   "Starling ID": "PDR627",
   "Number in DED": "1280",
   "Depth": "0"
@@ -9698,6 +9747,7 @@
   "Is Root": "1",
   "Root Homograph": "6",
   "Semantic Tag (Buck)": "SP_RG",
+  "Semantic Field (Buck)": "Sense Perception — Rough",
   "Starling ID": "PDR628",
   "Number in DED": "1265",
   "Depth": "0"
@@ -9774,6 +9824,7 @@
   "Is Root": "1",
   "Root Homograph": "7",
   "Semantic Tag (Buck)": "MT_IP",
+  "Semantic Field (Buck)": "Mind & Thought — Purpose, Intention",
   "Starling ID": "PDR629",
   "Number in DED": "1283",
   "Depth": "0"
@@ -9886,6 +9937,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "BP_BN",
+  "Semantic Field (Buck)": "Body Parts & Functions — Bone",
   "Starling ID": "PDR630",
   "Number in DED": "1296",
   "Depth": "0"
@@ -9953,6 +10005,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "PT_ST",
+  "Semantic Field (Buck)": "Possession & Trade — to Steal",
   "Starling ID": "PDR631",
   "Notes": "Telugu -ṟ- unclear.",
   "Number in DED": "1258",
@@ -10006,6 +10059,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "AN_BR",
+  "Semantic Field (Buck)": "Animals — Bear",
   "Starling ID": "PDR632",
   "Number in DED": "1263",
   "Depth": "0"
@@ -10176,6 +10230,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "BP_BS",
+  "Semantic Field (Buck)": "Body Parts & Functions — Belly, Stomach",
   "Starling ID": "PDR633",
   "Notes": "A good SDR root.",
   "Number in DED": "1274",
@@ -10304,6 +10359,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "BP_EG",
+  "Semantic Field (Buck)": "Body Parts & Functions — Egg",
   "Starling ID": "PDR634",
   "Number in DED": "1279",
   "Depth": "0"
@@ -10538,6 +10594,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "PW_WD",
+  "Semantic Field (Buck)": "Physical World — Wood, Timber",
   "Starling ID": "PDR635",
   "Number in DED": "1389",
   "Depth": "0"
@@ -10711,6 +10768,7 @@
   "Is Root": "1",
   "Root Homograph": "2",
   "Semantic Tag (Buck)": "EM_AG",
+  "Semantic Field (Buck)": "Emotion — Anger",
   "Starling ID": "PDR636",
   "Number in DED": "1396",
   "Depth": "0"
@@ -10826,6 +10884,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "SP_BK",
+  "Semantic Field (Buck)": "Sense Perception — Black",
   "Starling ID": "PDR637",
   "Depth": "0"
  },
@@ -10872,6 +10931,7 @@
   "Is Root": "1",
   "Root Homograph": "2",
   "Semantic Tag (Buck)": "FD_VE",
+  "Semantic Field (Buck)": "Food & Drink — Vegetables",
   "Starling ID": "PDR638",
   "Number in DED": "1391",
   "Depth": "0"
@@ -10981,6 +11041,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "CA_CL",
+  "Semantic Field (Buck)": "Clothing & Adornment — Cloth",
   "Starling ID": "PDR639",
   "Notes": "The element*-nḍ-is probably suffixal. Note that Tamil haskaṇṭai, so the Central Dravidian variants are more archaic.",
   "Number in DED": "1180",
@@ -11215,6 +11276,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "FD_HU",
+  "Semantic Field (Buck)": "Food & Drink — Hunger (n)",
   "Starling ID": "PDR640",
   "Number in DED": "1286",
   "Depth": "0"
@@ -11495,6 +11557,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "SP_BI",
+  "Semantic Field (Buck)": "Sense Perception — Bitter",
   "Starling ID": "PDR641",
   "Number in DED": "1249",
   "Depth": "0"
@@ -12076,6 +12139,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "PA_CU",
+  "Semantic Field (Buck)": "Physical Acts & Materials — to Cut",
   "Starling ID": "PDR642",
   "Number in DED": "1125",
   "Depth": "0"
@@ -12214,6 +12278,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "PA_KF",
+  "Semantic Field (Buck)": "Physical Acts & Materials — Knife (tool)",
   "Starling ID": "PDR643",
   "Number in DED": "1204, 1208",
   "Depth": "0"
@@ -12683,6 +12748,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "PT_SG",
+  "Semantic Field (Buck)": "Possession & Trade — to Grasp, Seize, Take Hold of",
   "Starling ID": "PDR644",
   "Number in DED": "1200",
   "Depth": "0"
@@ -12735,6 +12801,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "PW_BU",
+  "Semantic Field (Buck)": "Physical World — to Burn, Scorch",
   "Starling ID": "PDR645",
   "Number in DED": "1207",
   "Depth": "0"
@@ -12850,6 +12917,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "FD_FR",
+  "Semantic Field (Buck)": "Food & Drink — Fruit",
   "Starling ID": "PDR646",
   "Number in DED": "1134",
   "Depth": "0"
@@ -13128,6 +13196,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "PA_BI",
+  "Semantic Field (Buck)": "Physical Acts & Materials — to Bind",
   "Starling ID": "PDR647",
   "Number in DED": "1147",
   "Depth": "0"
@@ -13326,6 +13395,7 @@
   "Is Root": "1",
   "Root Homograph": "2",
   "Semantic Tag (Buck)": "PT_PA",
+  "Semantic Field (Buck)": "Possession & Trade — to Pay",
   "Starling ID": "PDR648",
   "Depth": "0"
  },
@@ -13372,6 +13442,7 @@
   "Is Root": "1",
   "Root Homograph": "3",
   "Semantic Tag (Buck)": "FD_SB",
+  "Semantic Field (Buck)": "Food & Drink — Soup, Broth",
   "Starling ID": "PDR649",
   "Number in DED": "1150",
   "Depth": "0"
@@ -13436,6 +13507,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "DF_BD",
+  "Semantic Field (Buck)": "Dwellings & Furniture — Bed",
   "Starling ID": "PDR650",
   "Number in DED": "1145",
   "Depth": "0"
@@ -13774,6 +13846,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "PT_SG",
+  "Semantic Field (Buck)": "Possession & Trade — to Grasp, Seize, Take Hold of",
   "Starling ID": "PDR651",
   "Number in DED": "1326",
   "Depth": "0"
@@ -13890,6 +13963,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "RB_CU",
+  "Semantic Field (Buck)": "Religion & Beliefs — to Curse",
   "Starling ID": "PDR652",
   "Number in DED": "1341",
   "Depth": "0"
@@ -14011,6 +14085,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "BP_AR",
+  "Semantic Field (Buck)": "Body Parts & Functions — Arm",
   "Starling ID": "PDR653",
   "Number in DED": "1234",
   "Depth": "0"
@@ -14214,6 +14289,7 @@
   "Is Root": "1",
   "Root Homograph": "1",
   "Semantic Tag (Buck)": "PA_WA",
+  "Semantic Field (Buck)": "Physical Acts & Materials — to Wash",
   "Starling ID": "PDR654",
   "Notes": "? NDR *qaǯ-.",
   "Number in DED": "1369",
