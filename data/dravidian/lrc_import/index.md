@@ -9,9 +9,9 @@ Re-run the script after fixing anything upstream; do not hand-edit these files.
 
 | File                           | What it is                                                                                                                                                                                                                                                         |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `dravidian_starling_data.xlsx` | Full Starling tree (31,411 rows). Every protoform row now carries the DED number(s) of **all** reflexes in its subtree; multiple distinct numbers are kept comma-separated (152 protoforms have >1; 1,501 subtrees have no DED number at all — Starling-only etyma). Row IDs are now unique — the notebook gave `Proto-North(-)Dravidian` variants the same `PND` prefix, colliding 541 IDs and silently merging subtree pairs (the earlier published stats 603/958 were inflated by this). |
+| `dravidian_starling_data.xlsx` | Full Starling tree (**30,848 rows**, after dropping 563 empty placeholders — see below). Every protoform row now carries the DED number(s) of **all** reflexes in its subtree; multiple distinct numbers are kept comma-separated (152 protoforms have >1; 1,501 subtrees have no DED number at all — Starling-only etyma). |
 | `dravidilex_languages.csv`     | 38 `Family,Subfamily,Language` rows for the LRC language uploader: the 26 tree languages plus the proto-languages (incl. intermediates like Proto-Nilgiri, Proto-Gondi-Kui) so protoform rows can resolve a Language at import.                                    |
-| `dravidilex_batch_import.json` | 31,411 records in the LRC Utilities reflex-upload format (`Headwords`/`Gloss`/`Language` + everything else → extra data). This is what gets imported.                                                                                                              |
+| `dravidilex_batch_import.json` | 30,848 records in the LRC Utilities reflex-upload format (`Headwords`/`Gloss`/`Language` + everything else → extra data). This is what gets imported.                                                                                                              |
 | `dravidilex_batch_import.xlsx` | Same rows as the JSON, for human review in Excel.                                                                                                                                                                                                                  |
 
 ## Mapping decisions (flag anything wrong to the group)
@@ -29,6 +29,20 @@ Re-run the script after fixing anything upstream; do not hand-edit these files.
   of Irula (uncertain)" rather than only via tree placement.
 - **`Proto-North-Dravidian`** (hyphenated, Starling inconsistency) is
   normalized to `Proto-North Dravidian`.
+- **Empty North Dravidian placeholders dropped (563 rows).** The scrape emitted
+  a spurious empty node for every North Dravidian etymon under the *spaced*
+  spelling `Proto-North Dravidian`, while the real etymon uses the *hyphenated*
+  `Proto-North-Dravidian`. The placeholder just echoes its parent root's gloss
+  and carries no DED number, no source URL, and no reflexes (Depth 0). Because
+  it shared an ID with the real row, dedup used to split the pair into
+  `PDXxx`/`PDXxx-2`, which surfaced on the site as **duplicate headwords** (two
+  `*aṭṭ-`). `build_dravidilex_import.py` now drops all 563 at load time
+  (`is_nd_placeholder_artifact`), before normalization erases the hyphen; the
+  real rows keep clean IDs and there are no more `-2` collisions. *Not* removed
+  (real data): 90 rows / 45 `(headword,gloss,lang)` triples that repeat but
+  differ in parent/DED/URL — the same reflex cited under multiple roots — and
+  39 rows with a blank gloss. NB headwords use decomposed combining marks
+  (`ṭ` = `t`+U+0323); NFC-normalize before string-matching them.
 - **Tamil's subfamily** in the tree spreadsheet read `South Dravidian I…` while
   the other ten rows read `Proto-South Dravidian I…`; normalized to the
   majority spelling.
@@ -65,7 +79,7 @@ Site Manager at `/admin/utilities`:
    `dravidilex`, protolanguage name `Proto-Dravidian`, and paste the landing
    page HTML — TinyMCE field).
 2. Utilities → **Upload Language CSV** → `dravidilex_languages.csv`.
-3. Utilities → **Upload Reflex CSV** → the 32 files in `batched/`, **in
+3. Utilities → **Upload Reflex CSV** → the 31 files in `batched/`, **in
    ascending order** (roots always precede their reflexes; a reflex whose
    etymon hasn't been uploaded yet fails with a clear error). The JSON's
    `IsEtymon`/`HomographNumber` rows create etyma; `Etyma`/
@@ -107,9 +121,11 @@ Steps (browser only):
 2. Create the lexicon in Lex Lexicons (slug starting `dravidilex`), paste the
    landing-page HTML (TinyMCE), and per-language descriptions in Lex
    Languages.
-3. Utilities → Upload Reflex CSV (Site Manager, i.e. Todd): the 32 files in
+3. Utilities → Upload Reflex CSV (Site Manager, i.e. Todd): the 31 files in
    `batched_compat_lrctest/`, any order (no linking, so order doesn't matter
-   here).
+   here). **Use `batched_compat_lrctest/`, NOT `batched/`** — master's uploader
+   throws `"Etyma crosslinking not supported yet"` on the `Etyma`/
+   `HomographNumber` keys that `batched/` carries.
 4. Lex Lexicons → Data Cache Status → **Regenerate Cache**.
 
 Note the data table on unpatched code shows only Root/Meaning/Language (+

@@ -45,6 +45,33 @@ LANGUAGE_NORMALIZATION = {
     "Proto-North-Dravidian": "Proto-North Dravidian",
 }
 
+# The scrape emitted a spurious *empty* placeholder for every North Dravidian
+# etymon, tagged with the SPACED spelling "Proto-North Dravidian" — while the
+# real etymon uses the HYPHENATED "Proto-North-Dravidian". The placeholder just
+# echoes its parent root's gloss and carries no DED number, no source URL, no
+# reflexes, and Depth 0. Because it shares an ID with the real (hyphenated) row,
+# deduplicate_ids used to split the pair into e.g. PND008 / PND008-2, which is
+# what surfaced as duplicate headwords on the site (two *aṭṭ-). All 563 spaced
+# rows are empty (verified) and none have children, so we drop them at load time
+# — before LANGUAGE_NORMALIZATION rewrites the hyphen and erases the only thing
+# that tells artifact from real.
+ARTIFACT_LANGUAGE = "Proto-North Dravidian"  # spaced spelling == the placeholder
+
+
+def _is_blank(value):
+    return value is None or str(value).strip() == ""
+
+
+def is_nd_placeholder_artifact(row):
+    """A row is a droppable North Dravidian placeholder iff it uses the spaced
+    spelling AND carries no distinguishing data (no DED, no URL, Depth 0)."""
+    return (
+        row.get("Language") == ARTIFACT_LANGUAGE
+        and _is_blank(row.get("Number in DED"))
+        and _is_blank(row.get("URL"))
+        and str(row.get("Depth")) == "0"
+    )
+
 # StarlingDB displays the alveolar series with a line below the letter; the
 # scraper flattened that to "letter_" (e.g. ayyan̠ -> "ayyan_"). Map back to
 # the DEDR line-below letters (precomposed where Unicode has them, combining
@@ -195,8 +222,19 @@ def load_starling_rows():
     row_iter = ws.iter_rows(values_only=True)
     header = list(next(row_iter))
     rows = []
+    dropped = 0
+    kept_spaced_with_data = 0
     for values in row_iter:
         row = dict(zip(header, values))
+        # Drop empty North Dravidian placeholders (see ARTIFACT_LANGUAGE) using
+        # the RAW spelling, before normalization erases the hyphen distinction.
+        if row.get("Language") == ARTIFACT_LANGUAGE:
+            if is_nd_placeholder_artifact(row):
+                dropped += 1
+                continue
+            # A spaced row that unexpectedly carries data is NOT a known
+            # artifact — keep it and flag rather than silently discard.
+            kept_spaced_with_data += 1
         for key in ("Language", "Parent Language"):
             if row.get(key) in LANGUAGE_NORMALIZATION:
                 row[key] = LANGUAGE_NORMALIZATION[row[key]]
@@ -205,6 +243,11 @@ def load_starling_rows():
                 row[key] = fix_underscore_letters(value)
         rows.append(row)
     wb.close()
+    if dropped:
+        print(f"dropped {dropped} empty Proto-North Dravidian placeholder rows")
+    if kept_spaced_with_data:
+        print(f"WARNING: kept {kept_spaced_with_data} spaced 'Proto-North Dravidian' "
+              f"rows that carry data — review; not treated as artifacts")
     return header, rows
 
 
