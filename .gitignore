@@ -102,3 +102,5 @@ nahuatl_processor.ipynb
 *.xlsx
 
 lrc_venv/
+# local lrc-test admin session cookie (never commit)
+.lrc_cookie
