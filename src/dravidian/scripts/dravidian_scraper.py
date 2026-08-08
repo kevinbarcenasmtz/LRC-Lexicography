@@ -9,10 +9,15 @@ import hashlib
 import os
 
 class StarLingGeneralScraper:
-    def __init__(self, start_url: str, total_pages: int, start_page: int, checkpoint_file: str = 'scraper_checkpoint.json'):
+    def __init__(self, start_url: str, total_pages: int, start_page: int,
+                 checkpoint_file: str = 'scraper_checkpoint_markup.json',
+                 output_file: str = 'starling_complete_data_markup.json'):
         self.start_url = start_url
         self.total_pages = total_pages
         self.checkpoint_file = checkpoint_file
+        # Scrape to a NEW file so the original flat scrape
+        # (starling_complete_data.json) is never overwritten (roadmap item 3).
+        self.output_file = output_file
         
         self.base_url = "https://starlingdb.org"
         self.seen_content: Set[str] = set()  # Track content hashes (Notes field)
@@ -46,18 +51,37 @@ class StarLingGeneralScraper:
         return None
     
     def extract_field_data(self, div) -> tuple:
-        """Extract field name and value from a div - completely generic"""
+        """Extract field name, flattened value, and markup-preserving HTML from a div.
+
+        The flattened ``value`` is unchanged from the original scraper (kept
+        byte-identical for a clean old-vs-new diff). ``value_html`` additionally
+        preserves the inner markup (``<i>``/``<b>`` boundaries) so downstream
+        destructuring can recover form/gloss boundaries that ``get_text`` flattens
+        away in Derivates / Additional forms / Dialectal forms (roadmap item 3).
+        """
         field_span = div.find('span', class_='fld')
         if field_span:
             field_name = field_span.get_text(strip=True).rstrip(':').strip()
             value_span = div.find('span', class_='unicode')
-            if value_span:
+            if value_span and isinstance(value_span, Tag):
                 value = value_span.get_text(strip=True)
+                value_html = value_span.decode_contents().strip()
             else:
                 # Get all text after field name
                 value = div.get_text(strip=True).replace(field_name, '', 1).strip()
-            return field_name, value
-        return None, None
+                # Markup fallback: clone the div and drop the label + subquery
+                # (+ icon) chrome, then keep whatever markup remains.
+                value_html = ''
+                if isinstance(div, Tag):
+                    clone = BeautifulSoup(str(div), 'html.parser').find('div')
+                    if isinstance(clone, Tag):
+                        for junk in clone.find_all('span', class_='fld'):
+                            junk.decompose()
+                        for junk in clone.find_all('div', class_='subquery_link'):
+                            junk.decompose()
+                        value_html = clone.decode_contents().strip()
+            return field_name, value, value_html
+        return None, None, None
     
     def fetch_with_retry(self, url: str, max_retries: int = 3, timeout: int = 45) -> Optional[requests.Response]:
         """Fetch URL with exponential backoff retry"""
@@ -116,9 +140,11 @@ class StarLingGeneralScraper:
                 for div in record.find_all('div', recursive=False):
                     if not isinstance(div, Tag):
                         continue
-                    field_name, value = self.extract_field_data(div)
+                    field_name, value, value_html = self.extract_field_data(div)
                     if field_name:
                         entry_data[field_name] = value
+                        if value_html and value_html != value:
+                            entry_data.setdefault('_field_html', {})[field_name] = value_html
                         
                      
             
@@ -139,7 +165,7 @@ class StarLingGeneralScraper:
                 for div in record.find_all('div', recursive=False):
                     if not isinstance(div, Tag):
                         continue
-                    field_name, _ = self.extract_field_data(div)
+                    field_name, _, _ = self.extract_field_data(div)
                     if field_name:
                         # ONLY follow links that have a subquery_link (+ icon)
                         if 'etymology' in field_name.lower():
@@ -181,9 +207,11 @@ class StarLingGeneralScraper:
         
         # Extract ALL main fields generically
         for div in record_div.find_all('div', recursive=False):
-            field_name, value = self.extract_field_data(div)
+            field_name, value, value_html = self.extract_field_data(div)
             if field_name:
                 record_data[field_name] = value
+                if value_html and value_html != value:
+                    record_data.setdefault('_field_html', {})[field_name] = value_html
         
         # Create content hash for main record
         content_hash = self.create_content_hash(record_data)
@@ -193,7 +221,7 @@ class StarLingGeneralScraper:
         
         # Now scrape ALL sub-entries (+ icons)
         for div in record_div.find_all('div', recursive=False):
-            field_name, _ = self.extract_field_data(div)
+            field_name, _, _ = self.extract_field_data(div)
             if field_name:
                 if 'etymology' in field_name.lower():
                     continue
@@ -281,8 +309,8 @@ class StarLingGeneralScraper:
                     print(f"Already seen: {len(self.seen_content)} unique entries")
                     
                     # Load existing data
-                    if os.path.exists('starling_complete_data.json'):
-                        with open('starling_complete_data.json', 'r', encoding='utf-8-sig') as f:
+                    if os.path.exists(self.output_file):
+                        with open(self.output_file, 'r', encoding='utf-8-sig') as f:
                             existing = json.load(f)
                             self.all_records = existing.get('records', [])
             except Exception as e:
@@ -300,10 +328,10 @@ class StarLingGeneralScraper:
             'records': self.all_records
         }
         
-        with open('starling_complete_data.json', 'w', encoding='utf-8-sig') as f:
+        with open(self.output_file, 'w', encoding='utf-8-sig') as f:
             json.dump(output, f, ensure_ascii=False, indent=2)
-        
-        print(f"\n Saved to starling_complete_data.json")
+
+        print(f"\n Saved to {self.output_file}")
     
     def scrape_all(self):
         """Scrape all pages with checkpoint support"""
@@ -335,9 +363,15 @@ class StarLingGeneralScraper:
 
 
 if __name__ == "__main__":
-    # Just change these two variables for any StarLing database
+    # Just change these variables for any StarLing database
     START_URL = r"https://starlingdb.org/cgi-bin/response.cgi?root=config&basename=\data\drav\dravet"
     TOTAL_PAGES = 111
-    START_PAGE = 21
-    scraper = StarLingGeneralScraper(START_URL, TOTAL_PAGES, START_PAGE)
+    START_PAGE = 1  # full re-scrape; the checkpoint file bumps this on resume
+    # Markup-preserving re-scrape writes to a NEW file; the original flat
+    # scrape (starling_complete_data.json) is left untouched (roadmap item 3).
+    scraper = StarLingGeneralScraper(
+        START_URL, TOTAL_PAGES, START_PAGE,
+        checkpoint_file='scraper_checkpoint_markup.json',
+        output_file='starling_complete_data_markup.json',
+    )
     scraper.scrape_all()
