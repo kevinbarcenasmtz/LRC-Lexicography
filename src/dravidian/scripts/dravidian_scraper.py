@@ -303,7 +303,11 @@ class StarLingGeneralScraper:
                 
                 # Verify checkpoint matches current job
                 if checkpoint.get('start_url') == self.start_url:
-                    self.current_page = checkpoint.get('current_page', 1)
+                    # current_page in the checkpoint is the last page that fully
+                    # completed AND was saved, so resume at the NEXT page —
+                    # restarting at current_page would re-scrape it and append its
+                    # records a second time (they're already in output_file).
+                    self.current_page = checkpoint.get('current_page', 0) + 1
                     self.seen_content = set(checkpoint.get('seen_content_hashes', []))
                     print(f"Resuming from page {self.current_page}")
                     print(f"Already seen: {len(self.seen_content)} unique entries")
