@@ -224,6 +224,7 @@ def load_starling_rows():
     rows = []
     dropped = 0
     kept_spaced_with_data = 0
+    formless = []
     for values in row_iter:
         row = dict(zip(header, values))
         # Drop empty North Dravidian placeholders (see ARTIFACT_LANGUAGE) using
@@ -241,6 +242,17 @@ def load_starling_rows():
         for key, value in row.items():
             if isinstance(value, str) and "_" in value and key not in UNDERSCORE_EXEMPT_COLUMNS:
                 row[key] = fix_underscore_letters(value)
+        # Split source-qualified `form "gloss"` Headwords into a clean form plus a
+        # preserved source gloss (word-379500 bug). Done after underscore repair
+        # so both parts inherit it, and here at load time so the tree xlsx and the
+        # import files stay consistent. The source gloss rides in a transient key
+        # (not in `header`) so it never leaks into the tree xlsx or extra data.
+        if row.get("Headword"):
+            form, source_gloss = split_embedded_gloss(str(row["Headword"]).strip())
+            row["Headword"] = form
+            row["_meaning_source"] = source_gloss
+            if source_gloss is None and '"' in form:
+                formless.append(row.get("ID"))
         rows.append(row)
     wb.close()
     if dropped:
@@ -248,6 +260,9 @@ def load_starling_rows():
     if kept_spaced_with_data:
         print(f"WARNING: kept {kept_spaced_with_data} spaced 'Proto-North Dravidian' "
               f"rows that carry data — review; not treated as artifacts")
+    if formless:
+        print(f"WARNING: {len(formless)} headwords are a bare quoted gloss with no "
+              f"form — left unchanged, need the markup re-scrape: {formless}")
     return header, rows
 
 
@@ -368,6 +383,37 @@ def build_languages_csv():
     return entries
 
 
+def split_embedded_gloss(headword):
+    """Separate a source-qualified reflex cell into (form, source gloss).
+
+    StarlingDB's source-qualified rows (e.g. "Telugu (Krishnamurti)") render the
+    form and a quoted gloss in one cell, which the destructuring notebook then
+    stored whole as the Headword — e.g. `aḍalu "to be afraid, tremble, shake"`
+    on word 379500. It affects a sixth of the pilot rows, concentrated in
+    dialect-source languages (Gondi, Kuvi, Kolami, Kota, Parji).
+
+    The form is everything before the first double quote; the gloss is what sits
+    between the first and last quote (nested quotes inside a gloss are kept).
+    The embedded gloss is usually MORE specific than the row's own Meaning (which
+    carries the parent etymon's general sense), so it is worth preserving as a
+    'Meaning (source)' extra-data field rather than discarding.
+
+    Guard: a handful of rows are a bare quoted gloss with no form before it
+    (e.g. `"hoe"`) — a distinct scrape defect that only the markup re-scrape can
+    repair. Splitting those would blank the headword, so they are left untouched
+    (form == original) and flagged by the caller.
+    """
+    if '"' not in headword:
+        return headword, None
+    form = headword.split('"', 1)[0].strip()
+    if form == "":
+        return headword, None  # form-less: leave unchanged, caller flags it
+    first, last = headword.index('"'), headword.rindex('"')
+    gloss = headword[first + 1:last] if last > first else headword[first + 1:]
+    gloss = gloss.strip()
+    return form, (gloss or None)
+
+
 def etymon_entry(headword):
     """Etyma entries are stored without asterisks — including on inner
     variants like "*aḍái ~ *aḍí" — because the site's etymon views prepend a
@@ -433,6 +479,9 @@ def build_import_rows(header, rows, buck_tags):
         }
         if language != starling_language:
             record["Language (Starling)"] = starling_language
+        source_gloss = row.get("_meaning_source")
+        if source_gloss and source_gloss.strip().lower() != record["Gloss"].strip().lower():
+            record["Meaning (source)"] = source_gloss
         link = root_link.get(row["ID"])
         if not row.get("Parent Word ID"):
             record["IsEtymon"] = "1"
