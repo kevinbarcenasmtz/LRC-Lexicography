@@ -40,7 +40,7 @@ _METADATA_KEYS = {
     "Gondwan etymology",
 }
 _DERIVATIVE_SUFFIXES = (" meaning", " derivates", " derivatives")
-
+ 
 
 def _is_proto_key(key: str) -> bool:
     return key.startswith("Proto-") or key.startswith("Proto ")
@@ -117,6 +117,86 @@ def _normalize_for_match(text: str) -> str:
     decomposed = unicodedata.normalize("NFKD", base)
     filtered = "".join(ch for ch in decomposed if not unicodedata.combining(ch))
     return " ".join(filtered.split())
+
+
+# Canonical-transcription policy (2026-08-16, Kevin + Todd): where a Starling
+# reflex and its matched Burrow/DEDR attestation are the SAME form written in
+# different notation, the DEDR spelling is canonical; Starling is retained as a
+# variant. This governs the "Transcription status" / "Canonical *" columns only
+# — it does NOT change matching (no new "Yes" matches) and needs no corpus regen.
+#
+# _CANONICAL_CORE_FOLD is the deliberately CONSERVATIVE confusable set used to
+# decide whether an unmatched ("language only") row is a pure notation variant
+# (safe to adopt DEDR's spelling) rather than a genuinely different/absent form
+# (which must keep Starling's headword — swapping it would replace a real reflex
+# with an unrelated form). Only the unambiguous IPA-vs-diaeresis / glottal pairs
+# are folded here; broader pairs (ẓ↔r̤, ch↔c) are intentionally left out pending a
+# linguistic ruling, so they stay classified as divergent_form for now.
+_CANONICAL_CORE_FOLD = {
+    0x0268: "i", 0x0197: "i",  # ɨ, Ɨ  (Burrow's ï reduces to i under NFKD)
+    0x026B: "l", 0x0142: "l",  # ɫ, ł
+    0x0292: "z", 0x03B6: "z",  # ʒ, ζ (greek zeta, Burrow's glyph)
+    0x0294: "", 0x02C0: "", 0x2019: "", 0x0027: "",  # glottal ʔ/ˀ/’/' vs bare
+}
+
+
+def _transcription_key(text: str, core_fold: bool = False) -> str:
+    """Normalized key for transcription-equivalence tests. With ``core_fold`` the
+    conservative confusable set is applied on top of the shipped matcher folds."""
+    if core_fold:
+        text = text.translate(_CANONICAL_CORE_FOLD)
+    return _normalize_for_match(text)
+
+
+def _canonical_burrow_form(
+    starling_headword: str, burrow_form: str, core_fold: bool
+) -> Optional[str]:
+    """Return the DEDR spelling of ``starling_headword`` if the two are the same
+    form under notation-folding, else None.
+
+    Compares the whole Burrow string first (so parenthetical multi-forms like
+    ``aḍï- (aḍïp-, aḍït-)`` match ``aḍɨ- (aḍɨp-, aḍɨt-)`` as one unit), then falls
+    back to each comma-separated form (for genuine multi-lexeme Burrow lists).
+    """
+    key = _transcription_key(starling_headword, core_fold)
+    if not key:
+        return None
+    burrow_form = burrow_form.strip()
+    if burrow_form and _transcription_key(burrow_form, core_fold) == key:
+        return burrow_form
+    for piece in (p.strip() for p in burrow_form.split(",")):
+        if piece and _transcription_key(piece, core_fold) == key:
+            return piece
+    return None
+
+
+def _canonical_fields(vr: "ValidationResult") -> tuple:
+    """(canonical_headword, canonical_source, transcription_status) for one row.
+
+    Policy: DEDR is the canonical transcription wherever it attests the form.
+    - matched rows: DEDR spelling is canonical (identical when byte-equal, else a
+      notational_variant reconciled by the shipped matcher folds).
+    - language-only rows: adopt DEDR's spelling only when the conservative core
+      fold proves it's the same form (notational_variant); otherwise it's a
+      divergent_form and Starling's headword stands.
+    - no usable Burrow form (No / N/A): Starling stands.
+    """
+    starling = vr.starling_headword
+    burrow_form = vr.burrow_headword.strip()
+    if not burrow_form:
+        status = "no_burrow_match" if vr.ded_number else "no_ded"
+        return starling, "starling", status
+    if vr.matched:
+        canon = _canonical_burrow_form(starling, burrow_form, core_fold=False) or burrow_form
+        status = "identical" if canon.strip() == starling.strip() else "notational_variant"
+        return canon, "burrow", status
+    if vr.match_type == "language_only":
+        canon = _canonical_burrow_form(starling, burrow_form, core_fold=True)
+        if canon is not None:
+            status = "identical" if canon.strip() == starling.strip() else "notational_variant"
+            return canon, "burrow", status
+        return starling, "starling", "divergent_form"
+    return starling, "starling", "no_burrow_match"
 
 
 def _clean_ded_number(raw: Any) -> Optional[str]:
@@ -1534,6 +1614,8 @@ def results_to_dataframe(results: List[ValidationResult]) -> pd.DataFrame:
         else:
             match_display = "N/A (no DED)"
 
+        canonical_headword, canonical_source, transcription_status = _canonical_fields(vr)
+
         rows.append(
             {
                 "Starling record #": vr.record_num,
@@ -1546,6 +1628,9 @@ def results_to_dataframe(results: List[ValidationResult]) -> pd.DataFrame:
                 "Starling lexical headword": vr.starling_headword,
                 "Starling lexical meaning": vr.starling_meaning,
                 "Starling language source branch": vr.source_node_label,
+                "Canonical headword": canonical_headword,
+                "Canonical source": canonical_source,
+                "Transcription status": transcription_status,
                 "Match": match_display,
                 "Match confidence": vr.match_confidence,
                 "Matched Burrow segment scope": vr.burrow_language_abbrev,
