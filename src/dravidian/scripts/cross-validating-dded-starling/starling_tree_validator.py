@@ -141,7 +141,7 @@ def _canonical_burrow_form(
     return None
 
 
-def _canonical_fields(vr: "ValidationResult") -> tuple:
+def _canonical_fields(vr: "ValidationResult") -> Tuple[str, str, str]:
     """(canonical_headword, canonical_source, transcription_status) for one row.
 
     Policy: DEDR is the canonical transcription wherever it attests the form.
@@ -350,6 +350,7 @@ def load_burrow_corpus(
     entries = data.get("entries", [])
     by_ded: Dict[str, BurrowParagraph] = {}
     skipped = 0
+    dropped_attestations: List[Tuple[Optional[str], str]] = []
     for entry in entries:
         if entry.get("edition", "DEDR") == "Appendix":
             skipped += 1
@@ -374,22 +375,40 @@ def load_burrow_corpus(
         for att_data in entry.get("attestations", []):
             try:
                 att = LanguageAttestation(**att_data)
-                repaired_gloss = recover_attestation_gloss_from_full_text(
-                    paragraph.full_text,
-                    att.language_abbrev,
-                    att.headwords,
-                    att.gloss,
-                )
-                if repaired_gloss:
-                    att.gloss = repaired_gloss
-                paragraph.attestations.append(att)
-            except TypeError:
+            except TypeError as exc:
+                # A malformed attestation record means real DEDR data would
+                # silently vanish from validation (and later be misread as
+                # "language missing from Burrow") -- collect and report
+                # instead of dropping quietly.
+                dropped_attestations.append((ded_str, str(exc)))
                 continue
+            repaired_gloss = recover_attestation_gloss_from_full_text(
+                paragraph.full_text,
+                att.language_abbrev,
+                att.headwords,
+                att.gloss,
+            )
+            if repaired_gloss:
+                att.gloss = repaired_gloss
+            paragraph.attestations.append(att)
     print(
         f"Burrow corpus: {len(entries)} entries, "
         f"{skipped} appendix skipped, "
         f"{len(by_ded)} unique DEDR paragraphs indexed"
     )
+    if dropped_attestations:
+        print(
+            f"WARNING: {len(dropped_attestations)} malformed attestation(s) "
+            "dropped from the corpus:",
+            file=sys.stderr,
+        )
+        for ded, err in dropped_attestations[:10]:
+            print(f"  DED {ded}: {err}", file=sys.stderr)
+        if len(dropped_attestations) > 10:
+            print(
+                f"  ... and {len(dropped_attestations) - 10} more",
+                file=sys.stderr,
+            )
     return dict(by_ded)
 
 
@@ -706,36 +725,28 @@ def _extract_id_reference_forms(
 
     return []
 
+@dataclass
+class MatchOutcome:
+    """Result of matching one Starling language entry against Burrow attestations."""
+
+    matched: bool
+    match_type: str
+    confidence: float
+    attestation: Optional[LanguageAttestation]
+    notes: str
+    parsed_gloss: str
+    burrow_lang: str = ""
+    burrow_form: str = ""
+    burrow_gloss: str = ""
+
+
 def _match_entry(
     entry: LanguageEntry,
     burrow_atts: List[LanguageAttestation],
     strict: bool = False,
     attestation_full_text: str = "",
-) -> Tuple[
-    bool,
-    str,
-    float,
-    Optional[LanguageAttestation],
-    str,
-    str,
-    str,
-    str,
-    str,
-]:
-    """
-    Try to match a Starling language entry against Burrow attestations.
-    Returns (
-        matched,
-        match_type,
-        confidence,
-        best_attestation,
-        notes,
-        parsed_gloss,
-        matched_burrow_lang,
-        matched_burrow_form,
-        matched_burrow_gloss,
-    ).
-    """
+) -> MatchOutcome:
+    """Try to match a Starling language entry against Burrow attestations."""
     starling_norm = normalize_for_match(entry.headword)
 
     best_match_result = None
@@ -884,16 +895,16 @@ def _match_entry(
                     matched_burrow_gloss = meaning_text
                     if used_id:
                         match_notes = f"{id_note}; {match_notes}" if match_notes else id_note
-                    return (
-                        True,
-                        "gloss_dialect_exact",
-                        best_match_result.confidence,
-                        best_att,
-                        match_notes,
-                        _parsed_burrow_segments_to_text(parsed_burrow_segments),
-                        matched_burrow_lang,
-                        matched_burrow_form,
-                        matched_burrow_gloss,
+                    return MatchOutcome(
+                        matched=True,
+                        match_type="gloss_dialect_exact",
+                        confidence=best_match_result.confidence,
+                        attestation=best_att,
+                        notes=match_notes,
+                        parsed_gloss=_parsed_burrow_segments_to_text(parsed_burrow_segments),
+                        burrow_lang=matched_burrow_lang,
+                        burrow_form=matched_burrow_form,
+                        burrow_gloss=matched_burrow_gloss,
                     )
                 if (
                     form_norm in starling_norm or starling_norm in form_norm
@@ -904,16 +915,16 @@ def _match_entry(
                     matched_burrow_gloss = meaning_text
                     if used_id:
                         match_notes = f"{id_note}; {match_notes}" if match_notes else id_note
-                    return (
-                        True,
-                        "gloss_dialect_substring",
-                        best_match_result.confidence,
-                        best_att,
-                        match_notes,
-                        _parsed_burrow_segments_to_text(parsed_burrow_segments),
-                        matched_burrow_lang,
-                        matched_burrow_form,
-                        matched_burrow_gloss,
+                    return MatchOutcome(
+                        matched=True,
+                        match_type="gloss_dialect_substring",
+                        confidence=best_match_result.confidence,
+                        attestation=best_att,
+                        notes=match_notes,
+                        parsed_gloss=_parsed_burrow_segments_to_text(parsed_burrow_segments),
+                        burrow_lang=matched_burrow_lang,
+                        burrow_form=matched_burrow_form,
+                        burrow_gloss=matched_burrow_gloss,
                     )
 
     if best_exact_match:
@@ -926,16 +937,16 @@ def _match_entry(
             exact_form,
             exact_gloss,
         ) = best_exact_match
-        return (
-            True,
-            "exact",
-            exact_conf,
-            exact_att,
-            exact_notes,
-            exact_parsed,
-            exact_lang,
-            exact_form,
-            exact_gloss,
+        return MatchOutcome(
+            matched=True,
+            match_type="exact",
+            confidence=exact_conf,
+            attestation=exact_att,
+            notes=exact_notes,
+            parsed_gloss=exact_parsed,
+            burrow_lang=exact_lang,
+            burrow_form=exact_form,
+            burrow_gloss=exact_gloss,
         )
 
     if best_headword_match and best_att:
@@ -985,16 +996,16 @@ def _match_entry(
             )
             for form, meaning, used_id in matched_burrow_segments
         ]
-        return (
-            True,
-            "substring",
-            best_match_result.confidence,
-            best_att,
-            best_match_result.notes,
-            _parsed_burrow_segments_to_text(parsed_burrow_segments),
-            matched_burrow_lang,
-            matched_burrow_form,
-            matched_burrow_gloss,
+        return MatchOutcome(
+            matched=True,
+            match_type="substring",
+            confidence=best_match_result.confidence,
+            attestation=best_att,
+            notes=best_match_result.notes,
+            parsed_gloss=_parsed_burrow_segments_to_text(parsed_burrow_segments),
+            burrow_lang=matched_burrow_lang,
+            burrow_form=matched_burrow_form,
+            burrow_gloss=matched_burrow_gloss,
         )
 
     if best_match_result and best_match_result.matched and best_att:
@@ -1063,28 +1074,25 @@ def _match_entry(
                 if first_segment.get("marker")
                 else str(first_segment.get("source", ""))
             )
-        return (
-            False,
-            "language_only",
-            best_match_result.confidence,
-            best_att,
-            notes,
-            _parsed_burrow_segments_to_text(parsed_burrow_segments),
-            matched_burrow_lang,
-            matched_burrow_form,
-            matched_burrow_gloss,
+        return MatchOutcome(
+            matched=False,
+            match_type="language_only",
+            confidence=best_match_result.confidence,
+            attestation=best_att,
+            notes=notes,
+            parsed_gloss=_parsed_burrow_segments_to_text(parsed_burrow_segments),
+            burrow_lang=matched_burrow_lang,
+            burrow_form=matched_burrow_form,
+            burrow_gloss=matched_burrow_gloss,
         )
 
-    return (
-        False,
-        "none",
-        0.0,
-        None,
-        "No language match found",
-        _parsed_burrow_segments_to_text([]),
-        "",
-        "",
-        "",
+    return MatchOutcome(
+        matched=False,
+        match_type="none",
+        confidence=0.0,
+        attestation=None,
+        notes="No language match found",
+        parsed_gloss=_parsed_burrow_segments_to_text([]),
     )
 
 
@@ -1234,57 +1242,48 @@ def _validate_branch(
             results.append(vr)
             continue
 
-        (
-            matched,
-            match_type,
-            confidence,
-            att,
-            notes,
-            parsed_gloss,
-            matched_burrow_lang,
-            matched_burrow_form,
-            matched_burrow_gloss,
-        ) = _match_entry(
+        outcome = _match_entry(
             entry,
             burrow_atts,
             strict=strict,
             attestation_full_text=paragraph.full_text if paragraph else "",
         )
 
-        vr.matched = matched
-        vr.match_type = match_type
-        vr.match_confidence = confidence
-        vr.notes = notes
+        vr.matched = outcome.matched
+        vr.match_type = outcome.match_type
+        vr.match_confidence = outcome.confidence
+        vr.notes = outcome.notes
 
+        att = outcome.attestation
         if att:
-            vr.burrow_headword = matched_burrow_form or ", ".join(att.headwords)
+            vr.burrow_headword = outcome.burrow_form or ", ".join(att.headwords)
             vr.burrow_gloss = att.gloss
-            vr.burrow_language_abbrev = matched_burrow_lang or att.language_abbrev
+            vr.burrow_language_abbrev = outcome.burrow_lang or att.language_abbrev
             vr.burrow_source = att.source_text
-            vr.burrow_gloss_parsed = parsed_gloss
-            # For a tracked Gondi/Kuwi/Kui dialect, matched_burrow_gloss was
+            vr.burrow_gloss_parsed = outcome.parsed_gloss
+            # For a tracked Gondi/Kuwi/Kui dialect, outcome.burrow_gloss was
             # always computed by dialect-aware logic in _match_entry (either
             # the gloss_dialect_* extraction or the deliberately-truncated
             # primary-form path -- see _truncate_gloss_before_first_marker),
             # which can legitimately be "" (no distinct meaning recoverable
             # for this dialect). Falling back to att.gloss in that case would
             # silently re-display unrelated dialects' full citation text, so
-            # use matched_burrow_gloss unconditionally here. Generic matches
+            # use outcome.burrow_gloss unconditionally here. Generic matches
             # (no inline_abbrevs) keep the truthy-check fallback, since "" is
             # ambiguous there (could mean "not computed" rather than
             # "deliberately empty").
             if get_inline_abbrevs_for_starling_dialect(entry.language):
-                vr.burrow_gloss = matched_burrow_gloss
-            elif matched_burrow_gloss:
-                vr.burrow_gloss = matched_burrow_gloss
+                vr.burrow_gloss = outcome.burrow_gloss
+            elif outcome.burrow_gloss:
+                vr.burrow_gloss = outcome.burrow_gloss
 
-        if not matched and match_type != "language_only" and burrow_atts:
+        if not outcome.matched and outcome.match_type != "language_only" and burrow_atts:
             vr.notes = (
                 f"{entry.language} not in DED {ded}; "
                 f"Burrow has: {', '.join(sorted(burrow_langs))}"
             )
 
-        if matched:
+        if outcome.matched:
             matched_count += 1
 
         results.append(vr)
