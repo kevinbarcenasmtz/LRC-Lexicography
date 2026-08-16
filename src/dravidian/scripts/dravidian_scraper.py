@@ -325,7 +325,12 @@ class StarLingGeneralScraper:
         output = {
             'metadata': {
                 'start_url': self.start_url,
-                'total_pages_scraped': len([r for r in self.all_records if r]), 
+                # current_page is the last page completed before this save (the
+                # scrape loop sets it before calling save_results), so it's the
+                # honest count of pages crawled — NOT a record count. Earlier code
+                # computed len([r for r in all_records if r]) here, which is really
+                # the non-empty record count and conflated pages with records.
+                'total_pages_scraped': self.current_page,
                 'total_records': len(self.all_records),
                 'unique_entries': len(self.seen_content)
             },
