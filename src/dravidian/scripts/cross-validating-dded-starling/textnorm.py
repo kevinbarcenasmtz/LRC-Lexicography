@@ -54,6 +54,16 @@ LENGTH_DOTS = {ord(c): None for c in "··ːˑ"}
 # same phoneme /ŋ/, so fold eng to "n" to reconcile the two orthographies.
 ENG_FOLD = {ord("ŋ"): "n", ord("Ŋ"): "n"}  # ŋ, Ŋ -> n
 
+# Starling writes barred i as ɨ (U+0268); Burrow writes the same notational
+# variant as ï (i + diaeresis), which NFKD decomposes to plain "i". ɨ has no
+# NFKD decomposition of its own and would otherwise survive normalization
+# unfolded, breaking matches like Starling "aḍɨ- (aḍɨp-, aḍɨt-)" vs Burrow's
+# "aḍï- (aḍïp-, aḍït-)" (DED 79 Kodagu). Part of the project's approved
+# conservative transcription fold (2026-08-16 canonical-transcription policy,
+# _CANONICAL_CORE_FOLD in reporting.py) -- folded here too so it also governs
+# matching, not just the display-only canonical-form columns.
+BARRED_I_FOLD = {ord("ɨ"): "i", ord("Ɨ"): "i"}  # ɨ, Ɨ -> i
+
 
 def normalize_for_match(text: str) -> str:
     """Normalize headwords for robust matching: strip diacritics, stars, hyphens.
@@ -78,6 +88,7 @@ def normalize_for_match(text: str) -> str:
         .lower()
         .translate(LENGTH_DOTS)
         .translate(ENG_FOLD)
+        .translate(BARRED_I_FOLD)
     )
     decomposed = unicodedata.normalize("NFKD", base)
     filtered = "".join(ch for ch in decomposed if not unicodedata.combining(ch))

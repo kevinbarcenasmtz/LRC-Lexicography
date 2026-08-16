@@ -497,6 +497,12 @@ def get_dialects(base_language: str) -> List[str]:
 #   Ko.  = Koya Gondi (DGG, Subrahmanyam 1968); distinct from top-level Ko. = Kota
 #   A.   = Adilabad fieldnotes (Burrow & Bhattacharya 1951) / Adilabad dialect
 #   Ch.  = Chindwara Gondi (dialect)
+#   S.   = Seoni Gondi dialect. Evidence: DED 133 Go. gloss "... (Mu. Ko. S.)
+#          adm-, (M.) ādmānā id." <-> Starling "Seoni Gondi" adm-; DED 718
+#          Go. gloss "...(S.) urum- to lighten" <-> Starling "Seoni Gondi"
+#          urum-. No conflict with Kuwi's own "S." = Schulze -- the inline
+#          abbreviation tables are keyed per top-level Starling language, so
+#          Gondi's "S." and Kuwi's "S." never collide.
 GONDI_INLINE_ABBREVS: Dict[str, List[str]] = {
     "Tr.": ["Betul Gondi"],
     "W.": ["Mandla Gondi (Williamson)"],
@@ -509,6 +515,7 @@ GONDI_INLINE_ABBREVS: Dict[str, List[str]] = {
     "Ko.": ["Koya Gondi"],
     "A.": ["Adilabad Gondi"],
     "Ch.": ["Chindwara Gondi"],
+    "S.": ["Seoni Gondi"],
 }
 
 # Kuwi inline source/dialect citations (parallel structure to Gondi above).

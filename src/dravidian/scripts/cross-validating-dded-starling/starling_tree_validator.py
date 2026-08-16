@@ -55,9 +55,22 @@ _METADATA_KEYS = {
     "Number in DED",
     "Number in CVOTGD",
     "Additional forms",
+    "Additional Forms",
+    "Miscellaneous",
     "Dravidian etymology",
     "South Dravidian etymology",
     "Gondwan etymology",
+    # Found by full-key audit (2026-08-16, bugfix batch) alongside the
+    # Additional Forms / Miscellaneous fix: editorial/reconstruction-note
+    # containers that pass the uppercase-first-letter heuristic in
+    # _is_language_key but are not language names. "Stems" occurs with its
+    # own "Number in DED" at DED 333/445/530 (would otherwise leak a fake
+    # always-"No" language row there, same failure mode as Miscellaneous/
+    # Additional Forms); "Notes on correspondences" only ever occurs on
+    # DED-less sub-entries in the current scrape but is excluded on the
+    # same non-language grounds.
+    "Stems",
+    "Notes on correspondences",
 }
 _DERIVATIVE_SUFFIXES = (" meaning", " derivates", " derivatives")
  
@@ -256,6 +269,22 @@ class MatchOutcome:
     burrow_lang: str = ""
     burrow_form: str = ""
     burrow_gloss: str = ""
+
+
+def _leading_form_span(segment: str, target_norm: str) -> str:
+    """Find the smallest leading word-span of ``segment`` whose normalized
+    form contains ``target_norm`` (used to report a tidy ``burrow_form`` for
+    a ``gloss_secondary`` match rather than the whole gloss segment).
+
+    Returns "" if no such span exists (caller falls back to the full
+    segment text).
+    """
+    words = segment.split()
+    for i in range(1, len(words) + 1):
+        span = " ".join(words[:i])
+        if target_norm in normalize_for_match(span):
+            return span
+    return ""
 
 
 def _match_entry(
@@ -525,6 +554,62 @@ def _match_entry(
             burrow_form=matched_burrow_form,
             burrow_gloss=matched_burrow_gloss,
         )
+
+    # Burrow lists several semicolon-separated form-groups per language
+    # (e.g. Kuwi "aḍḍe ānai to resist; addu ānai/kīnai to obviate; ..."), but
+    # the parser only stores the FIRST group as att.headwords -- so a
+    # Starling headword sitting verbatim later in the same attestation's
+    # gloss was previously reported as "Language only ... headword
+    # mismatch" even though Burrow does attest it. Scan the best
+    # attestation's recovered gloss for a semicolon segment containing the
+    # Starling headword, as a last resort before giving up on this entry.
+    # This must fire ONLY after every match path above has failed, so it
+    # can never downgrade an existing verdict.
+    if best_att and best_match_result and best_match_result.matched:
+        starling_norm_len_ok = len(starling_norm.replace(" ", "")) >= 3 or (
+            len(starling_norm.split()) >= 2
+        )
+        if starling_norm and starling_norm_len_ok:
+            secondary_gloss = recover_attestation_gloss_from_full_text(
+                attestation_full_text,
+                best_att.language_abbrev,
+                best_att.headwords,
+                best_att.gloss,
+            )
+            # For a tracked Gondi/Kuwi/Kui dialect, cut off at the first
+            # OTHER dialect's inline marker (same treatment as
+            # direct_match_gloss above) so this scan can't attribute a
+            # sibling dialect's citation form to the wrong Starling entry.
+            if get_inline_abbrevs_for_starling_dialect(entry.language):
+                secondary_gloss = truncate_gloss_before_first_marker(secondary_gloss)
+            for segment in secondary_gloss.split(";"):
+                segment = segment.strip()
+                if not segment:
+                    continue
+                segment_norm = normalize_for_match(segment)
+                if not segment_norm or starling_norm not in segment_norm:
+                    continue
+                form_chunk = _leading_form_span(segment, starling_norm) or segment
+                form_chunk = form_chunk.strip(" ,;.")
+                parsed_burrow_segments = [
+                    _build_parsed_burrow_segment(
+                        source=best_att.language_abbrev,
+                        form=form_chunk,
+                        meaning=segment,
+                        match_type="gloss_secondary",
+                    )
+                ]
+                return MatchOutcome(
+                    matched=True,
+                    match_type="gloss_secondary",
+                    confidence=best_match_result.confidence,
+                    attestation=best_att,
+                    notes=best_match_result.notes,
+                    parsed_gloss=_parsed_burrow_segments_to_text(parsed_burrow_segments),
+                    burrow_lang=best_att.language_abbrev,
+                    burrow_form=form_chunk,
+                    burrow_gloss=segment,
+                )
 
     if best_match_result and best_match_result.matched and best_att:
         notes = (

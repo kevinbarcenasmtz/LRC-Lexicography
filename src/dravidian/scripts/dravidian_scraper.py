@@ -64,11 +64,17 @@ class StarLingGeneralScraper:
             field_name = field_span.get_text(strip=True).rstrip(':').strip()
             value_span = div.find('span', class_='unicode')
             if value_span and isinstance(value_span, Tag):
-                value = value_span.get_text(strip=True)
+                # get_text(' ', ...) inserts a separator between adjacent
+                # text nodes/styled runs (e.g. <i>ḍakke</i> areca nut) so
+                # they don't get concatenated into one glued word; collapse
+                # the resulting whitespace runs back down to single spaces.
+                value = re.sub(r'\s+', ' ', value_span.get_text(' ', strip=True)).strip()
                 value_html = value_span.decode_contents().strip()
             else:
                 # Get all text after field name
-                value = div.get_text(strip=True).replace(field_name, '', 1).strip()
+                value = re.sub(
+                    r'\s+', ' ', div.get_text(' ', strip=True)
+                ).replace(field_name, '', 1).strip()
                 # Markup fallback: clone the div and drop the label + subquery
                 # (+ icon) chrome, then keep whatever markup remains.
                 value_html = ''

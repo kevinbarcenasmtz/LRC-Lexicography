@@ -35,6 +35,35 @@ from bs4.element import Tag
 from textnorm import normalize_for_match
 
 
+def _split_headword_chain(text: str) -> List[str]:
+    """Split a Burrow headword chain on top-level commas only.
+
+    Burrow lists conjugation-stem alternants inside parentheses right after
+    a headword, e.g. "aṭu (-pp-, -tt-)" -- a naive comma split treats the
+    comma inside the parens as a chain separator too, producing bogus
+    headwords "aṭu (-pp-" and "-tt-)" (surfaced as the matched form for
+    DED 79 Ta. in the audit report). Only split on a comma at paren depth 0,
+    so the parenthetical group stays attached to its headword.
+    """
+    parts: List[str] = []
+    depth = 0
+    current: List[str] = []
+    for ch in text:
+        if ch == "(":
+            depth += 1
+            current.append(ch)
+        elif ch == ")":
+            depth = max(0, depth - 1)
+            current.append(ch)
+        elif ch == "," and depth == 0:
+            parts.append("".join(current))
+            current = []
+        else:
+            current.append(ch)
+    parts.append("".join(current))
+    return parts
+
+
 @dataclass
 class LanguageAttestation:
     """Single language form within a Burrow entry."""
@@ -575,7 +604,8 @@ class BurrowEntryParser:
             next_span = spans[i + 1] if i + 1 < len(spans) else None
 
             headwords = [
-                hw.strip().rstrip("( ").strip() for hw in span.headword_text.split(",")
+                hw.strip().rstrip("( ").strip()
+                for hw in _split_headword_chain(span.headword_text)
             ]
             headwords = [
                 hw for hw in headwords if hw and len(hw) > 1 and not hw.startswith("(")
