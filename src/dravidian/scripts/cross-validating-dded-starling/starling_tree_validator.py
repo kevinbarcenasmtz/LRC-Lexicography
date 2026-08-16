@@ -16,7 +16,6 @@ import argparse
 import json
 import re
 import sys
-import unicodedata
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -27,6 +26,10 @@ from dialect_mapping import (
     match_languages,
     diagnostic_report,
     get_inline_abbrevs_for_starling_dialect,
+)
+from textnorm import (
+    normalize_for_match,
+    recover_attestation_gloss_from_full_text,
 )
 
 _METADATA_KEYS = {
@@ -87,38 +90,6 @@ def _extract_inline_meaning(value: str) -> str:
     return value[open_pos + 1 : close_pos].strip()
 
 
-# Burrow marks vowel length with a raised dot after the vowel (te·l = tēl, twa· = twā);
-# Starling writes the same length as a macron, already removed by NFKD + strip-combining.
-# Two confusable dots occur in the corpus (U+0387 dominant, U+00B7), plus IPA length marks.
-_LENGTH_DOTS = {ord(c): None for c in "\u00b7\u0387\u02d0\u02d1"}
-
-# Starling writes the velar nasal as eng (\u014b); Burrow uses \u1e45 (n + combining dot
-# above), which NFKD reduces to plain "n". Both are notational variants of the
-# same phoneme /\u014b/, so fold eng to "n" to reconcile the two orthographies.
-# Kept in sync with burrow_entry_parser._ENG_FOLD.
-_ENG_FOLD = {ord("\u014b"): "n", ord("\u014a"): "n"}  # \u014b, \u014a -> n
-
-
-def _normalize_for_match(text: str) -> str:
-    # Underscores are removed so Starling's ASCII diacritic notation (``in_r_u``
-    # for Burrow's ``iṉṟu``) reconciles with Burrow's diacritic forms post-NFKD.
-    # Kept in sync with burrow_entry_parser._normalize_for_match.
-    base = (
-        text.replace("*", "")
-        .replace("_", "")
-        .replace("-", " ")
-        .replace("(", " ")
-        .replace(")", " ")
-        .strip()
-        .lower()
-        .translate(_LENGTH_DOTS)
-        .translate(_ENG_FOLD)
-    )
-    decomposed = unicodedata.normalize("NFKD", base)
-    filtered = "".join(ch for ch in decomposed if not unicodedata.combining(ch))
-    return " ".join(filtered.split())
-
-
 # Canonical-transcription policy (2026-08-16, Kevin + Todd): where a Starling
 # reflex and its matched Burrow/DEDR attestation are the SAME form written in
 # different notation, the DEDR spelling is canonical; Starling is retained as a
@@ -145,7 +116,7 @@ def _transcription_key(text: str, core_fold: bool = False) -> str:
     conservative confusable set is applied on top of the shipped matcher folds."""
     if core_fold:
         text = text.translate(_CANONICAL_CORE_FOLD)
-    return _normalize_for_match(text)
+    return normalize_for_match(text)
 
 
 def _canonical_burrow_form(
@@ -403,7 +374,7 @@ def load_burrow_corpus(
         for att_data in entry.get("attestations", []):
             try:
                 att = LanguageAttestation(**att_data)
-                repaired_gloss = _recover_attestation_gloss_from_full_text(
+                repaired_gloss = recover_attestation_gloss_from_full_text(
                     paragraph.full_text,
                     att.language_abbrev,
                     att.headwords,
@@ -670,82 +641,6 @@ def _extract_id_reference_from_full_text(
     return []
 
 
-def _recover_attestation_gloss_from_full_text(
-    full_text: str,
-    source_abbrev: str,
-    source_headwords: List[str],
-    fallback_gloss: str,
-) -> str:
-    """
-    Recover a fuller attestation gloss from paragraph full_text when cached
-    attestation glosses are truncated.
-    """
-    headwords = [h.strip() for h in (source_headwords or []) if h and h.strip()]
-    if not full_text or not source_abbrev or not headwords:
-        return fallback_gloss
-
-    normalized = re.sub(r"\s+", " ", full_text).strip()
-    abbrev_esc = re.escape(source_abbrev.strip())
-    # Anchor on the FULL comma-separated headword chain, not just the first
-    # form -- anchoring on one token alone leaves the remaining alternate
-    # spellings (e.g. Ka. "matti, maddi, mar̤ti") dangling in the
-    # recovered tail, ahead of the real gloss prose.
-    hw_esc = r"\s*,\s*".join(re.escape(h) for h in headwords)
-    marker_re = re.compile(
-        rf"{abbrev_esc}\s+(?:\([^)]*\)\s*)*{hw_esc}",
-        re.IGNORECASE,
-    )
-    m_marker = marker_re.search(normalized)
-    if not m_marker:
-        return fallback_gloss
-
-    tail = normalized[m_marker.end() :].strip()
-    # Stop at the next top-level language token (e.g. "Malt.", "Ka.") so
-    # one attestation does not consume following language segments.
-    # Konḍa/Kui/Kuwi are the only language names in the whole inventory
-    # written WITHOUT a trailing period, so the main alternative (which
-    # requires one) silently walks past them -- added explicitly so
-    # attestations followed by one of these three still get bounded
-    # correctly (kept in sync with the identical function in
-    # repair_burrow_corpus_glosses.py).
-    ignore_tokens = {
-        "Tr.",
-        "W.",
-        "Ph.",
-        "Mu.",
-        "Ma.",
-        "A.",
-        "Ch.",
-        "Voc.",
-        "Cf.",
-        "e.g.",
-    }
-    for m in re.finditer(
-        r"\s([A-Z][A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+\.|Konḍa|Kui|Kuwi)\s+\S",
-        tail,
-    ):
-        tok = m.group(1)
-        if tok in ignore_tokens:
-            continue
-        # Konḍa/Kui/Kuwi (unlike the period-bearing tokens above) can also
-        # appear as an ordinary cross-reference mid-sentence, e.g. DED 3246's
-        # "...(cf. Kui trēba; with loss of t-)..." inside Kuwi's OWN gloss --
-        # not a new attestation. A real attestation-introducing mention is
-        # never preceded by "cf.".
-        if tok in ("Konḍa", "Kui", "Kuwi") and re.search(
-            r"\bcf\.\s*$", tail[: m.start()], re.IGNORECASE
-        ):
-            continue
-        tail = tail[: m.start()].strip()
-        break
-
-    tail = re.sub(r"\s+DEDS?\b.*$", "", tail, flags=re.IGNORECASE).strip()
-    if not tail:
-        return fallback_gloss
-
-    return tail if len(tail) > len(fallback_gloss) else fallback_gloss
-
-
 def _extract_id_reference_forms(
     gloss: str,
     source_abbrev: str = "",
@@ -841,7 +736,7 @@ def _match_entry(
         matched_burrow_gloss,
     ).
     """
-    starling_norm = _normalize_for_match(entry.headword)
+    starling_norm = normalize_for_match(entry.headword)
 
     best_match_result = None
     best_att = None
@@ -879,7 +774,7 @@ def _match_entry(
             best_match_result = lang_match
             best_att = att
 
-        att_gloss = _recover_attestation_gloss_from_full_text(
+        att_gloss = recover_attestation_gloss_from_full_text(
             attestation_full_text,
             att.language_abbrev,
             att.headwords,
@@ -920,7 +815,7 @@ def _match_entry(
         ]
 
         for bhw, meaning, used_id in candidate_headword_forms:
-            bhw_norm = _normalize_for_match(bhw)
+            bhw_norm = normalize_for_match(bhw)
             if bhw_norm == starling_norm:
                 # Keep direct exact as fallback; inline/dialect extraction is
                 # evaluated after the scan and should take precedence.
@@ -953,7 +848,7 @@ def _match_entry(
         inline_abbrevs = get_inline_abbrevs_for_starling_dialect(entry.language)
         if inline_abbrevs:
             primary_hw = best_att.headwords[0] if best_att.headwords else ""
-            best_att_gloss = _recover_attestation_gloss_from_full_text(
+            best_att_gloss = recover_attestation_gloss_from_full_text(
                 attestation_full_text,
                 best_att.language_abbrev,
                 best_att.headwords,
@@ -981,7 +876,7 @@ def _match_entry(
                 else:
                     id_note = ""
 
-                form_norm = _normalize_for_match(form)
+                form_norm = normalize_for_match(form)
                 if form_norm == starling_norm:
                     match_notes = best_match_result.notes
                     matched_burrow_lang = marker or best_att.language_abbrev
@@ -1059,7 +954,7 @@ def _match_entry(
             (headword, meaning, False)
             for headword in best_att.headwords
             for meaning in [
-                _recover_attestation_gloss_from_full_text(
+                recover_attestation_gloss_from_full_text(
                     attestation_full_text,
                     best_att.language_abbrev,
                     best_att.headwords,
@@ -1069,7 +964,7 @@ def _match_entry(
         ] + [
             (form, meaning, True)
             for form, meaning in _extract_id_reference_forms(
-                _recover_attestation_gloss_from_full_text(
+                recover_attestation_gloss_from_full_text(
                     attestation_full_text,
                     best_att.language_abbrev,
                     best_att.headwords,
@@ -1115,7 +1010,7 @@ def _match_entry(
         inline_abbrevs = get_inline_abbrevs_for_starling_dialect(entry.language)
         if inline_abbrevs and best_att:
             primary_hw = best_att.headwords[0] if best_att.headwords else ""
-            best_att_gloss = _recover_attestation_gloss_from_full_text(
+            best_att_gloss = recover_attestation_gloss_from_full_text(
                 attestation_full_text,
                 best_att.language_abbrev,
                 best_att.headwords,
@@ -1487,118 +1382,6 @@ def validate_record(
                 )
 
     _walk(tree, [])
-    return results
-
-
-def _validate_branch_direct(
-    branch: TreeNode,
-    record_num: int,
-    pd_headword: str,
-    pd_meaning: str,
-    burrow_by_ded: Dict[str, BurrowParagraph],
-    strict: bool = False,
-) -> List[ValidationResult]:
-    """Validate a proto-branch using ONLY its direct language entries (not descendants)."""
-    ded = branch.ded_number
-    direct_entries = branch.language_entries  # Only direct children, not recursive
-
-    if not direct_entries:
-        return []
-
-    paragraph = burrow_by_ded.get(ded) if ded else None
-    burrow_atts = paragraph.attestations if paragraph else []
-    burrow_langs = {att.language_name for att in burrow_atts}
-
-    results: List[ValidationResult] = []
-    matched_count = 0
-
-    for entry in direct_entries:
-        vr = ValidationResult(
-            record_num=record_num,
-            pd_headword=pd_headword,
-            pd_meaning=pd_meaning,
-            branch_label=branch.label,
-            branch_headword=branch.headword,
-            ded_number=ded,
-            language=entry.language,
-            starling_headword=entry.headword,
-            starling_meaning=entry.meaning,
-        )
-
-        if not ded:
-            vr.notes = "Branch has no DED number"
-            results.append(vr)
-            continue
-
-        if not burrow_atts:
-            vr.notes = f"DED {ded} not found in Burrow corpus"
-            results.append(vr)
-            continue
-
-        (
-            matched,
-            match_type,
-            confidence,
-            att,
-            notes,
-            parsed_gloss,
-            matched_burrow_lang,
-            matched_burrow_form,
-            matched_burrow_gloss,
-        ) = _match_entry(
-            entry,
-            burrow_atts,
-            strict=strict,
-            attestation_full_text=paragraph.full_text if paragraph else "",
-        )
-
-        vr.matched = matched
-        vr.match_type = match_type
-        vr.match_confidence = confidence
-        vr.notes = notes
-
-        if att:
-            vr.burrow_headword = matched_burrow_form or ", ".join(att.headwords)
-            vr.burrow_gloss = att.gloss
-            vr.burrow_language_abbrev = matched_burrow_lang or att.language_abbrev
-            vr.burrow_gloss_parsed = parsed_gloss
-            # See the matching comment in _validate_branch: for a tracked
-            # Gondi/Kuwi/Kui dialect, "" from matched_burrow_gloss is
-            # deliberate (see _truncate_gloss_before_first_marker), not
-            # "not computed" -- use it unconditionally rather than falling
-            # back to the unrelated-dialect-bleeding att.gloss.
-            if get_inline_abbrevs_for_starling_dialect(entry.language):
-                vr.burrow_gloss = matched_burrow_gloss
-            elif matched_burrow_gloss:
-                vr.burrow_gloss = matched_burrow_gloss
-
-        if not matched and match_type != "language_only" and burrow_atts:
-            vr.notes = (
-                f"{entry.language} not in DED {ded}; "
-                f"Burrow has: {', '.join(sorted(burrow_langs))}"
-            )
-
-        if matched:
-            matched_count += 1
-
-        results.append(vr)
-
-    # Roll up branch status based on direct entries only
-    total = len(direct_entries)
-    if not ded:
-        status = "no_ded_number"
-    elif not burrow_atts:
-        status = "ded_not_in_corpus"
-    elif matched_count == total:
-        status = "fully_attested"
-    elif matched_count > 0:
-        status = f"partially_attested ({matched_count}/{total})"
-    else:
-        status = "not_attested"
-
-    for vr in results:
-        vr.branch_status = status
-
     return results
 
 

@@ -223,8 +223,8 @@ def _isolate_entry_html(page_html: str, clean_ded: str) -> Optional[str]:
 def fetch_live_entry(ded_number: Any, delay: float = 0.5) -> Optional[Dict[str, Any]]:
     """Fetch one DED entry live from DSAL: search -> extract page URL -> fetch page.
 
-    Thin orchestration only, matching the existing two-step query pattern in
-    `burrow_enhanced_validation.py` and the 0.5s politeness delay convention
+    Thin orchestration only, using DSAL's two-step query pattern (search ->
+    page fetch) and the 0.5s politeness delay convention
     from `burrow_corpus_scraper.py`. Not a new scraper class -- `BurrowCorpusScraper`
     is tied to checkpoint/corpus file management this doesn't need.
     """

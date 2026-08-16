@@ -28,10 +28,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import List, Optional, Tuple
 import re
-import unicodedata
 
 from bs4 import BeautifulSoup
 from bs4.element import Tag
+
+from textnorm import normalize_for_match
 
 
 @dataclass
@@ -395,47 +396,6 @@ def _is_known_lang_abbrev(abbrev: str) -> bool:
     return normalize_burrow(cl) != cl or normalize_burrow(cl.rstrip(".")) != cl.rstrip(".")
 
 
-# Burrow marks vowel length with a raised dot after the vowel (te·l = tEl, twa· = twA);
-# Starling writes the same length as a macron, already removed by NFKD + strip-combining.
-# Two confusable dots occur in the corpus (U+0387 dominant, U+00B7), plus IPA length marks.
-# Kept in sync with starling_tree_validator._LENGTH_DOTS.
-_LENGTH_DOTS = {ord(c): None for c in "\u00b7\u0387\u02d0\u02d1"}
-
-# Starling writes the velar nasal as eng (\u014b); Burrow uses \u1e45 (n + combining dot
-# above), which NFKD reduces to plain "n". Both are notational variants of the
-# same phoneme /\u014b/, so fold eng to "n" to reconcile the two orthographies.
-# Kept in sync with starling_tree_validator._ENG_FOLD.
-_ENG_FOLD = {ord("\u014b"): "n", ord("\u014a"): "n"}  # \u014b, \u014a -> n
-
-
-def _normalize_for_match(text: str) -> str:
-    """Normalize headwords for robust matching: strip diacritics, stars, hyphens.
-
-    Underscores are removed too: Starling encodes diacritics in ASCII with a
-    trailing underscore (``in_r_u`` for Burrow's ``iṉṟu``), so stripping ``_``
-    here lets that notation reconcile with Burrow's diacritic forms after NFKD.
-
-    Length dots (Burrow's raised-dot vowel-length mark) are stripped so they
-    reconcile with Starling's macron notation -- see ``_LENGTH_DOTS``.
-
-    Eng (ŋ) is folded to "n" so Starling's IPA velar-nasal notation reconciles
-    with Burrow's ṅ (which NFKD reduces to "n") -- see ``_ENG_FOLD``.
-    """
-    base = (
-        text.replace("*", "")
-        .replace("_", "")
-        .replace("-", " ")
-        .replace("(", " ")
-        .replace(")", " ")
-        .strip()
-        .lower()
-        .translate(_LENGTH_DOTS)
-        .translate(_ENG_FOLD)
-    )
-    decomposed = unicodedata.normalize("NFKD", base)
-    filtered = "".join(ch for ch in decomposed if not unicodedata.combining(ch))
-    return " ".join(filtered.split())
-
 
 @dataclass
 class _LangSpan:
@@ -679,7 +639,7 @@ class BurrowEntryParser:
         except ImportError:
             return None
 
-        starling_hw_norm = _normalize_for_match(starling_headword)
+        starling_hw_norm = normalize_for_match(starling_headword)
 
         for att in attestations:
             result = match_languages(att.language_abbrev, starling_language)
@@ -687,7 +647,7 @@ class BurrowEntryParser:
                 continue
 
             for burrow_hw in att.headwords:
-                burrow_hw_norm = _normalize_for_match(burrow_hw)
+                burrow_hw_norm = normalize_for_match(burrow_hw)
                 if burrow_hw_norm == starling_hw_norm:
                     return att
                 if (
