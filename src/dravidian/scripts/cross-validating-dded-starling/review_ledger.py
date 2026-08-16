@@ -58,7 +58,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Optional, Set, Tuple
 
-from burrow_entry_parser import BurrowEntryParser
+from textnorm import clean_ded_number
 
 _SCHEMA_VERSION = 1
 
@@ -74,14 +74,19 @@ STATUS_VALUES = frozenset(
     }
 )
 
-# Reused so DED numbers are normalized identically everywhere in this
-# pipeline ("0047" / 47.0 / "47" all collapse to "47") instead of growing a
-# third copy of this logic alongside the validator's own private version.
-_entry_parser = BurrowEntryParser()
-
-
 def _clean_ded(ded_number: Any) -> str:
-    return _entry_parser.clean_ded_number(str(ded_number))
+    """Normalize a DED number to the validator's key semantics.
+
+    Uses the shared validation-layer cleaner so ledger keys align with the
+    validator's DED indexing ("0047" / 47.0 / "4896(a)" all collapse to the
+    key the validator emits). When the cleaner yields None (missing value, or
+    Starling's literal-"0" no-correspondence sentinel) fall back to the
+    stripped literal so historical/archival keys -- notably the "0" entry
+    documenting the sentinel bug itself -- stay reachable instead of
+    collapsing to "".
+    """
+    cleaned = clean_ded_number(ded_number)
+    return cleaned if cleaned is not None else str(ded_number).strip()
 
 
 def load_ledger(path: str | Path) -> Dict[str, Any]:

@@ -414,7 +414,14 @@ class BurrowEntryParser:
     """
 
     def clean_ded_number(self, ded_str: str) -> str:
-        """Clean DED number: strip leading zeros. '045' -> '45', '0047' -> '47'."""
+        """Clean DED number: strip leading zeros. '045' -> '45', '0047' -> '47'.
+
+        Scrape/corpus-layer semantics: split-entry suffixes are deliberately
+        KEPT ("4896(a)" stays "4896(a)") so the (a)/(b) halves of a split DED
+        entry remain distinct corpus entries and inspect_ded_entry can index
+        them separately. The validation/ledger layer folds those suffixes --
+        use ``textnorm.clean_ded_number`` there instead.
+        """
         try:
             return str(int(float(ded_str)))
         except (ValueError, TypeError):

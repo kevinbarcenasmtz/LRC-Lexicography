@@ -13,7 +13,36 @@ from __future__ import annotations
 
 import re
 import unicodedata
-from typing import List
+from typing import Any, List, Optional
+
+
+def clean_ded_number(raw: Any) -> Optional[str]:
+    """Normalize a DED number to a plain integer string: '0047' -> '47'.
+
+    Burrow occasionally suffixes a DED number with a parenthetical letter
+    (e.g. "4896(a)"/"4896(b)") to mark a split entry, where Starling keys on
+    the plain base number; fold the suffix away so both sides index alike.
+
+    This is the validation/ledger-layer cleaner: keys produced here align with
+    the tree validator's DED indexing. The scrape/corpus layer deliberately
+    keeps split-entry suffixes distinct (see
+    ``BurrowEntryParser.clean_ded_number``) so "4896(a)" and "4896(b)" remain
+    separate corpus entries.
+    """
+    if raw is None:
+        return None
+    s = str(raw).strip()
+    m = re.match(r"^(\d+)\s*\([a-z]\)$", s)
+    if m:
+        s = m.group(1)
+    try:
+        cleaned = str(int(float(s)))
+    except (ValueError, TypeError):
+        return s if s else None
+    # Starling uses a literal "0" as its own sentinel for "no Burrow DED
+    # correspondence"; Burrow's DED numbering starts at 1, so this is never
+    # a real entry and should be treated the same as a missing DED number.
+    return cleaned if cleaned != "0" else None
 
 # Burrow marks vowel length with a raised dot after the vowel (te·l = tēl, twa· = twā);
 # Starling writes the same length as a macron, already removed by NFKD + strip-combining.
