@@ -7,7 +7,7 @@ Proto-Dravidian (top-level root, no DED number) is reported on but NOT
 validated -- it sits above the DED entirely. The attestation ceiling is
 the highest proto node that actually carries a DED number.
 Usage:
-python .\\src\\dravidian\\scripts\\cross-validating-dded-starling\\starling_tree_validator.py .\\data\\dravidian\\starling\\starling_complete_data.json --corpus .\\data\\dravidian\\burrow_ded\\burrow_corpus.cleaned.json
+python .\\src\\dravidian\\scripts\\cross-validating-dded-starling\\starling_tree_validator.py .\\data\\dravidian\\starling\\starling_complete_data_scrape.json --corpus .\\data\\dravidian\\burrow_ded\\burrow_corpus.cleaned.json
 
 """
 
@@ -16,10 +16,9 @@ import argparse
 import json
 import re
 import sys
-from collections import defaultdict
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 import pandas as pd
 from burrow_entry_parser import LanguageAttestation
 from dialect_mapping import (
@@ -30,6 +29,23 @@ from dialect_mapping import (
 from textnorm import (
     normalize_for_match,
     recover_attestation_gloss_from_full_text,
+)
+from gloss_extraction import (
+    extract_gloss_forms_for_abbrevs,
+    extract_id_reference_forms,
+    truncate_gloss_before_first_marker,
+)
+from reporting import (
+    build_validation_audit_frames,
+    coverage_analysis,
+    generate_summary,
+    results_to_dataframe,
+)
+from validation_models import (
+    BurrowParagraph,
+    LanguageEntry,
+    TreeNode,
+    ValidationResult,
 )
 
 _METADATA_KEYS = {
@@ -90,86 +106,6 @@ def _extract_inline_meaning(value: str) -> str:
     return value[open_pos + 1 : close_pos].strip()
 
 
-# Canonical-transcription policy (2026-08-16, Kevin + Todd): where a Starling
-# reflex and its matched Burrow/DEDR attestation are the SAME form written in
-# different notation, the DEDR spelling is canonical; Starling is retained as a
-# variant. This governs the "Transcription status" / "Canonical *" columns only
-# — it does NOT change matching (no new "Yes" matches) and needs no corpus regen.
-#
-# _CANONICAL_CORE_FOLD is the deliberately CONSERVATIVE confusable set used to
-# decide whether an unmatched ("language only") row is a pure notation variant
-# (safe to adopt DEDR's spelling) rather than a genuinely different/absent form
-# (which must keep Starling's headword — swapping it would replace a real reflex
-# with an unrelated form). Only the unambiguous IPA-vs-diaeresis / glottal pairs
-# are folded here; broader pairs (ẓ↔r̤, ch↔c) are intentionally left out pending a
-# linguistic ruling, so they stay classified as divergent_form for now.
-_CANONICAL_CORE_FOLD = {
-    0x0268: "i", 0x0197: "i",  # ɨ, Ɨ  (Burrow's ï reduces to i under NFKD)
-    0x026B: "l", 0x0142: "l",  # ɫ, ł
-    0x0292: "z", 0x03B6: "z",  # ʒ, ζ (greek zeta, Burrow's glyph)
-    0x0294: "", 0x02C0: "", 0x2019: "", 0x0027: "",  # glottal ʔ/ˀ/’/' vs bare
-}
-
-
-def _transcription_key(text: str, core_fold: bool = False) -> str:
-    """Normalized key for transcription-equivalence tests. With ``core_fold`` the
-    conservative confusable set is applied on top of the shipped matcher folds."""
-    if core_fold:
-        text = text.translate(_CANONICAL_CORE_FOLD)
-    return normalize_for_match(text)
-
-
-def _canonical_burrow_form(
-    starling_headword: str, burrow_form: str, core_fold: bool
-) -> Optional[str]:
-    """Return the DEDR spelling of ``starling_headword`` if the two are the same
-    form under notation-folding, else None.
-
-    Compares the whole Burrow string first (so parenthetical multi-forms like
-    ``aḍï- (aḍïp-, aḍït-)`` match ``aḍɨ- (aḍɨp-, aḍɨt-)`` as one unit), then falls
-    back to each comma-separated form (for genuine multi-lexeme Burrow lists).
-    """
-    key = _transcription_key(starling_headword, core_fold)
-    if not key:
-        return None
-    burrow_form = burrow_form.strip()
-    if burrow_form and _transcription_key(burrow_form, core_fold) == key:
-        return burrow_form
-    for piece in (p.strip() for p in burrow_form.split(",")):
-        if piece and _transcription_key(piece, core_fold) == key:
-            return piece
-    return None
-
-
-def _canonical_fields(vr: "ValidationResult") -> Tuple[str, str, str]:
-    """(canonical_headword, canonical_source, transcription_status) for one row.
-
-    Policy: DEDR is the canonical transcription wherever it attests the form.
-    - matched rows: DEDR spelling is canonical (identical when byte-equal, else a
-      notational_variant reconciled by the shipped matcher folds).
-    - language-only rows: adopt DEDR's spelling only when the conservative core
-      fold proves it's the same form (notational_variant); otherwise it's a
-      divergent_form and Starling's headword stands.
-    - no usable Burrow form (No / N/A): Starling stands.
-    """
-    starling = vr.starling_headword
-    burrow_form = vr.burrow_headword.strip()
-    if not burrow_form:
-        status = "no_burrow_match" if vr.ded_number else "no_ded"
-        return starling, "starling", status
-    if vr.matched:
-        canon = _canonical_burrow_form(starling, burrow_form, core_fold=False) or burrow_form
-        status = "identical" if canon.strip() == starling.strip() else "notational_variant"
-        return canon, "burrow", status
-    if vr.match_type == "language_only":
-        canon = _canonical_burrow_form(starling, burrow_form, core_fold=True)
-        if canon is not None:
-            status = "identical" if canon.strip() == starling.strip() else "notational_variant"
-            return canon, "burrow", status
-        return starling, "starling", "divergent_form"
-    return starling, "starling", "no_burrow_match"
-
-
 def _clean_ded_number(raw: Any) -> Optional[str]:
     """Normalize a DED number to a plain integer string: '0047' -> '47'.
 
@@ -191,89 +127,6 @@ def _clean_ded_number(raw: Any) -> Optional[str]:
     # correspondence"; Burrow's DED numbering starts at 1, so this is never
     # a real entry and should be treated the same as a missing DED number.
     return cleaned if cleaned != "0" else None
-
-
-@dataclass
-class LanguageEntry:
-    """A single leaf-language attestation extracted from a Starling node."""
-
-    language: str
-    headword: str
-    headword_raw: str
-    meaning: str
-    source_node_label: str
-
-
-@dataclass
-class TreeNode:
-    """A node in the Starling etymon tree."""
-
-    label: str
-    headword: str
-    meaning: str
-    ded_number: Optional[str] = None
-    notes: str = ""
-    additional_forms: str = ""
-    source_url: str = ""
-    source_hash: str = ""
-    is_proto: bool = True
-    depth: int = 0
-    language_entries: List[LanguageEntry] = field(default_factory=list)
-    children: List[TreeNode] = field(default_factory=list)
-
-    def all_language_entries(self) -> List[LanguageEntry]:
-        """Recursively collect all leaf language entries under this node."""
-        entries = list(self.language_entries)
-        for child in self.children:
-            entries.extend(child.all_language_entries())
-        return entries
-
-
-@dataclass
-class ValidationResult:
-    """Validation result for one language entry within one branch."""
-
-    record_num: int
-    pd_headword: str
-    pd_meaning: str
-    branch_label: str
-    branch_headword: str
-    ded_number: Optional[str]
-    language: str
-    starling_headword: str
-    proto_node_depth: int = 0
-    matched: bool = False
-    starling_meaning: str = ""
-    source_node_label: str = ""
-    burrow_headword: str = ""
-    burrow_gloss: str = ""
-    burrow_language_abbrev: str = ""
-    match_type: str = ""
-    match_confidence: float = 0.0
-    branch_status: str = ""
-    notes: str = ""
-    proto_chain: str = ""
-    proto_label_path: str = ""
-    proto_headword_path: str = ""
-    proto_depth_path: str = ""
-    branch_notes: str = ""
-    ancestor_notes: str = ""
-    branch_additional_forms: str = ""
-    ancestor_additional_forms: str = ""
-    ancestor_proto_count: int = 0
-    burrow_full_text: str = ""
-    burrow_source: str = ""
-    burrow_gloss_parsed: str = ""
-
-
-@dataclass
-class BurrowParagraph:
-    """Cached Burrow paragraph grouped by DED number."""
-
-    attestations: List[LanguageAttestation]
-    raw_html: str = ""
-    full_text: str = ""
-    page: int = 0
 
 
 def _parse_node(data: Dict[str, Any], depth: int = 0) -> TreeNode:
@@ -412,319 +265,6 @@ def load_burrow_corpus(
     return dict(by_ded)
 
 
-# Common English words that cannot be Dravidian headword forms.
-# Used to distinguish a gloss-continuation token from an inline form token.
-_GLOSS_STOPWORDS = frozenset({
-    "to", "a", "an", "the", "of", "in", "id", "id.", "and", "or", "not",
-    "be", "is", "was", "are", "were", "have", "has", "as", "at", "by",
-    "for", "its", "it", "this", "that", "also",
-})
-
-
-def _split_attached_to(form: str, meaning_text: str) -> Tuple[str, str]:
-    """Split glued form+gloss fragments when parser finds no separator.
-
-    Example: "(Tr. W.)askÄnÄto cut..." should become form="askÄnÄ",
-    meaning="to cut ...". We also handle forms like "ask-to cut..." where a
-    hyphen remains before the attached gloss marker.
-    """
-    if not form:
-        return form, meaning_text
-
-    # Special case: "(A. Ch. Mu. Ma.)ask-to ..." => form="ask-"
-    if len(form) > 3 and form.endswith("-to"):
-        return form[:-2], f"to {meaning_text}"
-
-    low = form.lower()
-    if low == "to" and meaning_text:
-        return form, f"to {meaning_text}"
-
-    if len(low) > 3 and low.endswith("to") and meaning_text:
-        base = form[:-2]
-        if base and base[-1].isalpha():
-            return base, f"to {meaning_text}"
-    return form, meaning_text
-
-
-def _clean_inline_meaning(meaning_text: str) -> str:
-    """
-    Remove trailing editorial parentheses from inline Burrow meanings while
-    preserving lexical gloss content.
-    """
-    if not meaning_text:
-        return meaning_text
-
-    # Trim explanatory tails like "(ask- is pl. action of acc-; Voc. 17)".
-    m = re.search(r"\(\s*[^)]*(?:pl\.\s*action|Voc\.)[^)]*\)\s*$", meaning_text, re.IGNORECASE)
-    if not m:
-        # Also handle truncated tails missing a closing parenthesis.
-        m = re.search(r"\(\s*[^)]*(?:pl\.\s*action|Voc\.)[^)]*$", meaning_text, re.IGNORECASE)
-    if m:
-        meaning_text = meaning_text[: m.start()].rstrip(" ,;")
-    return meaning_text.strip()
-
-
-# A dialect/citation marker group like "Tr.", "Ph.", "Tr. W.", "A. Ch. Mu.
-# Ma." -- as opposed to an ordinary gloss parenthetical. Shared by
-# _extract_gloss_forms_for_abbrevs and _truncate_gloss_before_first_marker.
-_DIALECT_MARKER_GROUP_RE = re.compile(r"^(?:[A-Za-z]+\.)+(?:\s+[A-Za-z]+\.)*$")
-
-
-def _truncate_gloss_before_first_marker(gloss: str) -> str:
-    """
-    Trim a consolidated Burrow entry's gloss at the first dialect/citation
-    marker, e.g. Kuwi's "(F.) vegu" form stores its gloss as
-    ", (Su. Isr.) vegu (pl. veska), (P.) vergu (pl. verka) id.; (S.) weggu,
-    weska dry wood." -- text that genuinely belongs to OTHER dialects'
-    citations, not the primary (F.) form being matched here.
-
-    Used only when the primary headword is matched directly (the
-    gloss_dialect_* path in _match_entry already extracts a dialect-specific
-    meaning and never reaches this function) -- the primary form's own
-    marker (e.g. "(F.)") was already consumed during parsing as a headword
-    qualifier, so it never appears in the gloss for this function to find;
-    there is no way to recover its true distinct meaning, only to stop
-    displaying unrelated dialects' text in its place. Returns an empty
-    string when there's no text before the first marker (the common case --
-    primary forms are often grouped under a single shared "id." at the end),
-    which is more honest than showing irrelevant content, and avoids a
-    false meaning-mismatch flag (since _is_meaning_mismatch treats an empty
-    side as "nothing to compare", not a mismatch).
-    """
-    for marker_match in re.finditer(r"\(([^)]+)\)\s*", gloss):
-        if _DIALECT_MARKER_GROUP_RE.match(marker_match.group(1).strip()):
-            return gloss[: marker_match.start()].strip(" ;,")
-    return gloss
-
-
-_INLINE_PAREN_NOISE_RE = re.compile(r"^\([^)]*\)\s*(?:id\.?)?$", re.IGNORECASE)
-_INLINE_BARE_WORD_RE = re.compile(r"^[^\s,()]+\.?$")
-
-
-def _is_inline_citation_noise(meaning_text: str) -> bool:
-    """
-    True when an inline dialect marker's leftover "meaning" text is really
-    just citation noise -- a bare grammatical-number parenthetical like
-    "(pl. veska)", a trailing "id." cross-reference, or a second alternate
-    headword spelling -- rather than a genuine gloss.
-
-    The hard case is a bare single word with no parens/commas: that shape
-    is identical whether it's a leaked Dravidian headword variant (noise,
-    e.g. "veẖki") or a real one-word English gloss (real data, e.g.
-    "shelter") -- pure syntax can't tell them apart. Burrow's English
-    glosses are always plain ASCII; only the transliterated Dravidian forms
-    carry diacritics, so a bare word is only treated as noise when it
-    contains a non-ASCII character. This fails safe: an ASCII-only leaked
-    form (e.g. "ukka") is left unfixed rather than risk discarding a real
-    gloss (confirmed against real data: an unguarded bare-word check
-    wrongly emptied 364 genuine ASCII glosses out of 457 cases).
-    """
-    if _INLINE_PAREN_NOISE_RE.match(meaning_text):
-        return True
-    if _INLINE_BARE_WORD_RE.match(meaning_text) and not meaning_text.isascii():
-        return True
-    return meaning_text.rstrip(".,; )").lower() == "id"
-
-
-def _extract_gloss_forms_for_abbrevs(
-    primary_headword: str,
-    gloss: str,
-    target_abbrevs: List[str],
-) -> List[Tuple[str, bool, str, str]]:
-    """
-    Extract headword forms from a Burrow consolidated entry's gloss text for
-    specific inline dialect/citation abbreviations.
-
-    Burrow encodes Gondi dialect variants inside a single Go. gloss entry:
-        'Go. accÃ„ÂnÃ„Â (Tr.) to be cut; (Mu.) acc- to split; (Tr. W.) askÃ„ÂnÃ„Â ...'
-
-    For target_abbrevs=['W.'] this returns ['askÃ„ÂnÃ„Â'].
-    When the matching group has no distinct form token (e.g. '(Tr.) to be cut'),
-    falls back to primary_headword since the primary form applies for that source.
-    """
-    if not gloss or not target_abbrevs:
-        return []
-
-    target_set = set(target_abbrevs)
-    forms = []
-
-    marker_matches = []
-    for marker_match in re.finditer(r"\(([^)]+)\)\s*", gloss):
-        marker_text = marker_match.group(1).strip()
-        # Keep only dialect/citation marker groups and skip gloss
-        # parentheticals.
-        if _DIALECT_MARKER_GROUP_RE.match(marker_text):
-            marker_matches.append(marker_match)
-    for i, marker_match in enumerate(marker_matches):
-        group_text = marker_match.group(1)
-        segment_start = marker_match.end()
-        next_marker_start = (
-            marker_matches[i + 1].start() if i + 1 < len(marker_matches) else len(gloss)
-        )
-        next_semicolon = gloss.find(";", segment_start)
-        if next_semicolon == -1:
-            segment_end = next_marker_start
-        else:
-            segment_end = min(next_marker_start, next_semicolon)
-
-        segment = gloss[segment_start:segment_end].strip().lstrip(",")
-        if not segment:
-            continue
-
-        parts = segment.split(None, 1)
-        following_token = parts[0].rstrip(".,;")
-        meaning_text = parts[1].strip() if len(parts) > 1 else ""
-        if meaning_text and meaning_text[0] in ")]":
-            meaning_text = meaning_text[1:].strip()
-        meaning_text = meaning_text.strip(" ;,")
-
-        normalized_marker = " ".join(part.strip().strip(".") + "." for part in group_text.split())
-
-        # Parse abbreviation tokens from group: "Tr. W." Ã¢â€ â€™ {"Tr.", "W."}
-        group_abbrevs: set[str] = set()
-        for part in re.split(r"\s+", group_text.strip()):
-            part = part.strip()
-            if part and not part.endswith("."):
-                part += "."
-            if part:
-                group_abbrevs.add(part)
-
-        if target_set.isdisjoint(group_abbrevs):
-            continue
-
-        if following_token.lower() in _GLOSS_STOPWORDS:
-            # No distinct form token for this marker; use the primary
-            # headword, but this is not an id. reference.
-            if not primary_headword:
-                continue
-            _, fallback_meaning = _split_attached_to(following_token, meaning_text)
-            fallback_meaning = _clean_inline_meaning(fallback_meaning)
-            forms.append((primary_headword, False, normalized_marker, fallback_meaning))
-            continue
-
-        used_id = False
-        if meaning_text and _is_inline_citation_noise(meaning_text):
-            # Citation noise, not real prose -- comparing it against
-            # Starling's gloss produces a false meaning mismatch, so treat
-            # it as nothing to show instead (same convention as
-            # _truncate_gloss_before_first_marker).
-            used_id = meaning_text.rstrip(".,; )").lower().endswith("id")
-            meaning_text = ""
-        else:
-            following_token, meaning_text = _split_attached_to(following_token, meaning_text)
-            meaning_text = _clean_inline_meaning(meaning_text)
-
-        forms.append((following_token, used_id, normalized_marker, meaning_text))
-
-    return forms
-
-
-def _extract_id_reference_from_full_text(
-    full_text: str,
-    source_abbrev: str,
-    source_headword: str,
-) -> List[Tuple[str, str]]:
-    """
-    Recover collapsed "id." formatting from paragraph full text.
-
-    Handles historical cache entries where glosses were rendered without space
-    after ';' (e.g., "id.;ac-acroprickly."), producing:
-    [("ac-acro", "prickly.")].
-    """
-    if not full_text or not source_abbrev or not source_headword:
-        return []
-
-    normalized = re.sub(r"\s+", " ", full_text).strip()
-    marker = f"{source_abbrev.strip()} {source_headword.strip()}"
-    marker_re = re.escape(marker)
-
-    # Pattern captures "Malt. acu id.; ..." at the paragraph level.
-    m = re.search(
-        rf"(?i)(?:^|[\s;]){marker_re}\s+id\.;\s*([^;]*?)(?=\s+(?:DEDS?|DEDR)\s+|$)",
-        normalized,
-    )
-    if not m:
-        return []
-
-    segment = m.group(1).strip().rstrip(" ;")
-    segment = re.sub(r"\s+DEDS?\b.*$", "", segment, flags=re.IGNORECASE).strip()
-    if not segment:
-        return []
-
-    if " " in segment:
-        form, meaning = segment.split(" ", 1)
-        form = form.strip(" ,;")
-        meaning = meaning.strip()
-        if form and meaning:
-            return [(form, meaning)]
-    return []
-
-
-def _extract_id_reference_forms(
-    gloss: str,
-    source_abbrev: str = "",
-    source_headword: str = "",
-    fallback_text: str = "",
-) -> List[Tuple[str, str]]:
-    """
-    Extract an additional form/meaning pair from glosses that use "id.;".
-
-    Examples from Burrow:
-        "id.; ac-acro prickly."
-        => [("ac-acro", "prickly.")]
-    """
-    if not gloss:
-        return []
-
-    cleaned = gloss.strip()
-    if not cleaned.lower().startswith("id."):
-        return []
-
-    if not re.match(r"^id\.\s*;", cleaned, flags=re.IGNORECASE):
-        return []
-
-    # Expected shape: "id.; FORM meaning..." (or id.;FORM meaning...)
-    m = re.match(r"^id\.\s*;\s*(.+)$", cleaned, flags=re.IGNORECASE)
-    if not m:
-        return []
-
-    remainder = m.group(1).strip()
-    if not remainder:
-        return []
-
-    # Use full paragraph text if available; this is the most robust recovery for
-    # cache-derived formatting artifacts.
-    fallback = _extract_id_reference_from_full_text(
-        fallback_text,
-        source_abbrev,
-        source_headword,
-    )
-    if fallback:
-        return fallback
-
-    if " " in remainder:
-        form, meaning = remainder.split(" ", 1)
-        form = form.strip(" ,;")
-        meaning = meaning.strip()
-        if form and meaning:
-            meaning = meaning.rstrip(" ;")
-            return [(form, meaning)]
-
-    # No explicit boundary after id.; (common when tag-stripped content collapses):
-    # e.g. "ac-acroprickly." -> ("ac-acro", "prickly.")
-    # Keep a conservative fallback so this doesn't over-fire.
-    m2 = re.match(
-        r"^([A-Za-zÀ-ÖØ-öø-ÿĀ-žɑ-ʯ\-]+)-([a-zà-öø-ÿɑ-ʯ]{2,})([.;:!?])?$",
-        remainder,
-    )
-    if m2 and not m2.group(1).lower() in _GLOSS_STOPWORDS:
-        form = m2.group(1).strip(" ,;")
-        meaning = f"{m2.group(2)}{m2.group(3) or ''}"
-        if form:
-            return [(form, meaning)]
-
-    return []
-
 @dataclass
 class MatchOutcome:
     """Result of matching one Starling language entry against Burrow attestations."""
@@ -795,18 +335,18 @@ def _match_entry(
         # entry.language is a specific named dialect of a consolidated
         # Burrow language (e.g. "Kuwi (Fitzgerald)", "Gommu Gondi") whose
         # OWN marker was consumed during parsing as a headword qualifier
-        # (see _truncate_gloss_before_first_marker) -- so a direct headword
+        # (see truncate_gloss_before_first_marker) -- so a direct headword
         # match here would otherwise display unrelated dialects' citation
         # text as this dialect's "meaning". Generic/base-language matches
         # (e.g. plain "Gondi") have no inline_abbrevs and are unaffected.
         direct_match_gloss = att_gloss
         if get_inline_abbrevs_for_starling_dialect(entry.language):
-            direct_match_gloss = _truncate_gloss_before_first_marker(att_gloss)
+            direct_match_gloss = truncate_gloss_before_first_marker(att_gloss)
 
         candidate_headword_forms: List[Tuple[str, str, bool]] = [
             (hw.strip(), direct_match_gloss, False) for hw in att.headwords if hw.strip()
         ]
-        for form, meaning in _extract_id_reference_forms(
+        for form, meaning in extract_id_reference_forms(
             att_gloss,
             source_abbrev=att.language_abbrev,
             source_headword=(att.headwords[0] if att.headwords else ""),
@@ -865,7 +405,7 @@ def _match_entry(
                 best_att.headwords,
                 best_att.gloss,
             )
-            gloss_forms = _extract_gloss_forms_for_abbrevs(
+            gloss_forms = extract_gloss_forms_for_abbrevs(
                 primary_hw, best_att_gloss, inline_abbrevs
             )
             parsed_burrow_segments = [
@@ -955,7 +495,7 @@ def _match_entry(
         # An empty best_headword_match_gloss can mean either "no gloss
         # available" (fall back to the raw attestation gloss) or "this
         # dialect's marker was deliberately truncated to nothing" (see
-        # _truncate_gloss_before_first_marker) -- the latter must NOT fall
+        # truncate_gloss_before_first_marker) -- the latter must NOT fall
         # back, or it would re-display the unrelated full blob it was
         # trimmed to avoid.
         matched_burrow_gloss = best_headword_match_gloss or (
@@ -974,7 +514,7 @@ def _match_entry(
             ]
         ] + [
             (form, meaning, True)
-            for form, meaning in _extract_id_reference_forms(
+            for form, meaning in extract_id_reference_forms(
                 recover_attestation_gloss_from_full_text(
                     attestation_full_text,
                     best_att.language_abbrev,
@@ -1027,7 +567,7 @@ def _match_entry(
                 best_att.headwords,
                 best_att.gloss,
             )
-            inline_candidates = _extract_gloss_forms_for_abbrevs(
+            inline_candidates = extract_gloss_forms_for_abbrevs(
                 primary_hw, best_att_gloss, inline_abbrevs
             )
             if inline_candidates:
@@ -1264,7 +804,7 @@ def _validate_branch(
             # For a tracked Gondi/Kuwi/Kui dialect, outcome.burrow_gloss was
             # always computed by dialect-aware logic in _match_entry (either
             # the gloss_dialect_* extraction or the deliberately-truncated
-            # primary-form path -- see _truncate_gloss_before_first_marker),
+            # primary-form path -- see truncate_gloss_before_first_marker),
             # which can legitimately be "" (no distinct meaning recoverable
             # for this dialect). Falling back to att.gloss in that case would
             # silently re-display unrelated dialects' full citation text, so
@@ -1382,260 +922,6 @@ def validate_record(
 
     _walk(tree, [])
     return results
-
-
-def results_to_dataframe(results: List[ValidationResult]) -> pd.DataFrame:
-    rows = []
-    for vr in results:
-        if vr.matched:
-            match_display = f"Yes ({vr.match_type}, {vr.match_confidence:.2f})"
-        elif vr.match_type == "language_only":
-            match_display = f"Language only (conf: {vr.match_confidence:.2f})"
-        elif vr.ded_number:
-            match_display = "No"
-        else:
-            match_display = "N/A (no DED)"
-
-        canonical_headword, canonical_source, transcription_status = _canonical_fields(vr)
-
-        rows.append(
-            {
-                "Starling record #": vr.record_num,
-                "Validation DED #": vr.ded_number or "",
-                "Validation branch label": vr.branch_label,
-                "Validation branch form": vr.branch_headword,
-                "Record proto form": vr.pd_headword,
-                "Record proto meaning": vr.pd_meaning,
-                "Starling language": vr.language,
-                "Starling lexical headword": vr.starling_headword,
-                "Starling lexical meaning": vr.starling_meaning,
-                "Starling language source branch": vr.source_node_label,
-                "Canonical headword": canonical_headword,
-                "Canonical source": canonical_source,
-                "Transcription status": transcription_status,
-                "Match": match_display,
-                "Match confidence": vr.match_confidence,
-                "Matched Burrow segment scope": vr.burrow_language_abbrev,
-                "Matched Burrow form": vr.burrow_headword,
-                "Matched Burrow meaning": vr.burrow_gloss,
-                "Matched Burrow parsed segments": vr.burrow_gloss_parsed,
-                "Burrow matched source token": vr.burrow_source,
-                "Burrow paragraph text": vr.burrow_full_text,
-                "Proto ancestry node count": vr.ancestor_proto_count,
-                "Branch depth (record tree)": vr.proto_node_depth,
-                "Proto label lineage": vr.proto_label_path,
-                "Proto form lineage": vr.proto_headword_path,
-                "Proto depth lineage": vr.proto_depth_path,
-                "Proto lineage": vr.proto_chain,
-                "Branch notes (Starling)": vr.branch_notes,
-                "Ancestor notes (Starling)": vr.ancestor_notes,
-                "Branch additional forms (Starling)": vr.branch_additional_forms,
-                "Ancestor additional forms (Starling)": vr.ancestor_additional_forms,
-                "Branch attestation status": vr.branch_status,
-                "Validation note": vr.notes,
-            }
-        )
-    return pd.DataFrame(rows)
-
-
-def generate_summary(results: List[ValidationResult]) -> Dict[str, Any]:
-    total = len(results)
-    matched = sum(1 for r in results if r.matched)
-    with_ded = sum(1 for r in results if r.ded_number)
-
-    branch_keys: Dict[tuple, str] = {}
-    for r in results:
-        bk = (r.record_num, r.branch_label, r.ded_number)
-        if bk not in branch_keys:
-            branch_keys[bk] = r.branch_status
-
-    branch_statuses: Dict[str, int] = defaultdict(int)
-    for status in branch_keys.values():
-        branch_statuses[status] += 1
-
-    confidence_dist: Dict[str, int] = defaultdict(int)
-    for r in results:
-        if r.matched:
-            conf_bucket = f"{int(r.match_confidence * 100 / 10) * 10}%-{int(r.match_confidence * 100 / 10 + 1) * 10}%"
-            confidence_dist[conf_bucket] += 1
-
-    return {
-        "total_language_entries": total,
-        "entries_with_ded": with_ded,
-        "entries_without_ded": total - with_ded,
-        "entries_matched": matched,
-        "entry_match_rate": round(matched / with_ded * 100, 1) if with_ded else 0,
-        "unique_branches": len(branch_keys),
-        "branch_status_breakdown": dict(branch_statuses),
-        "confidence_distribution": dict(confidence_dist),
-        "records_processed": len({r.record_num for r in results}),
-    }
-
-
-def coverage_analysis(
-    results: List[ValidationResult],
-    burrow_by_ded: Dict[str, BurrowParagraph],
-) -> pd.DataFrame:
-    """
-    Per-DED paragraph coverage summary.
-
-    Includes:
-    - language inventory overlap (Starling vs Burrow)
-    - row-level validation outcomes (matched/language-only/unmatched)
-    """
-    results_by_ded: Dict[str, List[ValidationResult]] = defaultdict(list)
-    starling_by_ded: Dict[str, Set[str]] = defaultdict(set)
-    for r in results:
-        if r.ded_number:
-            results_by_ded[r.ded_number].append(r)
-            starling_by_ded[r.ded_number].add(r.language)
-
-    rows = []
-    for ded in sorted(starling_by_ded, key=lambda x: int(x) if x.isdigit() else 0):
-        ded_results = results_by_ded.get(ded, [])
-        burrow_atts = burrow_by_ded.get(ded, BurrowParagraph(attestations=[])).attestations
-        burrow_lang_labels = {att.language_name for att in burrow_atts}
-        starling_langs = starling_by_ded[ded]
-        matched_rows = sum(1 for r in ded_results if r.matched)
-        language_only_rows = sum(1 for r in ded_results if r.match_type == "language_only")
-        unmatched_rows = sum(
-            1
-            for r in ded_results
-            if not r.matched and r.match_type not in {"language_only"}
-        )
-
-        matched_s, matched_b = set(), set()
-        for sl in starling_langs:
-            for att in burrow_atts:
-                lang_match = match_languages(att.language_abbrev, sl, strict=False)
-                if lang_match.matched:
-                    matched_s.add(sl)
-                    matched_b.add(att.language_name)
-
-        only_starling = starling_langs - matched_s
-        only_burrow = burrow_lang_labels - matched_b
-
-        rows.append(
-            {
-                "DED #": ded,
-                "Starling entry rows": len(ded_results),
-                "Matched rows": matched_rows,
-                "Language-only rows": language_only_rows,
-                "Unmatched rows": unmatched_rows,
-                "Row match rate %": round((matched_rows / len(ded_results) * 100), 1)
-                if ded_results
-                else 0.0,
-                "Starling languages (unique)": len(starling_langs),
-                "Burrow languages (unique)": len(burrow_lang_labels),
-                "Language overlap (unique)": len(matched_s),
-                "Only in Starling (langs)": "; ".join(sorted(only_starling)) or "",
-                "Only in Burrow (langs)": "; ".join(sorted(only_burrow)) or "",
-            }
-        )
-    return pd.DataFrame(rows)
-
-
-def _normalize_meaning_text(text: Any) -> str:
-    # pd.isna catches NaN/None for missing CSV cells; plain `text or ""` does
-    # not, since a float NaN is truthy in Python and would otherwise become
-    # the literal string "nan" here, falsely registering as a real meaning.
-    if pd.isna(text):
-        return ""
-    value = str(text).strip().lower()
-    value = re.sub(r"\s+", " ", value)
-    value = value.rstrip(" .;,:")
-    return value
-
-
-def build_validation_audit_frames(df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
-    """
-    Build review-focused audit frames from tree_validation_results rows.
-
-    These sheets explicitly answer:
-    - which rows failed or are language-only
-    - which matched rows still have meaning mismatch
-    - which rows are missing Starling meanings
-    - branch-level and DED-level rollups for attestation status
-    """
-    work = df.copy()
-    work["__starling_meaning_norm"] = work["Starling lexical meaning"].map(_normalize_meaning_text)
-    work["__burrow_meaning_norm"] = work["Matched Burrow meaning"].map(_normalize_meaning_text)
-
-    def _is_meaning_mismatch(row: pd.Series) -> bool:
-        sm = row["__starling_meaning_norm"]
-        bm = row["__burrow_meaning_norm"]
-        if not sm or not bm:
-            return False
-        return (sm not in bm) and (bm not in sm)
-
-    work["__meaning_mismatch"] = work.apply(_is_meaning_mismatch, axis=1)
-    work["__is_yes"] = work["Match"].astype(str).str.startswith("Yes")
-    work["__is_language_only"] = work["Match"].astype(str).str.startswith("Language only")
-    work["__is_no"] = work["Match"].astype(str).eq("No")
-    work["__missing_starling_meaning"] = work["__starling_meaning_norm"].eq("")
-
-    issue_rows = work[
-        work["__is_language_only"] | work["__is_no"] | work["__meaning_mismatch"]
-    ].copy()
-    meaning_mismatch_rows = work[
-        work["__is_yes"] & work["__meaning_mismatch"]
-    ].copy()
-    missing_starling_meaning_rows = work[
-        work["__missing_starling_meaning"]
-    ].copy()
-
-    branch_rollup = (
-        work.groupby(
-            ["Starling record #", "Validation DED #", "Validation branch label", "Validation branch form"],
-            dropna=False,
-        )
-        .agg(
-            branch_status=("Branch attestation status", "first"),
-            total_rows=("Match", "size"),
-            matched_rows=("Match", lambda s: int(s.astype(str).str.startswith("Yes").sum())),
-            language_only_rows=("Match", lambda s: int(s.astype(str).str.startswith("Language only").sum())),
-            no_rows=("Match", lambda s: int((s.astype(str) == "No").sum())),
-            meaning_mismatch_rows=("__meaning_mismatch", "sum"),
-        )
-        .reset_index()
-    )
-
-    ded_rollup = (
-        work.groupby(["Validation DED #"], dropna=False)
-        .agg(
-            total_rows=("Match", "size"),
-            matched_rows=("Match", lambda s: int(s.astype(str).str.startswith("Yes").sum())),
-            language_only_rows=("Match", lambda s: int(s.astype(str).str.startswith("Language only").sum())),
-            no_rows=("Match", lambda s: int((s.astype(str) == "No").sum())),
-            meaning_mismatch_rows=("__meaning_mismatch", "sum"),
-            branches=("Validation branch label", "nunique"),
-            records=("Starling record #", "nunique"),
-        )
-        .reset_index()
-    )
-
-    review_cols = [
-        "Starling record #",
-        "Validation DED #",
-        "Validation branch label",
-        "Validation branch form",
-        "Starling language",
-        "Starling lexical headword",
-        "Starling lexical meaning",
-        "Match",
-        "Matched Burrow segment scope",
-        "Matched Burrow form",
-        "Matched Burrow meaning",
-        "Validation note",
-    ]
-
-    return {
-        "row_issues": issue_rows[review_cols],
-        "meaning_mismatches": meaning_mismatch_rows[review_cols],
-        "missing_starling_meaning": missing_starling_meaning_rows[review_cols],
-        "branch_rollup": branch_rollup,
-        "ded_rollup": ded_rollup,
-    }
 
 
 def run_validation(

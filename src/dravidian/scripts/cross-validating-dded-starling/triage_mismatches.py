@@ -50,7 +50,7 @@ import pandas as pd
 
 from burrow_entry_parser import BurrowEntryParser
 from review_ledger import load_ledger, reviewed_keys
-from starling_tree_validator import build_validation_audit_frames
+from reporting import build_validation_audit_frames
 
 _DED_COL = "Validation DED #"
 _LANG_COL = "Starling language"
