@@ -304,6 +304,24 @@ _PATTERNS = [
         + r"<b>(" + _HEADWORD_SPAN_ACROSS_NESTED + r")</b>",
         re.DOTALL,
     ),
+    # Pattern CIT: <i><b>Lang. (CITATION</b></i> ...remainder) <b>headword</b>
+    # A bibliographic source citation opens with "(" INSIDE the marker tag but
+    # its closing ")" lands only after the marker, so the abbrev capture breaks
+    # on the "(" and the whole language is dropped:
+    #   DED 2686 "<i><b>Te. (TVB</b></i>, Guntur dial.; comm. by K.) <b>cūru</b>"
+    #   DED 886  "<i><b>Te. (VPK</b></i>, intro. p. 123) <b>ēnu</b>"
+    #   DED 931  "<i><b>Kol. (SSTW</b></i>, p. 83) <b>panta okeng</b>"
+    #   DED 3884 "<i>Go. (LSI</i>, Kōi) <b>paṇi</b>"  (no inner <b>)
+    # Capture the abbrev alone, consume the citation (its "(" inside the marker
+    # through the first ")" after it), then the usual qualifier(s) before the
+    # fresh <b>headword</b>. The MANDATORY "(" right after the abbrev keeps this
+    # from firing on ordinary "<i><b>Lang.</b></i>" or "(Oll.)"-qualifier markers.
+    re.compile(
+        r"<i>(?:<b>)?" + _LANG_ABBREV + r"\s*\([^<>)]*(?:</b>)?</i>[^<>)]*\)\s*"
+        + _OPT_HEADWORD_QUALIFIER
+        + r"<b>(" + _HEADWORD_SPAN_ACROSS_NESTED + r")</b>",
+        re.DOTALL,
+    ),
     # Pattern C2: <i><b>(qualifier).</b> Lang.</i> <b>headword</b>
     # Same leading-qualifier root cause as Pattern C, but the qualifier sits in
     # its OWN <b>...</b> inside the <i>, with the language marker as plain text
