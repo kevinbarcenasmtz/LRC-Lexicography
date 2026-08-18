@@ -32,7 +32,7 @@ import re
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 
-from textnorm import normalize_for_match
+from textnorm import antecedent_is_multiform, normalize_for_match
 
 
 def _split_headword_chain(text: str) -> List[str]:
@@ -631,8 +631,14 @@ class BurrowEntryParser:
         for att in attestations:
             g = att.gloss.strip()
             m_qualified_id = _QUALIFIED_ID_RE.match(g)
+            # An "id." whose antecedent lists several forms is ambiguous -- the
+            # reference points at one form's meaning, not the whole section, and
+            # no string rule resolves which one -- so leave the literal "id."
+            # instead of gluing in the wrong meaning (kept in sync with
+            # repair_burrow_corpus_glosses.py; see antecedent_is_multiform).
+            resolvable = bool(last_real_gloss) and not antecedent_is_multiform(last_real_gloss)
             if g.lower() == "id.":
-                if last_real_gloss:
+                if resolvable:
                     att.gloss = last_real_gloss
             elif m_qualified_id:
                 # e.g. "(pl.) id." -> "(pl.) <prev gloss>". Strip any
@@ -642,13 +648,13 @@ class BurrowEntryParser:
                 # accumulate across multiple attestations.
                 qualifier = m_qualified_id.group(1).strip()
                 suffix = m_qualified_id.group(2).strip().lstrip(";").strip()
-                if last_real_gloss:
+                if resolvable:
                     bare_gloss = _LEADING_PAREN_RE.sub("", last_real_gloss).strip()
                     combined = f"({qualifier}) {bare_gloss}" if qualifier else bare_gloss
                     att.gloss = f"{combined}; {suffix}" if suffix else combined
             elif g.lower().startswith("id."):
                 # e.g. "id.; extra note" → "<prev gloss>; extra note"
-                if last_real_gloss:
+                if resolvable:
                     suffix = g[3:].lstrip(";").strip()
                     att.gloss = f"{last_real_gloss}; {suffix}" if suffix else last_real_gloss
                 last_real_gloss = att.gloss

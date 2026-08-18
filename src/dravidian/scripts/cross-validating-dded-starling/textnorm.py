@@ -95,6 +95,47 @@ def normalize_for_match(text: str) -> str:
     return " ".join(filtered.split())
 
 
+def _looks_like_form_token(token: str) -> bool:
+    """Heuristic: a transliterated Dravidian headword token vs an English
+    gloss word. Burrow's English glosses are plain ASCII; the transliterated
+    forms carry a diacritic, a raised length-dot, or a morpheme hyphen. (Same
+    signal used by gloss_extraction._is_inline_citation_noise.)"""
+    t = token.strip().strip(",;.()[]")
+    if not t:
+        return False
+    if not t.isascii():
+        return True
+    if "-" in t or "·" in token or "·" in token:
+        return True
+    return False
+
+
+def antecedent_is_multiform(gloss: str) -> bool:
+    """True when a resolved antecedent gloss lists more than one form-entry.
+
+    Burrow separates the form-entries of one language section with ``;`` --
+    ``head-form meaning; second-form meaning; ...`` -- while commas stay inside
+    a single sense list. A section is *multi-form* when a ``;`` segment after
+    the first begins with a transliterated Dravidian form token.
+
+    An ``id.`` (idem) reference points at the meaning of ONE specific antecedent
+    form, not the whole section. When the antecedent has a single form the
+    reference is unambiguous and can be expanded by whole-copy; when it has
+    several forms the correct antecedent is editorial, not positional (Burrow's
+    convention -- a compound/derived cognate may match a non-head sense), so no
+    string rule resolves it reliably. This predicate flags that ambiguous case
+    so the ``id.`` resolvers can leave the literal ``id.`` in place (faithful to
+    Burrow) rather than glue in the wrong meaning. See
+    ``docs/dravidian_validator_progress.md`` s6 (id.-expansion over-glue).
+    """
+    segments = [s.strip() for s in (gloss or "").split(";") if s.strip()]
+    for segment in segments[1:]:
+        tokens = segment.split()
+        if tokens and _looks_like_form_token(tokens[0]):
+            return True
+    return False
+
+
 def recover_attestation_gloss_from_full_text(
     full_text: str,
     source_abbrev: str,

@@ -19,7 +19,10 @@ import re
 from pathlib import Path
 from typing import Any, Dict, List
 
-from textnorm import recover_attestation_gloss_from_full_text
+from textnorm import (
+    antecedent_is_multiform,
+    recover_attestation_gloss_from_full_text,
+)
 
 
 def _normalize_spacing(gloss: str) -> str:
@@ -94,8 +97,13 @@ def repair_corpus(data: Dict[str, Any]) -> Dict[str, Any]:
                 continue
             g = (att.get("gloss", "") or "").strip()
             m_qualified_id = _QUALIFIED_ID_RE.match(g)
+            # An "id." whose antecedent lists several forms is ambiguous (the
+            # reference points at one form's meaning, not the whole section) and
+            # cannot be resolved by a string rule -- leave the literal "id."
+            # rather than glue in the wrong meaning (see antecedent_is_multiform).
+            resolvable = bool(last_real_gloss) and not antecedent_is_multiform(last_real_gloss)
             if g.lower() == "id.":
-                if last_real_gloss:
+                if resolvable:
                     att["gloss"] = last_real_gloss
                     changed += 1
             elif m_qualified_id:
@@ -106,7 +114,7 @@ def repair_corpus(data: Dict[str, Any]) -> Dict[str, Any]:
                 # accumulate across multiple attestations.
                 qualifier = m_qualified_id.group(1).strip()
                 suffix = m_qualified_id.group(2).strip().lstrip(";").strip()
-                if last_real_gloss:
+                if resolvable:
                     bare_gloss = _LEADING_PAREN_RE.sub("", last_real_gloss).strip()
                     combined = f"({qualifier}) {bare_gloss}" if qualifier else bare_gloss
                     new_gloss = f"{combined}; {suffix}" if suffix else combined
@@ -114,7 +122,7 @@ def repair_corpus(data: Dict[str, Any]) -> Dict[str, Any]:
                         att["gloss"] = new_gloss
                         changed += 1
             elif g.lower().startswith("id."):
-                if last_real_gloss:
+                if resolvable:
                     suffix = g[3:].lstrip(";").strip()
                     new_gloss = f"{last_real_gloss}; {suffix}" if suffix else last_real_gloss
                     if new_gloss != g:
