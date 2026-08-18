@@ -19,20 +19,24 @@ from typing import Any, List, Optional
 def clean_ded_number(raw: Any) -> Optional[str]:
     """Normalize a DED number to a plain integer string: '0047' -> '47'.
 
-    Burrow occasionally suffixes a DED number with a parenthetical letter
-    (e.g. "4896(a)"/"4896(b)") to mark a split entry, where Starling keys on
-    the plain base number; fold the suffix away so both sides index alike.
+    Burrow occasionally suffixes a DED number to mark a split entry, either
+    with a parenthetical letter (e.g. "4896(a)"/"4896(b)") or a bare trailing
+    letter (e.g. "3621A", where 3621 = "night" and 3621A = "bug"). Starling
+    keys both split halves on the plain base number, so fold the suffix away
+    here so both sides index alike -- the loader then merges the split halves'
+    attestation pools under the base key, and each Starling branch still only
+    matches the forms that textually exist in its half.
 
     This is the validation/ledger-layer cleaner: keys produced here align with
     the tree validator's DED indexing. The scrape/corpus layer deliberately
     keeps split-entry suffixes distinct (see
-    ``BurrowEntryParser.clean_ded_number``) so "4896(a)" and "4896(b)" remain
-    separate corpus entries.
+    ``BurrowEntryParser.clean_ded_number``) so "4896(a)"/"4896(b)" and "3621A"
+    remain separate corpus entries.
     """
     if raw is None:
         return None
     s = str(raw).strip()
-    m = re.match(r"^(\d+)\s*\([a-z]\)$", s)
+    m = re.match(r"^(\d+)\s*(?:\([a-z]\)|[A-Za-z])$", s)
     if m:
         s = m.group(1)
     try:
