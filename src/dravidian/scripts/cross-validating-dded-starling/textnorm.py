@@ -53,6 +53,15 @@ def clean_ded_number(raw: Any) -> Optional[str]:
 # Two confusable dots occur in the corpus (U+0387 dominant, U+00B7), plus IPA length marks.
 LENGTH_DOTS = {ord(c): None for c in "··ːˑ"}
 
+# Burrow marks nasalization (and occasionally a short/breve vowel) with a
+# SPACING modifier letter placed after the vowel -- ˜ (U+02DC, e.g. cī˜kaṭi,
+# ī˜ga) or ˘ (U+02D8, e.g. nū˘vu) -- where Starling uses the COMBINING mark
+# (combining tilde U+0303 etc.), which NFKD + strip-combining already removes on
+# the Starling side. Strip Burrow's spacing forms too so both sides drop the
+# mark consistently and reconcile (same rationale as LENGTH_DOTS -- the feature
+# is treated as non-distinctive for matching on BOTH sides, not just one).
+SPACING_DIACRITICS = {ord("˜"): None, ord("˘"): None, ord("~"): None}
+
 # Starling writes the velar nasal as eng (ŋ); Burrow uses ṅ (n + combining dot
 # above), which NFKD reduces to plain "n". Both are notational variants of the
 # same phoneme /ŋ/, so fold eng to "n" to reconcile the two orthographies.
@@ -93,7 +102,9 @@ def normalize_for_match(text: str) -> str:
     here lets that notation reconcile with Burrow's diacritic forms after NFKD.
 
     Length dots (Burrow's raised-dot vowel-length mark) are stripped so they
-    reconcile with Starling's macron notation -- see ``LENGTH_DOTS``.
+    reconcile with Starling's macron notation -- see ``LENGTH_DOTS``. Burrow's
+    spacing nasalization/breve modifiers are stripped for the same reason --
+    see ``SPACING_DIACRITICS``.
 
     Eng (ŋ) is folded to "n" so Starling's IPA velar-nasal notation reconciles
     with Burrow's ṅ (which NFKD reduces to "n") -- see ``ENG_FOLD``.
@@ -116,6 +127,7 @@ def normalize_for_match(text: str) -> str:
         .strip()
         .lower()
         .translate(LENGTH_DOTS)
+        .translate(SPACING_DIACRITICS)
         .translate(ENG_FOLD)
         .translate(BARRED_I_FOLD)
         .translate(GLOTTAL_FOLD)
