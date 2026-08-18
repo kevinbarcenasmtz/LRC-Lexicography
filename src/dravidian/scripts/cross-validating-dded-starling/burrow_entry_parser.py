@@ -430,6 +430,20 @@ _STRICT_PATTERNS = [
         + r"</i>\s+(?:\([^)]*\)\s*)*(" + _FORM_FIRST + r"[^<]*)(?=<)",
         re.DOTALL,
     ),
+    # Shape (3): <i><b>...sci-name. Abbrev.</b></i> <b>bold-headword</b>
+    # The <i><b> (bold-order) analog of shape (2): the previous language's
+    # trailing scientific name is folded into this marker's bold span before the
+    # abbrev, with the headword in a fresh <b> (DED 2730
+    # "<i><b>Zizyphus oenoplia. Ka.</b></i> (Lush.) <b>suri-muḷḷu</b>"). The
+    # mandatory lowercase-text-then-space before the abbrev keeps it off ordinary
+    # "<i><b>Ka.</b></i>" markers; the _is_known_lang_abbrev gate (applied in the
+    # strict-pattern loop) prevents capturing the scientific name itself as a lang.
+    re.compile(
+        r"<i><b>[^<]*?[a-z][^<]*?\s" + _LANG_ABBREV + r"</b></i>"
+        + _OPT_HEADWORD_QUALIFIER
+        + r"<b>(" + _HEADWORD_SPAN_ACROSS_NESTED + r")</b>",
+        re.DOTALL,
+    ),
 ]
 
 
