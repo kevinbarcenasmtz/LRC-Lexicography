@@ -446,6 +446,55 @@ _STRICT_PATTERNS = [
     ),
 ]
 
+# Running-text variant of shape (1): NO <b> before the <i>, and the headword is
+# PLAIN TEXT after the marker (e.g. DED 257 "<i>M. edule. Tu.</i> alimarů,
+# alimārů"). This is the case shape (1)'s comment deferred, because when the form
+# is elided the marker is followed directly by an English gloss (DED 814
+# "<i>Calotropis gigantea. Ma.</i> gigantic swallow-wort...") with no <b> anchor
+# to tell them apart -- so this pattern is gated by _rt_headword_ok, a lexical
+# guard (not a structural one), and is iterated SEPARATELY from _STRICT_PATTERNS.
+_RT_SCINAME_PATTERN = re.compile(
+    _TOTYPE_NOT_BOLD + r"<i>[^<]*?[a-z][^<]*?\s" + _LANG_ABBREV
+    + r"</i>\s+(?:\([^)]*\)\s*)*(" + _FORM_FIRST + r"[^<]*)(?=<)",
+    re.DOTALL,
+)
+
+# Common English words that begin or pervade a Burrow gloss; a captured
+# running-text headword starting with (or immediately continuing into) one of
+# these is prose, not a Dravidian form, so _rt_headword_ok rejects it.
+_ENGLISH_GLOSS_WORDS = frozenset(
+    """a an the of or and with to as in on at for used kind large small big long
+    wild sacred common red white black green sweet bitter tree plant bird fish
+    gigantic swallow manure leaf leaves flower fruit root seed nut oil water milk
+    grass shrub herb climber creeper species see same be become being sp var""".split()
+)
+
+
+def _rt_headword_ok(text: str) -> Optional[str]:
+    """Lexical guard for _RT_SCINAME_PATTERN (which has no <b> anchor).
+
+    Accept a plain-text run as a headword only when it reads as a Dravidian form,
+    not an English gloss (the elided-form case). A form carries a diacritic /
+    length-dot, or is a token that is not a common English gloss word; prose
+    glosses begin with -- or run straight into -- an English word.
+    """
+    t = text.strip()
+    if not t:
+        return None
+    first = re.split(r"[\s,;]", t, 1)[0].strip(".,;()")
+    if not first:
+        return None
+    if any(ord(c) > 127 or c == "·" or c == "·" for c in first):
+        return t  # diacritic / length-dot -> unambiguously a transliterated form
+    if first.lower() in _ENGLISH_GLOSS_WORDS:
+        return None
+    # Plain-ASCII first token that is not itself a gloss word: still reject if the
+    # run immediately continues as English prose (a following gloss word).
+    for tk in t.split()[1:3]:
+        if tk.strip(".,;()").lower() in _ENGLISH_GLOSS_WORDS:
+            return None
+    return t
+
 
 def _normalize_language(lang_abbrev: str) -> str:
     """
@@ -640,6 +689,25 @@ class BurrowEntryParser:
                         start=m.start(),
                         end=m.end(),
                     )
+
+        # Running-text sci-name pattern: no <b> anchor, so the plain-text headword
+        # is passed through the _rt_headword_ok lexical guard (rejects English
+        # gloss of the elided-form case). Run last, position-deduped like the rest.
+        for m in _RT_SCINAME_PATTERN.finditer(entry_html):
+            if m.start() in seen_starts:
+                continue
+            lang_abbrev = _clean_lang_abbrev(m.group(1))
+            if not _is_valid_lang(lang_abbrev) or not _is_known_lang_abbrev(lang_abbrev):
+                continue
+            headword_text = _rt_headword_ok(_HTML_TAG_RE.sub("", m.group(2)))
+            if headword_text is None:
+                continue
+            seen_starts[m.start()] = _LangSpan(
+                lang_abbrev=lang_abbrev,
+                headword_text=headword_text,
+                start=m.start(),
+                end=m.end(),
+            )
 
         return sorted(seen_starts.values(), key=lambda s: s.start)
 
