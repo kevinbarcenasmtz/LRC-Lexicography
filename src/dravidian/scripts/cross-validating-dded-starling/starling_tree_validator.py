@@ -16,6 +16,7 @@ import argparse
 import json
 import re
 import sys
+from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -74,7 +75,37 @@ _METADATA_KEYS = {
     "Notes on correspondences",
 }
 _DERIVATIVE_SUFFIXES = (" meaning", " derivates", " derivatives")
- 
+
+# The DED-keyed database. Starling embeds cross-references from the main
+# Dravidian etymology database (/data/drav/dravet) out into subgroup
+# reconstruction databases -- Gondi-Kui (gndet), Kui-Kuwi (kuiet), Brahui
+# (braet), Telugu (telet), North Dravidian (ndret), Kolami-Gadba (kogaet),
+# Gondi (gonet), etc. Those subgroup entries reconstruct an intermediate
+# proto-stage and carry no "Number in DED", so a language attestation reached
+# only through such a cross-link cannot be matched against Burrow's DED-keyed
+# corpus (verified against the live Starling pages -- see ledger key
+# konda-gondi-kui-no-ded, which alone accounts for 635 Konda orphan rows).
+# Such orphan entries are counted and excluded from the match results rather
+# than reported as unmatchable rows.
+_DED_KEYED_BASENAME = "dravet"
+
+
+def _source_basename(url: str) -> str:
+    """The Starling database basename a node was scraped from, e.g. 'dravet'
+    or 'gndet', parsed from its ``_url`` (``basename=/data/drav/<name>``,
+    URL-encoded or not). Empty when no basename is present."""
+    match = re.search(r"basename=(?:%2f|/)data(?:%2f|/)drav(?:%2f|/)(\w+)", url or "")
+    return match.group(1) if match else ""
+
+
+def _is_subgroup_db_source(url: str) -> bool:
+    """True when a node comes from a non-DED-keyed subgroup database reached via
+    cross-reference (anything under /data/drav/ other than the main dravet DB).
+    A node with no recognizable basename is treated as main-DB (not suppressed)
+    so genuine DED-less gaps in dravet still surface."""
+    basename = _source_basename(url)
+    return bool(basename) and basename != _DED_KEYED_BASENAME
+
 
 def _is_proto_key(key: str) -> bool:
     return key.startswith("Proto-") or key.startswith("Proto ")
@@ -996,8 +1027,20 @@ def validate_record(
         for child in node.children:
             _walk(child, chain)
 
-        # Report orphan language entries (node has no DED, not root)
+        # Report orphan language entries (node has no DED, not root). Entries
+        # from a non-DED-keyed subgroup database reached via cross-reference get
+        # a distinct status so run_validation can count them and keep them out
+        # of the match results (see _is_subgroup_db_source).
         if not node.ded_number and node.depth > 0 and node.language_entries:
+            if _is_subgroup_db_source(node.source_url):
+                orphan_status = "subgroup_db_no_ded"
+                orphan_notes = (
+                    "Subgroup database "
+                    f"({_source_basename(node.source_url)}) has no DED number"
+                )
+            else:
+                orphan_status = "no_ded_number"
+                orphan_notes = "Parent branch has no DED number"
             for entry in node.language_entries:
                 results.append(
                     ValidationResult(
@@ -1011,8 +1054,8 @@ def validate_record(
                         starling_headword=entry.headword,
                         starling_meaning=entry.meaning,
                         source_node_label=entry.source_node_label,
-                        branch_status="no_ded_number",
-                        notes="Parent branch has no DED number",
+                        branch_status=orphan_status,
+                        notes=orphan_notes,
                         proto_chain=_format_proto_chain(chain),
                         proto_label_path=_labels_from_chain(chain),
                         proto_headword_path=_headwords_from_chain(chain),
@@ -1061,6 +1104,26 @@ def run_validation(
                 f"{len(all_results)} entries validated"
             )
 
+    # Exclude orphan entries from non-DED-keyed subgroup databases: they carry
+    # no DED number and cannot be matched against Burrow's DED-keyed corpus, so
+    # they only add noise to every output. Keep a count (with a per-database
+    # breakdown) for the summary rather than dropping them silently.
+    subgroup_orphans = [
+        r for r in all_results if r.branch_status == "subgroup_db_no_ded"
+    ]
+    all_results = [
+        r for r in all_results if r.branch_status != "subgroup_db_no_ded"
+    ]
+    subgroup_by_db: Dict[str, int] = defaultdict(int)
+    for r in subgroup_orphans:
+        db_match = re.search(r"Subgroup database \((\w+)\)", r.notes or "")
+        subgroup_by_db[db_match.group(1) if db_match else "unknown"] += 1
+    if subgroup_orphans:
+        print(
+            f"Excluded {len(subgroup_orphans)} orphan entries from non-DED-keyed "
+            f"subgroup databases (unmatchable; kept in summary only)"
+        )
+
     df = results_to_dataframe(all_results)
     xlsx_path = out_dir / "tree_validation_results.xlsx"
     df.to_excel(xlsx_path, index=False, engine="openpyxl")
@@ -1081,6 +1144,10 @@ def run_validation(
     print(f"Audit report:   {audit_path}")
 
     summary = generate_summary(all_results)
+    summary["subgroup_db_orphans_excluded"] = len(subgroup_orphans)
+    summary["subgroup_db_orphans_by_database"] = dict(
+        sorted(subgroup_by_db.items(), key=lambda kv: kv[1], reverse=True)
+    )
     summary_path = out_dir / "tree_validation_summary.json"
     with open(summary_path, "w", encoding="utf-8-sig") as f:
         json.dump(summary, f, indent=2)
@@ -1095,6 +1162,12 @@ def run_validation(
     print(f"  Matched in Burrow:  {summary['entries_matched']}")
     if summary["entries_with_ded"]:
         print(f"  Match rate:         {summary['entry_match_rate']}%")
+    if summary.get("subgroup_db_orphans_excluded"):
+        print(
+            f"  Subgroup-DB orphans excluded: "
+            f"{summary['subgroup_db_orphans_excluded']} "
+            f"({summary['subgroup_db_orphans_by_database']})"
+        )
     print(f"\nBranches:             {summary['unique_branches']}")
     for status, count in sorted(summary["branch_status_breakdown"].items()):
         print(f"  {status}: {count}")
