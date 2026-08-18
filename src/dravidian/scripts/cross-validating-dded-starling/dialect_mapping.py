@@ -237,7 +237,9 @@ LANGUAGE_INVENTORY: Dict[str, LanguageInfo] = {
     ),
     "Ir.": LanguageInfo(
         burrow_abbrev="Ir.",
-        starling_base="Iruḷa",
+        # Starling spells this "Irula" (plain l) throughout; DEDR's retroflex
+        # "Iruḷa" is kept as the corpus display but must not be the match target.
+        starling_base="Irula",
         branch=LanguageBranch.NILGIRI,
         dialects=[],
     ),
@@ -287,6 +289,15 @@ LANGUAGE_INVENTORY: Dict[str, LanguageInfo] = {
     ),
 }
 
+# A few Burrow abbreviations appear in the source with inconsistent
+# orthography -- a plain consonant where the canonical form is retroflex, or a
+# dropped trailing period. Map the stray spellings onto their canonical
+# inventory key so match_languages resolves them like the canonical form.
+_ABBREV_ALIASES: Dict[str, str] = {
+    "Mand.": "Manḍ.",  # DED 34: plain-d spelling of Manda (canonical Manḍ.)
+    "Koḍ": "Koḍ.",     # DED 215/2826/5297: Kodagu missing its trailing period
+}
+
 # Reverse indexes (built from LANGUAGE_INVENTORY)
 _STARLING_TO_BURROW: Dict[str, str] = {}
 _DIALECT_TO_BASE: Dict[str, str] = {}
@@ -306,6 +317,14 @@ def _build_indexes() -> None:
         for dialect in info.dialects:
             if dialect not in _DIALECT_TO_BASE:
                 _DIALECT_TO_BASE[dialect] = info.starling_base
+
+    # Register stray-orthography abbreviation variants against the canonical
+    # LanguageInfo (does not touch _STARLING_TO_BURROW, so the canonical
+    # abbreviation stays the reverse-lookup target).
+    for variant, canonical in _ABBREV_ALIASES.items():
+        info = _BURROW_TO_INFO.get(canonical)
+        if info and variant not in _BURROW_TO_INFO:
+            _BURROW_TO_INFO[variant] = info
 
 
 _build_indexes()
