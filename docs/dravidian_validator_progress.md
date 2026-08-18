@@ -170,9 +170,57 @@ Matcher-side fixes change only comparison logic — no regen. Parser-side fixes 
 | **Phase 2 single-char filter** | Parser bug | parser | unquantified | `len(hw) > 1` drops legit one-letter headwords (Tamil `i` in DED 410). Proposed `len(hw) > 1 or hw.isalpha()` — quantify admits first. |
 | **Special-vowel divergences** | Genuine divergence | n/a | `ɨ` ×339, `ʔ` ×84, `ɫ` ×41, `ʒ` ×10 | Real phonemic distinctions (Toda/Kota), not orthographic variants — log as `genuine_divergence`, do **not** fold. Confirm a few before logging. |
 | Long-tail headword mismatches | Mixed | n/a | flat `row_count=2` tail | Individual diacritic/orthographic divergences + dialect mismatches (conf 0.95). No dominant lever. |
-| **Dedupe pass** | Data quality | corpus | DED 410 (×4), 4896 (×2) | Duplicate corpus entries from the scrape/repair. |
+| ~~**Dedupe pass**~~ **CLOSED** | Data quality | matcher (loader) | 988 attestations folded | Duplicate concatenation resolved on load — see §6. |
 | Option C qualifiers | Parser (deferred) | parser | DED 2617, 1617 | Single-letter `P.`/`A.` still captured by Pattern E; left for a structural fix. |
+| **id.-expansion over-glue** | Corpus gloss quality | corpus (repair) | ~322 candidates | OPEN — needs a Burrow-`id.`-convention ruling; see §6. |
 
 All large systemic levers — every matcher-side fold (underscore, length-dot, eng, letter-suffix)
 **and** the two biggest parser-side recoveries (Naiki, nested-tag headword) — are now spent. The
 remaining tail is narrower; Kuwi-type and To-type are the last sizeable parser buckets.
+
+---
+
+## 6. Corpus-duplication reconciliation (2026-08-16)
+
+Two of the 2026-08-16 batch follow-ups — both about the ~117 DED numbers that carry
+more than one corpus entry — resolved **loader-side** (`load_burrow_corpus`), no corpus
+regen, no re-scrape. `entry_match_rate` holds at **94.0%** (18,184 matched); verified by a
+full row-level diff (20,007 rows both sides, 0 added/removed, exactly **1** Match-status
+change — an eliminated false positive).
+
+**Audit of the 104 duplicate-DED groups** (5,633 DEDR entries → 5,516 unique numbers):
+
+- **84 partial-overlap groups** = same-page **double-scrapes**, one copy truncated at an
+  `(a)`/`(b)` sub-entry boundary (e.g. two DED 137 records on p.14). The loader's
+  `setdefault`+append **concatenated** both, so overlapping languages were counted twice.
+- **18 disjoint groups**, of which **10** are the Appendix mislabel below; the rest are
+  genuine same-page complementary splits (kept).
+- **2 identical groups** (byte-identical re-scrapes).
+
+**Fix A — attestation dedup on load.** After concatenation + gloss-repair, each paragraph's
+attestation list is folded on the `(language_abbrev, headwords, gloss)` tuple. Byte-identical
+duplicates collapse; genuine `(a)`/`(b)` forms of one language keep distinct headwords/gloss
+and survive; order-preserving. **988 duplicate attestations folded.** Match-rate-neutral by
+construction (removing duplicate Burrow forms cannot change whether a Starling form matches);
+the win is de-doubled coverage/audit counts.
+
+**Fix B — Appendix page-mislabel.** Ten Appendix supplement entries (pp.509–512, DED
+1/3/4/7/27/44/45/47/49/50) were mislabelled `edition="DEDR"`: `editions.detect_edition_from_text`
+matched the `DED(S) N` backward-reference they carry and overrode the authoritative page≥509
+classification. Their IA-loanword reflexes were being merged into the real DEDR paragraph for
+numbers the Appendix reuses. The loader now skips `edition=="Appendix" OR page>=APPENDIX_START_PAGE`
+(page is authoritative: 62 Appendix / 5623 DEDR is a clean partition). One eliminated false
+positive: Starling Tamil `a` (DED 1) had matched "Language only" against Burrow `akkaṭa`
+"excl. of wonder", which existed **only** in the DED(S) 21 supplement, not DEDR DED 1 (no Tamil)
+→ now correctly "No".
+
+**Deferred — id.-expansion over-glue** (`repair_burrow_corpus_glosses.py`, corpus-side, needs a
+regen). The `id.` (idem) resolver copies the **entire** previous attestation gloss; when that
+previous section is a multi-**form** list, `id.` should mean only the **last form's** meaning
+(DED 7 Ka. opens with all of Toda's gloss). Blast radius ≈ **322** candidate cases (216 exact
+`id.` + 106 `id.;…`, both with an embedded-form previous gloss; + 55 `(X) id.`). **Not fixed:
+the disambiguation is not syntactic** — DED 58 Ma. `mother; aṉṉai … ` and DED 88
+`areca-nut; aṭaippai …` share DED 7's shape but there `id.` means the *head* meaning, so a
+"take the last `;` segment" rule regresses the common single-form/multi-meaning case. A correct
+fix needs form-vs-meaning segmentation of the previous gloss (historically fragile here). Left
+for a Burrow-`id.`-convention ruling; it is gloss-display quality, not a match-rate lever.

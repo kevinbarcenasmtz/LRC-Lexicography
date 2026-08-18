@@ -26,6 +26,7 @@ from dialect_mapping import (
     diagnostic_report,
     get_inline_abbrevs_for_starling_dialect,
 )
+from editions import APPENDIX_START_PAGE
 from textnorm import (
     clean_ded_number,
     normalize_for_match,
@@ -196,7 +197,18 @@ def load_burrow_corpus(
     skipped = 0
     dropped_attestations: List[Tuple[Optional[str], str]] = []
     for entry in entries:
-        if entry.get("edition", "DEDR") == "Appendix":
+        # The page number is the authoritative edition signal: the Appendix
+        # physically begins at APPENDIX_START_PAGE. Ten Appendix entries carry
+        # a "DED(S) N" backward-reference that patch_corpus_editions.py's text
+        # heuristic mistook for a DEDR marker, mislabelling them edition="DEDR"
+        # (e.g. DED 1/7 p.509+, IA-loanword supplement entries). They reuse the
+        # main dictionary's DED numbers, so without this guard their reflexes
+        # would be merged into the real DEDR paragraph. Gate on page directly so
+        # the mislabel cannot leak appendix attestations into DEDR matching.
+        if (
+            entry.get("edition", "DEDR") == "Appendix"
+            or entry.get("page", 0) >= APPENDIX_START_PAGE
+        ):
             skipped += 1
             continue
         ded_raw = entry.get("ded_number")
@@ -235,10 +247,35 @@ def load_burrow_corpus(
             if repaired_gloss:
                 att.gloss = repaired_gloss
             paragraph.attestations.append(att)
+
+    # Deduplicate attestations within each paragraph. The raw scrape holds
+    # duplicate paragraph records for ~84 DED numbers (a re-scrape of the same
+    # page, one copy truncated at an "(a)"/"(b)" sub-entry boundary), and the
+    # loop above concatenates every same-numbered entry's attestations, so the
+    # overlapping languages were being counted twice (e.g. DED 137's Ma./Ka./
+    # Tu./Te. appeared twice, doubling coverage and inflating audit rows). Fold
+    # on the fully-repaired (language, headwords, gloss) tuple: byte-identical
+    # duplicates collapse, while genuine (a)/(b) forms of the same language keep
+    # their distinct headwords/gloss and survive. Order-preserving, so the first
+    # occurrence (and its gloss) wins.
+    deduped = 0
+    for paragraph in by_ded.values():
+        seen: set[Tuple[str, Tuple[str, ...], str]] = set()
+        unique: List[LanguageAttestation] = []
+        for att in paragraph.attestations:
+            key = (att.language_abbrev, tuple(att.headwords), att.gloss)
+            if key in seen:
+                deduped += 1
+                continue
+            seen.add(key)
+            unique.append(att)
+        paragraph.attestations = unique
+
     print(
         f"Burrow corpus: {len(entries)} entries, "
         f"{skipped} appendix skipped, "
-        f"{len(by_ded)} unique DEDR paragraphs indexed"
+        f"{len(by_ded)} unique DEDR paragraphs indexed, "
+        f"{deduped} duplicate attestations folded"
     )
     if dropped_attestations:
         print(
