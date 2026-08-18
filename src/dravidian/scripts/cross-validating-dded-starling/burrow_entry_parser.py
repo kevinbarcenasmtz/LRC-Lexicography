@@ -344,17 +344,38 @@ _PATTERNS = [
 # leading-qualifier shape (which keep the abbrev at the <i> start, just behind a
 # <b> or "<b>("), so this only fires on the genuinely-embedded case.
 #
-# Bold-headword shape ONLY (headword in its own <b>...</b>): the plain-text
-# headword variant is deliberately omitted because where a form is elided the
-# marker is followed directly by the English gloss (e.g. DED 814 Ma.
-# "<i>Calotropis gigantea. Ma.</i> gigantic swallow-wort..."), which a text
-# capture would wrongly store as the headword.
+# Two shapes, distinguished by whether a <b> immediately precedes the <i>:
+#
+#  (1) NO <b> before <i>, headword in its OWN <b>...</b> (_TOTYPE_NOT_BOLD +
+#      trailing "<b>(headword)</b>"). The plain-text-headword flavour of THIS
+#      shape stays omitted, because where a form is elided the marker is
+#      followed directly by the English gloss in running text (e.g. DED 814
+#      "erukku <i>Calotropis gigantea. Ma.</i> gigantic swallow-wort...") and a
+#      text capture would wrongly store the gloss as the headword.
+#
+#  (2) <b> IMMEDIATELY before <i>, PLAIN-TEXT headword in the same bold run
+#      (_TOTYPE_BOLD_EMBEDDED, added below). The editor opens a fresh <b> only
+#      when a real headword follows, so the mandatory "<b>" here is exactly the
+#      signal that separates a form-present case (safe to capture) from the
+#      elided-gloss case above (which has no <b> before its marker <i>). Sized
+#      corpus-wide at 216 unparsed spans (Ma 114, Ka 34, Te 27, Tu 15, Koḏ 10,
+#      To 5, Ko 4, Pa 4, +3), 0 English-gloss contamination -- the scientific
+#      name is the PREVIOUS language's gloss-tail wrongly folded into this <i>.
 _TOTYPE_NOT_BOLD = r"(?<!<b>)(?<!<b>\()"
 _TOTYPE_PRE = r"<i>[^<]*?[a-z][^<]*?"
+# First char of a Dravidian transliteration form; gates the plain-text headword
+# capture in shape (2) so a capitalised follow-token can't be taken as a form.
+_FORM_FIRST = r"[a-zāīūēōṛṝḷṇṭḍḷṅñśṣḻ]"
 _STRICT_PATTERNS = [
     re.compile(
         _TOTYPE_NOT_BOLD + _TOTYPE_PRE + _LANG_ABBREV + r"</i>(?:\s*</b>)?"
         + _OPT_HEADWORD_QUALIFIER + r"<b>(" + _HEADWORD_SPAN_ACROSS_NESTED + r")</b>",
+        re.DOTALL,
+    ),
+    # Shape (2): <b><i>...sci-name. Abbrev.</i> plain-text-headword <...
+    re.compile(
+        r"<b>\s*" + _TOTYPE_PRE + _LANG_ABBREV
+        + r"</i>\s+(?:\([^)]*\)\s*)*(" + _FORM_FIRST + r"[^<]*)(?=<)",
         re.DOTALL,
     ),
 ]
