@@ -91,6 +91,15 @@ def normalize_for_match(text: str) -> str:
         .translate(BARRED_I_FOLD)
     )
     decomposed = unicodedata.normalize("NFKD", base)
+    # Retroflex zh (Tamil/Malayalam ழ, /ɻ/): Starling writes it ẓ (z + U+0323
+    # combining dot below), Burrow writes it r̤ (r + U+0324 combining diaeresis
+    # below) -- the same phoneme in two transliteration conventions. Fold both
+    # to a single sentinel HERE, after NFKD but before combining marks are
+    # stripped: once the marks are gone the two would read as incompatible "z"
+    # vs "r" and never match (e.g. DED 11 akaẓ/akar̤, DED 84 aṭa-maẓa/aṭa-mar̤a).
+    # Deliberately surgical -- r + U+0323 (ṛ) is a DIFFERENT phoneme and is left
+    # untouched; only the exact zh sequences are folded.
+    decomposed = decomposed.replace("ẓ", "ẓ").replace("r̤", "ẓ")
     filtered = "".join(ch for ch in decomposed if not unicodedata.combining(ch))
     return " ".join(filtered.split())
 

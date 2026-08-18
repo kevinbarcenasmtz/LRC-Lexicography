@@ -312,6 +312,20 @@ _PATTERNS = [
         r"([^\s<;(][^<;(]*?)(?=\s*[;<(]|\s*</?[bi])",
         re.DOTALL,
     ),
+    # Pattern G: <i><b>Lang.</b></i> <lone-vowel headword, plain text>
+    # The deictic/pronominal base entries write their leading headword-language
+    # marker in Pattern-C markup (<i><b>Lang.</b></i>) but the headword itself is
+    # a bare vowel in PLAIN text, not <b>-wrapped, followed directly by the
+    # running-prose gloss (DED 1: "<i><b>Ta.</b></i> a demonstr. base expr..."):
+    # Pattern C needs a <b>headword</b>, Pattern E needs a bare <i>Lang.</i>, so
+    # neither fires and the entry's own defining language is dropped. A lone
+    # vowel is the quality guard -- an English gloss word is never a single vowel
+    # -- so this cannot capture prose. Only 1 match corpus-wide today (DED 1 Ta.).
+    re.compile(
+        r"<i><b>" + _OPT_SUBENTRY + _LANG_ABBREV + r"</b></i>\s+"
+        r"([aāiīuūeēoō](?:,\s*[aāiīuūeēoō])*)(?=[\s.;])",
+        re.DOTALL,
+    ),
 ]
 
 # Patterns that scan INTO an <i> span (not anchored on "<i>Abbrev" at the span
