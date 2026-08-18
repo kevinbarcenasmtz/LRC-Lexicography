@@ -68,6 +68,22 @@ ENG_FOLD = {ord("ŋ"): "n", ord("Ŋ"): "n"}  # ŋ, Ŋ -> n
 # matching, not just the display-only canonical-form columns.
 BARRED_I_FOLD = {ord("ɨ"): "i", ord("Ɨ"): "i"}  # ɨ, Ɨ -> i
 
+# Glottal stop is transcribed several ways across the two sources: Starling
+# writes the full letter ʔ (U+0294); Burrow writes it as a modifier letter ˀ
+# (U+02C0, e.g. Maria Gondi oˀ, Kuwi siṭˀ) OR as an apostrophe (rendered as the
+# right single quote U+2019, e.g. Kurukh alra'ānā for Starling alraʔānā). These
+# are one phoneme in three notations, so fold them all to a single sentinel (ʔ)
+# so e.g. alraʔānā and alra'ānā reconcile. A consistent 1:1 fold, so it can
+# only merge forms, never split a currently-matching pair (cf. the ẓ/r̤ and ŋ
+# folds). The modifier/quote characters are not combining, so folding here in
+# the pre-NFKD translate chain is safe.
+GLOTTAL_FOLD = {
+    ord("ˀ"): "ʔ",  # U+02C0 modifier letter glottal stop
+    ord("ʼ"): "ʔ",  # U+02BC modifier letter apostrophe (glottalization)
+    ord("’"): "ʔ",  # ' right single quote (Burrow's rendered apostrophe)
+    ord("'"): "ʔ",  # U+0027 apostrophe
+}
+
 
 def normalize_for_match(text: str) -> str:
     """Normalize headwords for robust matching: strip diacritics, stars, hyphens.
@@ -81,6 +97,9 @@ def normalize_for_match(text: str) -> str:
 
     Eng (ŋ) is folded to "n" so Starling's IPA velar-nasal notation reconciles
     with Burrow's ṅ (which NFKD reduces to "n") -- see ``ENG_FOLD``.
+
+    Glottal stop is folded to a single sentinel so Starling's ʔ reconciles with
+    Burrow's modifier ˀ and its apostrophe notation -- see ``GLOTTAL_FOLD``.
 
     Hyphens are removed outright (not turned into a space): Starling marks the
     root/suffix boundary of a citation form with an internal hyphen (Brahui
@@ -99,6 +118,7 @@ def normalize_for_match(text: str) -> str:
         .translate(LENGTH_DOTS)
         .translate(ENG_FOLD)
         .translate(BARRED_I_FOLD)
+        .translate(GLOTTAL_FOLD)
     )
     decomposed = unicodedata.normalize("NFKD", base)
     # Retroflex zh (Tamil/Malayalam ழ, /ɻ/): Starling writes it ẓ (z + U+0323
