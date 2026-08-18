@@ -289,6 +289,21 @@ _PATTERNS = [
         + r"<b>(" + _HEADWORD_SPAN_ACROSS_NESTED + r")</b>",
         re.DOTALL,
     ),
+    # Pattern C3: <i>(qualifier). <b>Lang.</b></i> <b>headword</b>
+    # Leading qualifier / subentry marker as plain text INSIDE the italic but
+    # BEFORE the bold-wrapped language marker (DED 3655
+    # "<i>(neut.). <b>Go.</b></i> (Tr.) <b>nālung</b>", DED 2876
+    # "<i>(a) <b>Kol.</b></i> <b>so·ŋg-</b>"). Distinct from Pattern C (qualifier
+    # inside the bold) and C2 (qualifier in its own bold). With both leading
+    # groups empty this collapses to "<i><b>Lang.</b></i>" == Pattern C, which
+    # runs first and wins the position, so no double-count.
+    re.compile(
+        r"<i>" + _OPT_LEADING_QUALIFIER + _OPT_SUBENTRY + r"<b>"
+        + _OPT_SUBENTRY + _LANG_ABBREV + r"</b></i>"
+        + _OPT_HEADWORD_QUALIFIER
+        + r"<b>(" + _HEADWORD_SPAN_ACROSS_NESTED + r")</b>",
+        re.DOTALL,
+    ),
     # Pattern C2: <i><b>(qualifier).</b> Lang.</i> <b>headword</b>
     # Same leading-qualifier root cause as Pattern C, but the qualifier sits in
     # its OWN <b>...</b> inside the <i>, with the language marker as plain text
