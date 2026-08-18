@@ -35,6 +35,16 @@ from bs4.element import Tag
 from textnorm import antecedent_is_multiform, normalize_for_match
 
 
+# Single-character headwords are normally noise (stray captured letters) and are
+# filtered out during extraction. The sole legitimate exception is a bare vowel
+# grapheme, which is the actual headword of the deictic/pronominal base entries
+# (Ta. a "remoter base", DED 1; Ta. i "proximate base", DED 410; Ta. u, DED 557;
+# etc.). Without this whitelist the entry's own headword language -- usually the
+# Ta./Ma. that defines it -- is dropped wholesale, because its entire headword
+# chain reduces to single vowels that the length guard would otherwise discard.
+_VOWEL_HEADWORDS = frozenset("aāiīuūeēoō")
+
+
 def _split_headword_chain(text: str) -> List[str]:
     """Split a Burrow headword chain on top-level commas only.
 
@@ -608,7 +618,11 @@ class BurrowEntryParser:
                 for hw in _split_headword_chain(span.headword_text)
             ]
             headwords = [
-                hw for hw in headwords if hw and len(hw) > 1 and not hw.startswith("(")
+                hw
+                for hw in headwords
+                if hw
+                and not hw.startswith("(")
+                and (len(hw) > 1 or hw in _VOWEL_HEADWORDS)
             ]
             if not headwords:
                 continue
