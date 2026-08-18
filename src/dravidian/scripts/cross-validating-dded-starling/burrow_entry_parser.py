@@ -277,8 +277,27 @@ _PATTERNS = [
         re.DOTALL,
     ),
     # Pattern C: <i><b>Lang.</b></i> <b>headword</b>
+    # _OPT_LEADING_QUALIFIER mirrors Pattern A: the PREVIOUS language's trailing
+    # grammatical qualifier is sometimes glued in front of this marker inside the
+    # same bold span (e.g. DED 946 "<i><b>(intr.). Go.</b></i> (Tr.) <b>wōṛānā</b>"),
+    # so the abbrev capture would otherwise start on "(" and fail _is_valid_lang,
+    # dropping the whole language. Optional + non-capturing: normal
+    # "<i><b>Go.</b></i>" markers are unaffected and group numbering is unchanged.
     re.compile(
-        r"<i><b>" + _OPT_SUBENTRY + _LANG_ABBREV + r"</b></i>"
+        r"<i><b>" + _OPT_LEADING_QUALIFIER + _OPT_SUBENTRY + _LANG_ABBREV + r"</b></i>"
+        + _OPT_HEADWORD_QUALIFIER
+        + r"<b>(" + _HEADWORD_SPAN_ACROSS_NESTED + r")</b>",
+        re.DOTALL,
+    ),
+    # Pattern C2: <i><b>(qualifier).</b> Lang.</i> <b>headword</b>
+    # Same leading-qualifier root cause as Pattern C, but the qualifier sits in
+    # its OWN <b>...</b> inside the <i>, with the language marker as plain text
+    # after it (DED 3682 "<i><b>(tr.).</b> Go.</i> (Tr.) <b>nindānā</b>"). Neither
+    # Pattern C (needs Lang inside the bold) nor B/D (needs Lang right after <i>)
+    # anchors here. The required bolded parenthetical before the marker keeps this
+    # from firing on ordinary <i>Lang.</i> spans.
+    re.compile(
+        r"<i><b>\([^)]*\)\.?</b>\s*" + _LANG_ABBREV + r"</i>"
         + _OPT_HEADWORD_QUALIFIER
         + r"<b>(" + _HEADWORD_SPAN_ACROSS_NESTED + r")</b>",
         re.DOTALL,
