@@ -81,11 +81,17 @@ def normalize_for_match(text: str) -> str:
 
     Eng (ŋ) is folded to "n" so Starling's IPA velar-nasal notation reconciles
     with Burrow's ṅ (which NFKD reduces to "n") -- see ``ENG_FOLD``.
+
+    Hyphens are removed outright (not turned into a space): Starling marks the
+    root/suffix boundary of a citation form with an internal hyphen (Brahui
+    ``hamp-ing``, ``all-ī``, ``ir-aṭ``) that Burrow writes joined (``hamping``,
+    ``allī``, ``iraṭ``). Deleting the hyphen -- rather than leaving a space the
+    joined Burrow form can never match -- reconciles the two conventions.
     """
     base = (
         text.replace("*", "")
         .replace("_", "")
-        .replace("-", " ")
+        .replace("-", "")
         .replace("(", " ")
         .replace(")", " ")
         .strip()
