@@ -296,6 +296,10 @@ LANGUAGE_INVENTORY: Dict[str, LanguageInfo] = {
 _ABBREV_ALIASES: Dict[str, str] = {
     "Mand.": "Manḍ.",  # DED 34: plain-d spelling of Manda (canonical Manḍ.)
     "Koḍ": "Koḍ.",     # DED 215/2826/5297: Kodagu missing its trailing period
+    "Kui.": "Kui",     # DED 837: Kui with a stray trailing period (canonical is bare)
+    "Kod.": "Koḍ.",    # DED 4547: plain-d "Kod." (no dot-below) spelling of Kodagu
+    "Konḏa.": "Konḍa", # DED 3684: macron-below-d + period variant of Konḍa
+    "Ko..": "Ko.",     # DED 3700: Kota with a doubled trailing period
 }
 
 # Reverse indexes (built from LANGUAGE_INVENTORY)
