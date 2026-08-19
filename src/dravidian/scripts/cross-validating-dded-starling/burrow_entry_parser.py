@@ -444,6 +444,23 @@ _STRICT_PATTERNS = [
         + r"<b>(" + _HEADWORD_SPAN_ACROSS_NESTED + r")</b>",
         re.DOTALL,
     ),
+    # Shape (4): <i>sci-name. <b>Abbrev.</b></i> <b>headword</b>
+    # The previous language's trailing scientific binomial and the next language's
+    # marker share one <i> span, but here ONLY the abbrev is bolded (the sci-name
+    # is plain text inside the italic) -- the inverse of shape (3), where the
+    # sci-name sits INSIDE the bold. DED 3824 "...vayaḷai purslane, <i>P.
+    # quadrifida. <b>Ma.</b></i> <b>pacaḷa, paśaḷa</b>", DED 3755 "...<i>Phyllanthus
+    # emblica. <b>Ma.</b></i> <b>nelli</b>", DED 4250 "...<i>Trichosanthes anguina.
+    # <b>Ma.</b></i> <b>puṭṭal, piṭṭal</b>". The mandatory lowercase sci-name text
+    # before <b>Abbrev keeps it off ordinary "<i><b>Ma.</b></i>" markers; the
+    # _is_known_lang_abbrev gate (strict-pattern loop) blocks the sci-name itself,
+    # and the <b>-bounded headword is contamination-proof.
+    re.compile(
+        r"<i>[^<]*?[a-z][^<]*?<b>" + _LANG_ABBREV + r"</b></i>"
+        + _OPT_HEADWORD_QUALIFIER
+        + r"<b>(" + _HEADWORD_SPAN_ACROSS_NESTED + r")</b>",
+        re.DOTALL,
+    ),
 ]
 
 # Running-text variant of shape (1): NO <b> before the <i>, and the headword is
