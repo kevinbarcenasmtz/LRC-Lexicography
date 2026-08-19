@@ -118,6 +118,12 @@ def normalize_for_match(text: str) -> str:
     ``allī``, ``iraṭ``). Deleting the hyphen -- rather than leaving a space the
     joined Burrow form can never match -- reconciles the two conventions.
     """
+    # Burrow writes the tense/morphology parenthetical with spaces where Starling
+    # uses commas -- Burrow "(-pp- -tt-)" vs Starling "(-pp-, -tt-)". Drop commas
+    # that sit INSIDE a parenthetical only, so the two reconcile, while a top-level
+    # comma-separated headword list (a genuine form separator -- the same
+    # distinction the DravidiLex import makes, commit 703f775) is left intact.
+    text = re.sub(r"\(([^()]*)\)", lambda m: "(" + m.group(1).replace(",", "") + ")", text)
     base = (
         text.replace("*", "")
         .replace("_", "")
