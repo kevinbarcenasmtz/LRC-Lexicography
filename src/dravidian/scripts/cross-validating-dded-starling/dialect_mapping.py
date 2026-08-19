@@ -546,6 +546,13 @@ GONDI_INLINE_ABBREVS: Dict[str, List[str]] = {
     # (The leading-"Koya" marker shape is admitted by _DIALECT_MARKER_GROUP_RE.)
     "Koya.": ["Koya Gondi"],
     "A.": ["Adilabad Gondi"],
+    # Burrow's actual Adilabad-dialect sigil in the consolidated Go. gloss is
+    # "(SR.)" (e.g. DED 910 "(SR.) yeḍung" <-> Starling "Adilabad Gondi"
+    # yeḍung (SR)). Starling attaches "SR" only to Adilabad Gondi (51x) with
+    # no collision against any other Gondi dialect. Deliberately NOT mapping
+    # bare "Su." here: it recovers nothing beyond SR. and would collide with
+    # Koya's spelled-out "(Koya Su.)" marker group (routed via "Koya." above).
+    "SR.": ["Adilabad Gondi"],
     "Ch.": ["Chindwara Gondi"],
     "S.": ["Seoni Gondi"],
 }
