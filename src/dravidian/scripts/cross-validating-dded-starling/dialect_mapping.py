@@ -536,6 +536,11 @@ GONDI_INLINE_ABBREVS: Dict[str, List[str]] = {
     "L.": ["Maria Gondi (Lind)"],
     "G.": ["Gommu Gondi"],
     "Ko.": ["Koya Gondi"],
+    # Burrow also tags Koya forms with a spelled-out "Koya Su."/"Koya T." group
+    # (Subrahmanyam / Tyler sub-sources); the gloss extractor tokenises those to
+    # {"Koya.", "Su."}/{"Koya.", "T."}, so "Koya." routes them to Koya Gondi too.
+    # (The leading-"Koya" marker shape is admitted by _DIALECT_MARKER_GROUP_RE.)
+    "Koya.": ["Koya Gondi"],
     "A.": ["Adilabad Gondi"],
     "Ch.": ["Chindwara Gondi"],
     "S.": ["Seoni Gondi"],

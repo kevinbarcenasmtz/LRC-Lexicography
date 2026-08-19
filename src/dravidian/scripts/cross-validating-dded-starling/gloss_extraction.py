@@ -65,7 +65,12 @@ def _clean_inline_meaning(meaning_text: str) -> str:
 # A dialect/citation marker group like "Tr.", "Ph.", "Tr. W.", "A. Ch. Mu.
 # Ma." -- as opposed to an ordinary gloss parenthetical. Shared by
 # extract_gloss_forms_for_abbrevs and truncate_gloss_before_first_marker.
-_DIALECT_MARKER_GROUP_RE = re.compile(r"^(?:[A-Za-z]+\.)+(?:\s+[A-Za-z]+\.)*$")
+# Burrow tags Koya sub-sources with a SPELLED-OUT leading word before the dotted
+# sigil -- "(Koya Su.)", "(Koya T.)" -- unlike every other inline marker which is
+# purely dotted abbreviations. The optional leading "Koya " lets those groups pass
+# while an ordinary gloss parenthetical ("(large tree)") is still rejected (its
+# tokens are bare words with no trailing dot and no leading "Koya").
+_DIALECT_MARKER_GROUP_RE = re.compile(r"^(?:Koya\s+)?(?:[A-Za-z]+\.)+(?:\s+[A-Za-z]+\.)*$")
 
 
 def truncate_gloss_before_first_marker(gloss: str) -> str:
