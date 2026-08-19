@@ -93,6 +93,15 @@ GLOTTAL_FOLD = {
     ord("'"): "ʔ",  # U+0027 apostrophe
 }
 
+# Two IPA vowel letters where the sources pick different codepoints for the same
+# phone: Starling writes the mid-central vowel as ǝ (U+01DD turned e), Burrow as
+# ə (U+0259 schwa, DED 190 əyb/ǝyb); Starling writes the open-o as ɔ (U+0254,
+# DED 3498 dɔṇḍE) where Burrow writes plain o (doṇḍE). Neither ǝ nor ə nor ɔ has
+# an NFKD decomposition, so they would otherwise survive normalization unfolded.
+# Fold each to the Burrow spelling. A 1:1 fold -- can only merge forms, never
+# split a currently-matching pair (cf. the ẓ/r̤, ŋ, and barred-i folds).
+IPA_VOWEL_FOLD = {ord("ǝ"): "ə", ord("ɔ"): "o"}  # U+01DD -> schwa, open-o -> o
+
 
 def normalize_for_match(text: str) -> str:
     """Normalize headwords for robust matching: strip diacritics, stars, hyphens.
@@ -124,6 +133,11 @@ def normalize_for_match(text: str) -> str:
     # comma-separated headword list (a genuine form separator -- the same
     # distinction the DravidiLex import makes, commit 703f775) is left intact.
     text = re.sub(r"\(([^()]*)\)", lambda m: "(" + m.group(1).replace(",", "") + ")", text)
+    # Burrow occasionally leaves a stray space around the "/" that separates
+    # alternative stems within one citation form -- Burrow "nolt-/ noṭ-" vs
+    # Starling "nolt-/noṭ-". Collapse whitespace around "/" so the two reconcile
+    # (recurs across Kannada/Kui/Telugu/Naiki/Kota/Kodagu/Muria/Toda).
+    text = re.sub(r"\s*/\s*", "/", text)
     base = (
         text.replace("*", "")
         .replace("_", "")
@@ -137,6 +151,7 @@ def normalize_for_match(text: str) -> str:
         .translate(ENG_FOLD)
         .translate(BARRED_I_FOLD)
         .translate(GLOTTAL_FOLD)
+        .translate(IPA_VOWEL_FOLD)
     )
     decomposed = unicodedata.normalize("NFKD", base)
     # Retroflex zh (Tamil/Malayalam ழ, /ɻ/): Starling writes it ẓ (z + U+0323
