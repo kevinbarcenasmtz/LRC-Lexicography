@@ -19,17 +19,21 @@ Outputs (data/dravidian/lrc_import/)
     Starling data so protoform rows can resolve a Language at import time.
 - dravidilex_batch_import.json
     Reflex rows in the Utilities uploader format (Headwords / Gloss /
-    Language required; every other key lands in LexReflexExtraData).
+    Language required; HeadwordEntries gives the Laravel importer already-split
+    LexReflex.entries; every other key lands in LexReflexExtraData).
     The tree is preserved through Starling ID / Parent Word ID extra data.
 - dravidilex_batch_import.xlsx
     Human-reviewable spreadsheet of the same rows.
 """
 
 import csv
+import html
 import json
 import re
 from collections import defaultdict
+from html.parser import HTMLParser
 from pathlib import Path
+from urllib.parse import parse_qs, urlparse
 
 import openpyxl
 from openpyxl.utils import get_column_letter
@@ -39,6 +43,36 @@ DATA_DIR = REPO_ROOT / "data" / "dravidian"
 STARLING_XLSX = DATA_DIR / "starling" / "output.xlsx"
 TREE_XLSX = DATA_DIR / "three-tier-language tree.xlsx"
 OUT_DIR = DATA_DIR / "lrc_import"
+# Scraped Burrow & Emeneau DEDR entries, keyed by DED number for the Sources
+# column (data/dravidian/burrow_ded/burrow_corpus.cleaned.json).
+BURROW_CORPUS = DATA_DIR / "burrow_ded" / "burrow_corpus.cleaned.json"
+
+# Source abbreviations (must match the `code` column of the committed
+# dravidilex_sources.csv that ImportDravidilexCSV seeds LexSource from).
+SOURCE_DEDR = "DEDR"
+SOURCE_CVOTGD = "CVOTGD"
+SOURCE_STARLING = "STARLING"
+
+# Roots/etyma cannot carry sources (no lex_etyma_source table), so their
+# Starling provenance rides as a plain "Other Info" extra-data line instead.
+ROOT_STARLING_ATTRIBUTION = "Starostin, Dravidian Etymology database (StarlingDB)"
+
+SOURCE_HTML_ALLOWED_TAGS = {"a", "b", "br", "i", "small", "sup"}
+
+STARLING_DATABASE_LABELS = {
+    "/data/drav/dret": "Dravidian etymology",
+    "/data/drav/sdret": "South Dravidian etymology",
+    "/data/drav/gonet": "Gondwan etymology",
+    "/data/drav/kogaet": "Kolami-Gadba etymology",
+    "/data/drav/telet": "Telugu etymology",
+    "/data/drav/kuiet": "Kui-Kuwi etymology",
+    "/data/drav/ktet": "Kota-Toda etymology",
+    "/data/drav/ndret": "North Dravidian etymology",
+    "/data/drav/gndet": "Gondi etymology",
+    "/data/drav/pemet": "Pengo-Manda etymology",
+    "/data/drav/konet": "Konda etymology",
+    "/data/drav/braet": "Brahui etymology",
+}
 
 # Starling uses both spellings; keep one.
 LANGUAGE_NORMALIZATION = {
@@ -338,12 +372,20 @@ def write_batches(batch_dir, records):
     print(f"wrote {n_batches} chunks of <={BATCH_SIZE} to {batch_dir.relative_to(REPO_ROOT)}/")
 
 
+def _xlsx_cell(value):
+    """openpyxl can't write a list/dict cell — JSON-encode complex values
+    (e.g. the Sources array) so the spreadsheet stays human-reviewable."""
+    if isinstance(value, (list, dict)):
+        return json.dumps(value, ensure_ascii=False)
+    return value
+
+
 def write_xlsx(path, header, rows):
     wb = openpyxl.Workbook(write_only=True)
     ws = wb.create_sheet("Sheet1")
     ws.append(header)
     for row in rows:
-        ws.append([row.get(col) for col in header])
+        ws.append([_xlsx_cell(row.get(col)) for col in header])
     wb.save(path)
 
 
@@ -421,6 +463,35 @@ def etymon_entry(headword):
     return str(headword).replace("*", "").strip()
 
 
+def headword_entries(headword):
+    """Split reflex headwords only on top-level commas.
+
+    Starling/DEDR headword cells often use parenthetical morphology such as
+    `aṭai (-v-, -nt-)`. Those commas are display text, not entry separators, so
+    the Laravel importer consumes this pre-shaped list instead of comma-splitting
+    raw Headwords.
+    """
+    entries = []
+    current = []
+    depth = 0
+    for char in str(headword):
+        if char in "([":
+            depth += 1
+        elif char in ")]" and depth > 0:
+            depth -= 1
+        if char == "," and depth == 0:
+            entry = "".join(current).strip()
+            if entry:
+                entries.append(entry)
+            current = []
+            continue
+        current.append(char)
+    entry = "".join(current).strip()
+    if entry:
+        entries.append(entry)
+    return entries
+
+
 def load_buck_tags():
     """Starling row ID -> (Buck field abbr, human-readable field label)."""
     path = OUT_DIR / BUCK_TAGS_CSV_NAME
@@ -446,7 +517,159 @@ def load_buck_tags():
     return tags
 
 
-def build_import_rows(header, rows, buck_tags):
+class SourceHtmlSanitizer(HTMLParser):
+    """Allow only source-entry markup that the lexicon word page should render."""
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.parts = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag not in SOURCE_HTML_ALLOWED_TAGS:
+            return
+        if tag == "br":
+            self.parts.append("<br>")
+            return
+        if tag == "a":
+            href = ""
+            for name, value in attrs:
+                if name == "href" and value and value.startswith(("http://", "https://")):
+                    href = value
+                    break
+            if href:
+                self.parts.append(f'<a href="{html.escape(href, quote=True)}">')
+            return
+        self.parts.append(f"<{tag}>")
+
+    def handle_endtag(self, tag):
+        if tag in SOURCE_HTML_ALLOWED_TAGS and tag != "br":
+            self.parts.append(f"</{tag}>")
+
+    def handle_data(self, data):
+        self.parts.append(html.escape(data))
+
+
+def sanitize_source_html(source_html):
+    sanitizer = SourceHtmlSanitizer()
+    sanitizer.feed(source_html)
+    sanitizer.close()
+    return "".join(sanitizer.parts)
+
+
+def clean_dedr_html(raw):
+    """Normalize a scraped Burrow DEDR entry into clean, well-formed HTML.
+
+    Keeps the linguistically meaningful `<b>`/`<i>` markup; strips the scrape's
+    structural cruft: the `<div class='hw_result'>` wrappers, the `<number>`
+    entry-number tag (covered by our source header + the reflex's `Number in
+    DED`), the malformed `<xref="cdial">…</xref="cdial">` cross-reference
+    pseudo-tags (text kept), and the trailing `<bibl>` line (our bold source
+    header already carries the citation). The remaining HTML is allowlist
+    sanitized before import because source text renders as HTML on word pages.
+    """
+    s = re.sub(r"</?div[^>]*>", "", raw)
+    s = re.sub(r"<number>.*?</number>", "", s, flags=re.S)
+    s = re.sub(r'</?xref="[^"]*">', "", s)
+    s = re.sub(r"<bibl>.*?</bibl>", "", s, flags=re.S)
+    s = re.sub(r"</?super>", lambda m: m.group(0).replace("super", "sup"), s)
+    return sanitize_source_html(re.sub(r"\s+", " ", s).strip())
+
+
+def load_dedr_entries():
+    """DED number -> (page, cleaned_html) from the scraped Burrow corpus.
+
+    Filtered to edition="DEDR" (the Appendix reuses the same numbers). A few
+    DED numbers were scraped more than once; keep the fullest paragraph.
+    """
+    with open(BURROW_CORPUS, encoding="utf-8-sig") as f:
+        corpus = json.load(f)
+    best_len = {}
+    index = {}
+    for entry in corpus.get("entries", []):
+        if entry.get("edition") != "DEDR":
+            continue
+        try:
+            num = int(entry.get("ded_number"))
+        except (TypeError, ValueError):
+            continue
+        raw = entry.get("raw_html") or ""
+        if num in best_len and len(raw) <= best_len[num]:
+            continue
+        best_len[num] = len(raw)
+        index[num] = (entry.get("page"), clean_dedr_html(raw))
+    return index
+
+
+def starling_url_metadata(url):
+    query = parse_qs(urlparse(url).query)
+    basename = query.get("basename", [""])[0]
+    return STARLING_DATABASE_LABELS.get(basename, basename), query.get("text_number", [""])[0]
+
+
+def build_starling_entry(record):
+    """STARLING source body as a citation, not a duplicate entry.
+
+    Word/gloss/tree details already render in the main table and Other Info.
+    Keep only source-locator facts here: Starling branch/database, Starling ID,
+    text number, and link to the original record.
+    """
+    parts = []
+    url = record.get("URL")
+    citation_bits = []
+    if url:
+        database_label, text_number = starling_url_metadata(url)
+        if database_label:
+            citation_bits.append(database_label)
+        if text_number:
+            citation_bits.append(f"text no. {text_number}")
+    if record.get("Starling ID"):
+        citation_bits.append(f"record {record['Starling ID']}")
+    if citation_bits:
+        parts.append(f"<small>{html.escape(' · '.join(citation_bits))}")
+    if url:
+        if citation_bits:
+            parts.append("<br>")
+        parts.append(f'<a href="{html.escape(url, quote=True)}">View original record</a>')
+    if citation_bits:
+        parts.append("</small>")
+    return sanitize_source_html("".join(parts))
+
+
+def build_sources(record, dedr_index, missing_ded):
+    """The `Sources` array for one reflex: DEDR (full Burrow entry, per DED
+    number), CVOTGD (page/entry number only — not scraped yet), and STARLING."""
+    sources = []
+    ded_value = record.get("Number in DED")
+    if ded_value:
+        for num in dict.fromkeys(int(x) for x in re.findall(r"\d+", str(ded_value))):
+            entry = dedr_index.get(num)
+            if entry is None:
+                missing_ded[num] = missing_ded.get(num, 0) + 1
+                continue
+            page, cleaned = entry
+            sources.append({
+                "source": SOURCE_DEDR,
+                "page_number": str(page) if page else "",
+                "original_entry": cleaned,
+            })
+    cvotgd = record.get("Number in CVOTGD")
+    if cvotgd:
+        # Not scraped — a page/entry-number citation only (TODO: scrape CVOTGD).
+        sources.append({
+            "source": SOURCE_CVOTGD,
+            "page_number": str(cvotgd).strip(),
+            "original_entry": "",
+        })
+    if record.get("URL"):
+        sources.append({
+            "source": SOURCE_STARLING,
+            "page_number": "",
+            "original_entry": build_starling_entry(record),
+        })
+    return sources
+
+
+def build_import_rows(header, rows, buck_tags, dedr_index):
     """Map tree rows onto the Utilities reflex-upload format.
 
     Parentless rows are marked `IsEtymon` (with a `HomographNumber`, since
@@ -454,8 +677,13 @@ def build_import_rows(header, rows, buck_tags):
     `Etyma` + `EtymaHomographNumber` pointing at its root, so the uploader can
     create the etymon→reflex tree. Roots always precede their descendants in
     file order, which batching into contiguous chunks preserves.
+
+    Every reflex also gets a `Sources` array (DEDR full entry by DED number,
+    CVOTGD number, STARLING); roots carry Starling only as an "Other Info" line,
+    since etyma cannot hold sources.
     """
     extra_columns = [col for col in header if col not in ("Headword", "Meaning", "Language")]
+    missing_ded = {}
 
     root_link = {}  # row ID -> (etymon entry, homograph number)
     homograph_counts = {}
@@ -485,22 +713,34 @@ def build_import_rows(header, rows, buck_tags):
         link = root_link.get(row["ID"])
         if not row.get("Parent Word ID"):
             record["IsEtymon"] = "1"
+            record["EtymonEntry"] = link[0]
             record["HomographNumber"] = str(link[1])
             tag = buck_tags.get(row["ID"])
             if tag:
                 record["Semantic Tag (Buck)"] = tag[0]
-                if tag[1]:
-                    record["Semantic Field (Buck)"] = tag[1]
+            # Etyma cannot hold sources; surface Starling provenance as Other Info.
+            record["Source (StarlingDB)"] = ROOT_STARLING_ATTRIBUTION
         elif link:
+            record["HeadwordEntries"] = headword_entries(record["Headwords"])
             record["Etyma"] = link[0]
             record["EtymaHomographNumber"] = str(link[1])
         for col in extra_columns:
+            if not row.get("Parent Word ID") and col == "Depth":
+                continue
             value = row.get(col)
             if value is None or str(value).strip() == "":
                 continue
             key = "Starling ID" if col == "ID" else col
             record[key] = str(value).strip()
+        if row.get("Parent Word ID"):
+            sources = build_sources(record, dedr_index, missing_ded)
+            if sources:
+                record["Sources"] = sources
         import_rows.append(record)
+    if missing_ded:
+        print(f"WARNING: {sum(missing_ded.values())} reflex-DED references point at "
+              f"{len(missing_ded)} DED numbers absent from the DEDR corpus "
+              f"(no DEDR source attached): {sorted(missing_ded)[:15]}")
     return import_rows
 
 
@@ -526,7 +766,9 @@ def main():
     buck_tags = load_buck_tags()
     if buck_tags:
         print(f"injecting {len(buck_tags)} Buck semantic tags onto root rows")
-    import_rows = build_import_rows(header, rows, buck_tags)
+    dedr_index = load_dedr_entries()
+    print(f"loaded {len(dedr_index)} DEDR entries for the Sources column")
+    import_rows = build_import_rows(header, rows, buck_tags, dedr_index)
 
     known_languages = {language for _, _, language in languages}
     unmapped = sorted({r["Language"] for r in import_rows} - known_languages)
