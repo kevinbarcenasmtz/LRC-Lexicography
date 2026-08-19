@@ -531,6 +531,10 @@ GONDI_INLINE_ABBREVS: Dict[str, List[str]] = {
     "W.": ["Mandla Gondi (Williamson)"],
     "Ph.": ["Mandla Gondi (Phailbus)"],  # not in §31; retained as uncertain
     "Mu.": ["Muria Gondi"],
+    # East/West Muria sub-labels Burrow uses alongside plain "Mu." (DED 4968
+    # "(MuE.) maloṛ ... (MuW.) malol, molol"); both are Muria Gondi.
+    "MuE.": ["Muria Gondi"],
+    "MuW.": ["Muria Gondi"],
     "Ma.": ["Maria Gondi"],
     "M.": ["Maria Gondi (Mitchell)"],
     "L.": ["Maria Gondi (Lind)"],
