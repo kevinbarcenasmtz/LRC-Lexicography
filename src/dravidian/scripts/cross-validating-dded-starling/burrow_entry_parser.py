@@ -470,6 +470,79 @@ _ENGLISH_GLOSS_WORDS = frozenset(
 )
 
 
+# Plain-text (untagged) language markers in running text: the abbrev is NOT
+# wrapped in <i> (so no _PATTERNS/_STRICT entry anchors on it) and sits right
+# after a sentence boundary, with its headword either sharing the same <b> run
+# (shape 1) or in its own fresh <b> immediately after (shape 2). This is the
+# "glued into the previous language's gloss" miss documented for Tulu, Konda,
+# Malayalam, Malto, Parji, and Kodagu -- e.g. "...male servant. Tu. <b>ūḷiga</b>"
+# (DED 758), "...(Voc. 97). Konḍa <b>al- (aṭ-, aṇ-)</b>" (DED 260),
+# "mango stone. <b>Tu. aṇḍi</b>" (DED 126).
+#
+# These have NO structural <i>-anchor, so over-firing on a mid-gloss
+# cross-reference (e.g. DED 382's "see 4411 Ta. <b>peru</b>)") is the risk. Two
+# guards keep them safe: (1) the MANDATORY sentence-boundary lookbehind
+# `(?<=\.\s)` (a period + whitespace) -- a cross-ref like "4411 Ta." is preceded
+# by a digit, not a period, so it never fires; (2) the _is_known_lang_abbrev
+# gate applied in the loop (same gate the To.-type/RT patterns use), which
+# rejects a capitalised English word ("Water", "Big") that isn't a real
+# language. Iterated AFTER _PATTERNS/_STRICT/_RT so any position an anchored
+# pattern already claimed wins.
+# A cross-reference introducer sitting immediately before a plain-text language
+# marker means the marker is a CROSS-REFERENCE target, not a new attestation:
+# "...abuse. Cf. Ta. eḷku" (DED 776), "? Cf. Kor. (O.) elkiri" (DED 835),
+# "(cf. Ta. ovvoṉṟu each one)" (DED 990). These introducers (Cf./cf./see/s.v./
+# esp./viz./under/=) all themselves end in a period, so they satisfy the
+# _PLAINTEXT_MARKER_PATTERNS' `(?<=\.\s)` sentence-boundary lookbehind and would
+# be wrongly captured. (The number-bearing form "Cf. 856 Ta." is already
+# excluded -- the digit between breaks the immediate period boundary -- so only
+# the no-number "Cf. Ta." shape needs this guard.) Checked against the
+# tag-stripped tail right before the marker.
+_CROSSREF_TAIL_RE = re.compile(
+    r"(?:\bcf|\bsee|\bs\.\s*v|\bviz|\besp|\bunder|\be\.\s*g|=)\s*\.?\s*$",
+    re.IGNORECASE,
+)
+
+
+def _plaintext_marker_is_crossref(entry_html: str, marker_start: int) -> bool:
+    """True when a plain-text marker at ``marker_start`` follows a cross-reference
+    introducer (Cf./cf./see/s.v./esp./viz./under/=), so it is a cross-reference
+    target rather than a new language attestation."""
+    tail = _HTML_TAG_RE.sub("", entry_html[max(0, marker_start - 40):marker_start])
+    return bool(_CROSSREF_TAIL_RE.search(tail))
+
+
+def _plaintext_marker_in_parenthetical(entry_html: str, marker_start: int) -> bool:
+    """True when a plain-text marker sits inside an unclosed "(" -- i.e. within a
+    grammatical sub-form list "(obl. Old Ta. niṉ-, mod. Ta. uṉ-)" (DED 3684), a
+    "(whence borrowed forms, e.g. Te. ...)" derivation note (DED 2448), or a
+    "(= ...; cf. ... Pe. ...)" comparison (DED 2682). A genuine top-level
+    attestation is never inside an open parenthetical, so a positive paren depth
+    at the marker means this is an in-gloss sub-form or editorial note, not a new
+    attestation. Also blocks a Gondi sub-dialect qualifier like "(pl. W. Mu. Ma.
+    ...)" (DED 400) from being mis-parsed as a Malayalam attestation. Paren depth
+    is computed over the tag-stripped text before the marker (headword
+    parentheticals earlier in the entry are balanced, so they net to zero)."""
+    before = _HTML_TAG_RE.sub("", entry_html[:marker_start])
+    return before.count("(") > before.count(")")
+
+
+_PLAINTEXT_MARKER_PATTERNS = [
+    # Shape 1: <b>Abbrev. headword</b>  (marker + headword share one bold run)
+    re.compile(
+        r"(?<=\.\s)<b>" + _LANG_ABBREV + r"\s+("
+        + _HEADWORD_SPAN_ACROSS_NESTED + r")</b>",
+        re.DOTALL,
+    ),
+    # Shape 2: Abbrev. <b>headword</b>  (untagged marker, headword in fresh <b>)
+    re.compile(
+        r"(?<=\.\s)" + _LANG_ABBREV + r"\s*" + _OPT_HEADWORD_QUALIFIER
+        + r"<b>(" + _HEADWORD_SPAN_ACROSS_NESTED + r")</b>",
+        re.DOTALL,
+    ),
+]
+
+
 def _rt_headword_ok(text: str) -> Optional[str]:
     """Lexical guard for _RT_SCINAME_PATTERN (which has no <b> anchor).
 
@@ -708,6 +781,28 @@ class BurrowEntryParser:
                 start=m.start(),
                 end=m.end(),
             )
+
+        # Plain-text (untagged) running-text markers -- no <i> anchor, so gated
+        # by _is_known_lang_abbrev AND the pattern's own mandatory sentence
+        # boundary. Run last so any anchored-pattern position wins first.
+        for pattern in _PLAINTEXT_MARKER_PATTERNS:
+            for m in pattern.finditer(entry_html):
+                if m.start() in seen_starts:
+                    continue
+                if _plaintext_marker_is_crossref(entry_html, m.start()):
+                    continue
+                if _plaintext_marker_in_parenthetical(entry_html, m.start()):
+                    continue
+                lang_abbrev = _clean_lang_abbrev(m.group(1))
+                if not _is_valid_lang(lang_abbrev) or not _is_known_lang_abbrev(lang_abbrev):
+                    continue
+                headword_text = _HTML_TAG_RE.sub("", m.group(2)).strip()
+                seen_starts[m.start()] = _LangSpan(
+                    lang_abbrev=lang_abbrev,
+                    headword_text=headword_text,
+                    start=m.start(),
+                    end=m.end(),
+                )
 
         return sorted(seen_starts.values(), key=lambda s: s.start)
 
