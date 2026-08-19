@@ -65,12 +65,25 @@ def _clean_inline_meaning(meaning_text: str) -> str:
 # A dialect/citation marker group like "Tr.", "Ph.", "Tr. W.", "A. Ch. Mu.
 # Ma." -- as opposed to an ordinary gloss parenthetical. Shared by
 # extract_gloss_forms_for_abbrevs and truncate_gloss_before_first_marker.
+# One dialect/citation abbreviation token: letters (INCLUDING diacritics, e.g.
+# the retroflex "Ṭ." in Kuwi's "(Ṭ. Isr.)") ending in a period. The diacritic
+# widening does not loosen the gate -- every token must still end in "." (an
+# ordinary gloss word like "veṛku" has none), that trailing dot is the real
+# guard, so admitting diacritic letters only lets real markers like "Ṭ." qualify.
+_MARKER_ABBREV_TOKEN = r"[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+\."
+
 # Burrow tags Koya sub-sources with a SPELLED-OUT leading word before the dotted
 # sigil -- "(Koya Su.)", "(Koya T.)" -- unlike every other inline marker which is
 # purely dotted abbreviations. The optional leading "Koya " lets those groups pass
 # while an ordinary gloss parenthetical ("(large tree)") is still rejected (its
-# tokens are bare words with no trailing dot and no leading "Koya").
-_DIALECT_MARKER_GROUP_RE = re.compile(r"^(?:Koya\s+)?(?:[A-Za-z]+\.)+(?:\s+[A-Za-z]+\.)*$")
+# tokens are bare words with no trailing dot and no leading "Koya"). A trailing
+# page citation "p. 127" (e.g. Kuwi's "(Isr. p. 127)") is also admitted -- Burrow
+# glues a source page number onto a source-tagged form -- via the optional tail.
+_DIALECT_MARKER_GROUP_RE = re.compile(
+    r"^(?:Koya\s+)?(?:" + _MARKER_ABBREV_TOKEN + r")+"
+    r"(?:\s+" + _MARKER_ABBREV_TOKEN + r")*"
+    r"(?:\s+p\.?\s*\d+)?$"
+)
 
 
 def truncate_gloss_before_first_marker(gloss: str) -> str:
