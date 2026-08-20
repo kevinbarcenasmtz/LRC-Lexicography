@@ -300,6 +300,7 @@ _ABBREV_ALIASES: Dict[str, str] = {
     "Kod.": "Koḍ.",    # DED 4547: plain-d "Kod." (no dot-below) spelling of Kodagu
     "Konḏa.": "Konḍa", # DED 3684: macron-below-d + period variant of Konḍa
     "Ko..": "Ko.",     # DED 3700: Kota with a doubled trailing period
+    "Koḏ.": "Koḍ.",    # DED 2690: macron-below-d (U+1E0F) OCR variant of Kodagu Koḍ.
 }
 
 # Reverse indexes (built from LANGUAGE_INVENTORY)

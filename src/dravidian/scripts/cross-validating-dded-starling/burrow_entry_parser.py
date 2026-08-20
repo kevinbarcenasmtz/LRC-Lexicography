@@ -216,7 +216,11 @@ _LANG_ABBREV = r"(" + _LANG_CHAR + r"\.?" + _OPT_LANG_QUALIFIER + r")"
 # to stop at) the qualifier got glued onto the captured headword text --
 # and the headword-cleanup filter drops any string starting with "(",
 # silently discarding the whole attestation (Go. in DED 107, Kuwi in DED 83).
-_OPT_HEADWORD_QUALIFIER = r"\s*(?:\([^)]*\)\s*)*"
+# A bare "?" (Burrow's uncertainty mark) sometimes stands in this position with
+# no parentheses, e.g. DED 4143 "<i><b>Tu.</b></i> ? <b>pēñci</b>"; skip it too
+# so the following <b>headword</b> is still reached. (A real headword never
+# begins with "?", so this cannot swallow form content.)
+_OPT_HEADWORD_QUALIFIER = r"\s*(?:\?\s*)?(?:\([^)]*\)\s*)*"
 
 # Headword content for Patterns B/D, C, F, allowed to span across a nested
 # non-<b> tag (grammatical <i>pl.</i>/<i>obl.</i> qualifier, <at>...</at>
@@ -284,8 +288,26 @@ _PATTERNS = [
     # so the abbrev capture would otherwise start on "(" and fail _is_valid_lang,
     # dropping the whole language. Optional + non-capturing: normal
     # "<i><b>Go.</b></i>" markers are unaffected and group numbering is unchanged.
+    # The optional "\.?" between "</b>" and "</i>" tolerates the abbrev's trailing
+    # period landing OUTSIDE the bold span, "<i><b>Koḍ</b>.</i>" (DED 3918): the
+    # abbrev then captures as "Koḍ" (no period), resolved by the "Koḍ" alias.
     re.compile(
-        r"<i><b>" + _OPT_LEADING_QUALIFIER + _OPT_SUBENTRY + _LANG_ABBREV + r"</b></i>"
+        r"<i><b>" + _OPT_LEADING_QUALIFIER + _OPT_SUBENTRY + _LANG_ABBREV + r"</b>\.?</i>"
+        + _OPT_HEADWORD_QUALIFIER
+        + r"<b>(" + _HEADWORD_SPAN_ACROSS_NESTED + r")</b>",
+        re.DOTALL,
+    ),
+    # Pattern CQ: <i><b>Lang.</b> (bibliographic qualifier)</i> <b>headword</b>
+    # A source/dictionary citation sits AFTER the bold-wrapped abbrev but still
+    # INSIDE the italic marker: DED 1563 "<i><b>Tu.</b> (Eng.-Tulu Dict.)</i>
+    # <b>girige</b>", DED 5006 "<i><b>Ta.</b> (DCV)</i> <b>muṟaḷai</b>". Pattern C
+    # needs "</b></i>" immediately (the citation breaks it), and CIT handles the
+    # inverse shape where the "(" opens INSIDE the bold and its ")" lands after
+    # the marker -- neither fires here. The bolded abbrev plus the mandatory
+    # "(...)" between "</b>" and "</i>" keep this off ordinary "<i><b>Lang.</b></i>"
+    # markers; the citation is discarded (only the headword bold is captured).
+    re.compile(
+        r"<i><b>" + _OPT_SUBENTRY + _LANG_ABBREV + r"</b>\s*\([^<]*\)</i>"
         + _OPT_HEADWORD_QUALIFIER
         + r"<b>(" + _HEADWORD_SPAN_ACROSS_NESTED + r")</b>",
         re.DOTALL,
