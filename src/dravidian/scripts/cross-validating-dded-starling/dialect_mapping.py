@@ -553,6 +553,12 @@ GONDI_INLINE_ABBREVS: Dict[str, List[str]] = {
     # bare "Su." here: it recovers nothing beyond SR. and would collide with
     # Koya's spelled-out "(Koya Su.)" marker group (routed via "Koya." above).
     "SR.": ["Adilabad Gondi"],
+    # Adilabad Su. sub-source, tagged "(ASu.)" in the consolidated Go. gloss
+    # (e.g. DED 340 "(ASu.) āg-", DED 3515 "(ASu.) dobbā"): 170 occurrences
+    # corpus-wide, always inside a Gondi gloss flanked by other Gondi sub-
+    # sigils. Distinct token from bare "Su." (skipped above for the Koya
+    # collision) -- "ASu." is unambiguously Adilabad, so it is safe to map.
+    "ASu.": ["Adilabad Gondi"],
     "Ch.": ["Chindwara Gondi"],
     "S.": ["Seoni Gondi"],
 }
