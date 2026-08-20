@@ -583,6 +583,22 @@ _PLAINTEXT_MARKER_PATTERNS = [
 ]
 
 
+# Comma-for-period marker: the abbrev's terminal period is OCR'd as a comma
+# sitting OUTSIDE the italic -- "<b><i>Ta</i>, par̤i (-pp-, -tt-)</b>" (DED 4002,
+# the Tamil form par̤i). Pattern A's mandatory "</i>\s+" (its guard against
+# capturing "<i>SciName</i>; word" scientific names as bogus languages) cannot
+# admit the comma without reopening that hole, so this is a SEPARATE pattern:
+# the abbrev capture has no trailing period (the comma replaced it), and the
+# _find_all_lang_spans loop reconstructs it and gates on the KNOWN-language check
+# -- a scientific name ("Artocarpus.") is not a known language and is rejected,
+# closing the false-positive risk the comma would otherwise open.
+_COMMA_MARKER_PATTERN = re.compile(
+    r"<b>\(?<i>" + _OPT_LEADING_QUALIFIER + _OPT_SUBENTRY + r"(" + _LANG_CHAR + r")"
+    + r"</i>,\s+" + _OPT_HEADWORD_QUALIFIER + r"([^<]+)(?=<)",
+    re.DOTALL,
+)
+
+
 def _rt_headword_ok(text: str) -> Optional[str]:
     """Lexical guard for _RT_SCINAME_PATTERN (which has no <b> anchor).
 
@@ -860,6 +876,24 @@ class BurrowEntryParser:
                     start=m.start(),
                     end=m.end(),
                 )
+
+        # Comma-for-period marker (<i>Ta</i>, headword): reconstruct the abbrev's
+        # elided period and admit ONLY a known language, so a scientific name in
+        # the same shape can't be captured. Run last, position-deduped.
+        for m in _COMMA_MARKER_PATTERN.finditer(entry_html):
+            if m.start() in seen_starts:
+                continue
+            abbrev = _clean_lang_abbrev(m.group(1))
+            abbrev_dot = abbrev if abbrev.endswith(".") else abbrev + "."
+            if not _is_known_lang_abbrev(abbrev_dot):
+                continue
+            headword_text = _HTML_TAG_RE.sub("", m.group(2)).strip()
+            seen_starts[m.start()] = _LangSpan(
+                lang_abbrev=abbrev_dot,
+                headword_text=headword_text,
+                start=m.start(),
+                end=m.end(),
+            )
 
         return sorted(seen_starts.values(), key=lambda s: s.start)
 
