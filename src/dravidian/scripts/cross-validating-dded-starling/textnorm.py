@@ -102,6 +102,23 @@ GLOTTAL_FOLD = {
 # split a currently-matching pair (cf. the ẓ/r̤, ŋ, and barred-i folds).
 IPA_VOWEL_FOLD = {ord("ǝ"): "ə", ord("ɔ"): "o"}  # U+01DD -> schwa, open-o -> o
 
+# Toda's velarized lateral and its voiced sibilant are each written with
+# different codepoints by the two sources. Starling writes the lateral as ɫ
+# (U+026B, l + middle tilde); Burrow writes the SAME Toda phoneme variously as
+# ł (U+0142, l + stroke), ḷ (U+1E37 -> "l" after NFKD), or plain l -- so the
+# only common target reconciling all of Burrow's spellings is plain "l".
+# Likewise Starling writes the sibilant as ʒ (U+0292 ezh) where Burrow writes ζ
+# (U+03B6 Greek zeta) or plain z, so fold both to "z". Each character is 100%
+# Toda-confined in each dataset (ɫ/ʒ Starling-only, ł/ζ Burrow-only), so these
+# 1:1 folds only merge Toda forms -- never split a currently-matching pair in
+# any language (cf. the ẓ/r̤, ŋ, and barred-i folds).
+TODA_CONSONANT_FOLD = {
+    ord("ɫ"): "l",  # U+026B  Starling Toda lateral   -> l
+    ord("ł"): "l",  # U+0142  Burrow Toda lateral      -> l
+    ord("ʒ"): "z",  # U+0292  ezh, Starling Toda       -> z
+    ord("ζ"): "z",  # U+03B6  Greek zeta, Burrow Toda  -> z
+}
+
 
 def normalize_for_match(text: str) -> str:
     """Normalize headwords for robust matching: strip diacritics, stars, hyphens.
@@ -120,6 +137,10 @@ def normalize_for_match(text: str) -> str:
 
     Glottal stop is folded to a single sentinel so Starling's ʔ reconciles with
     Burrow's modifier ˀ and its apostrophe notation -- see ``GLOTTAL_FOLD``.
+
+    Toda's lateral (Starling ɫ / Burrow ł) and sibilant (Starling ʒ / Burrow ζ)
+    are folded to plain "l"/"z" so the two sources' Toda orthographies reconcile
+    -- see ``TODA_CONSONANT_FOLD``.
 
     Hyphens are removed outright (not turned into a space): Starling marks the
     root/suffix boundary of a citation form with an internal hyphen (Brahui
@@ -152,6 +173,7 @@ def normalize_for_match(text: str) -> str:
         .translate(BARRED_I_FOLD)
         .translate(GLOTTAL_FOLD)
         .translate(IPA_VOWEL_FOLD)
+        .translate(TODA_CONSONANT_FOLD)
     )
     decomposed = unicodedata.normalize("NFKD", base)
     # Retroflex zh (Tamil/Malayalam ழ, /ɻ/): Starling writes it ẓ (z + U+0323
