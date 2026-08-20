@@ -387,12 +387,19 @@ def _match_entry(
     matched_burrow_form = ""
     matched_burrow_gloss = ""
     parsed_burrow_segments: List[Dict[str, Any]] = []
+    # Every language-matched attestation, in Burrow order. A consolidated
+    # Burrow language (e.g. Go.) is stored as SEVERAL sibling attestations
+    # (one per sense-group), so the inline-dialect-form scan below must be
+    # able to look in all of them, not only best_att.
+    matched_atts: List[Tuple[Any, LanguageAttestation]] = []
 
     for att in burrow_atts:
         lang_match = match_languages(att.language_abbrev, entry.language, strict=strict)
 
         if not lang_match.matched:
             continue
+
+        matched_atts.append((lang_match, att))
 
         if (
             not best_match_result
@@ -478,77 +485,79 @@ def _match_entry(
     # For consolidated Burrow entries (e.g. Go.) that encode dialect variants
     # inline in the gloss (e.g. "(Mu.) acc-", "(Tr. W.) askÃ„ÂnÃ„Â"), attempt a
     # dialect-specific form match before falling back to direct matches.
+    #
+    # The inline form can live in ANY language-matched attestation, not only
+    # best_att (the highest-confidence segment): a consolidated language is
+    # stored as several sibling attestations, one per sense-group. DED 1850,
+    # for instance, keeps "(ASu.) gudd-" in the second Go. segment
+    # ("khuddā ...; (ASu.) gudd- to quarrel") while best_att is the first
+    # ("kurkal"). Scan best_att first (preserving the single-att behavior),
+    # then the remaining language-matched siblings in Burrow order.
     if best_att and best_match_result and best_match_result.matched:
         inline_abbrevs = get_inline_abbrevs_for_starling_dialect(entry.language)
         if inline_abbrevs:
-            primary_hw = best_att.headwords[0] if best_att.headwords else ""
-            best_att_gloss = recover_attestation_gloss_from_full_text(
-                attestation_full_text,
-                best_att.language_abbrev,
-                best_att.headwords,
-                best_att.gloss,
-            )
-            gloss_forms = extract_gloss_forms_for_abbrevs(
-                primary_hw, best_att_gloss, inline_abbrevs
-            )
-            parsed_burrow_segments = [
-                _build_parsed_burrow_segment(
-                    source=best_att.language_abbrev,
-                    form=form,
-                    meaning=meaning_text,
-                    marker=marker,
-                    used_id=used_id,
-                    match_type="inline",
-                )
-                for form, used_id, marker, meaning_text in gloss_forms
+            scan_order = [(best_match_result, best_att)] + [
+                (lm, att) for lm, att in matched_atts if att is not best_att
             ]
-
-            for form, used_id, marker, meaning_text in gloss_forms:
-                id_note = ""
-                if used_id:
-                    id_note = "Source representation is id."
-                else:
-                    id_note = ""
-
-                form_norm = normalize_for_match(form)
-                if form_norm == starling_norm:
-                    match_notes = best_match_result.notes
-                    matched_burrow_lang = marker or best_att.language_abbrev
-                    matched_burrow_form = form
-                    matched_burrow_gloss = meaning_text
-                    if used_id:
-                        match_notes = f"{id_note}; {match_notes}" if match_notes else id_note
-                    return MatchOutcome(
-                        matched=True,
-                        match_type="gloss_dialect_exact",
-                        confidence=best_match_result.confidence,
-                        attestation=best_att,
-                        notes=match_notes,
-                        parsed_gloss=_parsed_burrow_segments_to_text(parsed_burrow_segments),
-                        burrow_lang=matched_burrow_lang,
-                        burrow_form=matched_burrow_form,
-                        burrow_gloss=matched_burrow_gloss,
+            for scan_match, scan_att in scan_order:
+                primary_hw = scan_att.headwords[0] if scan_att.headwords else ""
+                scan_att_gloss = recover_attestation_gloss_from_full_text(
+                    attestation_full_text,
+                    scan_att.language_abbrev,
+                    scan_att.headwords,
+                    scan_att.gloss,
+                )
+                gloss_forms = extract_gloss_forms_for_abbrevs(
+                    primary_hw, scan_att_gloss, inline_abbrevs
+                )
+                scan_segments = [
+                    _build_parsed_burrow_segment(
+                        source=scan_att.language_abbrev,
+                        form=form,
+                        meaning=meaning_text,
+                        marker=marker,
+                        used_id=used_id,
+                        match_type="inline",
                     )
-                if (
-                    form_norm in starling_norm or starling_norm in form_norm
-                ) and min(len(form_norm), len(starling_norm)) >= 2:
-                    match_notes = best_match_result.notes
-                    matched_burrow_lang = marker or best_att.language_abbrev
-                    matched_burrow_form = form
-                    matched_burrow_gloss = meaning_text
-                    if used_id:
-                        match_notes = f"{id_note}; {match_notes}" if match_notes else id_note
-                    return MatchOutcome(
-                        matched=True,
-                        match_type="gloss_dialect_substring",
-                        confidence=best_match_result.confidence,
-                        attestation=best_att,
-                        notes=match_notes,
-                        parsed_gloss=_parsed_burrow_segments_to_text(parsed_burrow_segments),
-                        burrow_lang=matched_burrow_lang,
-                        burrow_form=matched_burrow_form,
-                        burrow_gloss=matched_burrow_gloss,
-                    )
+                    for form, used_id, marker, meaning_text in gloss_forms
+                ]
+
+                for form, used_id, marker, meaning_text in gloss_forms:
+                    id_note = "Source representation is id." if used_id else ""
+
+                    form_norm = normalize_for_match(form)
+                    if form_norm == starling_norm:
+                        match_notes = scan_match.notes
+                        if used_id:
+                            match_notes = f"{id_note}; {match_notes}" if match_notes else id_note
+                        return MatchOutcome(
+                            matched=True,
+                            match_type="gloss_dialect_exact",
+                            confidence=scan_match.confidence,
+                            attestation=scan_att,
+                            notes=match_notes,
+                            parsed_gloss=_parsed_burrow_segments_to_text(scan_segments),
+                            burrow_lang=marker or scan_att.language_abbrev,
+                            burrow_form=form,
+                            burrow_gloss=meaning_text,
+                        )
+                    if (
+                        form_norm in starling_norm or starling_norm in form_norm
+                    ) and min(len(form_norm), len(starling_norm)) >= 2:
+                        match_notes = scan_match.notes
+                        if used_id:
+                            match_notes = f"{id_note}; {match_notes}" if match_notes else id_note
+                        return MatchOutcome(
+                            matched=True,
+                            match_type="gloss_dialect_substring",
+                            confidence=scan_match.confidence,
+                            attestation=scan_att,
+                            notes=match_notes,
+                            parsed_gloss=_parsed_burrow_segments_to_text(scan_segments),
+                            burrow_lang=marker or scan_att.language_abbrev,
+                            burrow_form=form,
+                            burrow_gloss=meaning_text,
+                        )
 
     if best_exact_match:
         (
