@@ -748,6 +748,23 @@ class BurrowEntryParser:
         for pattern in _PATTERNS:
             for m in pattern.finditer(entry_html):
                 lang_abbrev = _clean_lang_abbrev(m.group(1))
+                # A dialect qualifier can sit BETWEEN the language marker and the
+                # headword, outside the <i> marker --
+                # "<i><b>Nk.</b></i> (Ch.) <b>aṛka</b>" (DED 75/430) or
+                # "<i>Nk.</i> (Ch.) <b>khīr</b>" (DED 1623). There
+                # _OPT_HEADWORD_QUALIFIER consumes and discards it, so "Nk. (Ch.)"
+                # (= Naiki) would be stored as bare "Nk." (= Naikri, the WRONG
+                # dialect -- the form itself parses correctly). Fold the qualifier
+                # back into the abbrev, but ONLY when the inventory recognises the
+                # composite (normalize_burrow changes it) -- so bibliographic /
+                # source tags in the same position ("Go. (Tr.)", "Ga. (S.)",
+                # "(LSI 4.572)") are left untouched, none resolving to a composite.
+                between = entry_html[m.end(1):m.start(2)]
+                qual_m = re.search(r"\(([^)<]*)\)", between)
+                if qual_m:
+                    qualified = f"{lang_abbrev} ({qual_m.group(1).strip()})"
+                    if _is_known_qualified_abbrev(qualified):
+                        lang_abbrev = qualified
                 headword_text = _HTML_TAG_RE.sub("", m.group(2)).strip()
 
                 if not _is_valid_lang(lang_abbrev):
