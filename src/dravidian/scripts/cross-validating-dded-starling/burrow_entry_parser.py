@@ -27,6 +27,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import List, Optional, Tuple
+import html
 import re
 
 from bs4 import BeautifulSoup
@@ -894,8 +895,12 @@ class BurrowEntryParser:
         for i, span in enumerate(spans):
             next_span = spans[i + 1] if i + 1 < len(spans) else None
 
+            # Headwords are regex-sliced from str(blockquote), which preserves
+            # HTML entities (unlike the gloss's get_text path) -- so a source
+            # "(&lt; ...)" derivation note reaches here still escaped. Decode it
+            # so the stored headword reads "(< ...)" as published, not "(&lt; ...)".
             headwords = [
-                hw.strip().rstrip("( ").strip()
+                html.unescape(hw.strip().rstrip("( ").strip())
                 for hw in _split_headword_chain(span.headword_text)
             ]
             headwords = [

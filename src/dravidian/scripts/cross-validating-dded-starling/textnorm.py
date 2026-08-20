@@ -11,6 +11,7 @@ they reduce to the same key -- so the single source of truth lives here.
 
 from __future__ import annotations
 
+import html
 import re
 import unicodedata
 from typing import Any, List, Optional
@@ -148,6 +149,17 @@ def normalize_for_match(text: str) -> str:
     ``allī``, ``iraṭ``). Deleting the hyphen -- rather than leaving a space the
     joined Burrow form can never match -- reconciles the two conventions.
     """
+    # Burrow's etymology notes -- a parenthetical beginning with the "derived
+    # from" arrow, e.g. Kui "gebga (< geg-b-; gegd-)" -- are metadata, not a
+    # citation form, and Starling carries the same note; drop them so matching
+    # keys on the headword proper (also reconciles a spacing difference around
+    # the arrow, "(<kūkp-" vs "(< kūkp-"). The scrape left the arrow HTML-escaped
+    # in the corpus headword ("(&lt; ...)"), so unescape first -- both so the drop
+    # recognizes it and so any stray &lt;/&gt; reconciles with Starling's literal
+    # </>. (html.unescape only rewrites &name;/&#n; sequences, leaving ordinary
+    # headword text untouched.)
+    text = html.unescape(text)
+    text = re.sub(r"\(\s*<[^()]*\)", " ", text)
     # Burrow writes the tense/morphology parenthetical with spaces where Starling
     # uses commas -- Burrow "(-pp- -tt-)" vs Starling "(-pp-, -tt-)". Drop commas
     # that sit INSIDE a parenthetical only, so the two reconcile, while a top-level
