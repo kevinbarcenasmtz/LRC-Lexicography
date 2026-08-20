@@ -189,6 +189,35 @@ def normalize_for_match(text: str) -> str:
     return " ".join(filtered.split())
 
 
+# Burrow writes a pair of variant forms compactly with a short optional segment
+# in parentheses flanked by letters: k(r)ovvu = {kovvu, krovvu}, pur(u)gu =
+# {purugu, purgu}, tal(l)i = {tali, talli}, ven(n)u = {venu, vennu} (esp.
+# Telugu). Starling lists ONE resolution -- sometimes the dropped form,
+# sometimes the kept one -- while normalize_for_match alone maps the parens to
+# spaces ("k r ovvu") and matches neither. The guard is deliberately narrow: an
+# INFIX only (a word char on BOTH sides, no adjacent space) of 1-3 non-space
+# chars, so it never fires on Burrow's tense parentheticals ("(-pp- -tt-)"),
+# obl.-stem notes ("(obl. ...)"), or trailing source sigils ("(B)"), which are
+# space-flanked and/or longer.
+_OPTIONAL_INFIX_RE = re.compile(r"(?<=[^\W\d_])\(([^()\s]{1,3})\)(?=[^\W\d_])", re.UNICODE)
+
+
+def normalize_for_match_variants(text: str) -> List[str]:
+    """normalize_for_match keys for a headword, expanding an optional-infix
+    parenthetical into BOTH resolutions (see ``_OPTIONAL_INFIX_RE``).
+
+    Forms without such an infix yield a single key identical to
+    ``normalize_for_match``. Expansion can only ADD candidate keys, so it can
+    only merge a currently-unmatched headword, never split a matching pair.
+    """
+    keys = {normalize_for_match(text)}
+    if _OPTIONAL_INFIX_RE.search(text):
+        keys.add(normalize_for_match(_OPTIONAL_INFIX_RE.sub("", text)))
+        keys.add(normalize_for_match(_OPTIONAL_INFIX_RE.sub(lambda m: m.group(1), text)))
+    keys.discard("")
+    return list(keys)
+
+
 def _looks_like_form_token(token: str) -> bool:
     """Heuristic: a transliterated Dravidian headword token vs an English
     gloss word. Burrow's English glosses are plain ASCII; the transliterated

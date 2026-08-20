@@ -31,6 +31,7 @@ from editions import APPENDIX_START_PAGE
 from textnorm import (
     clean_ded_number,
     normalize_for_match,
+    normalize_for_match_variants,
     recover_attestation_gloss_from_full_text,
 )
 from gloss_extraction import (
@@ -441,8 +442,13 @@ def _match_entry(
         ]
 
         for bhw, meaning, used_id in candidate_headword_forms:
-            bhw_norm = normalize_for_match(bhw)
-            if bhw_norm == starling_norm:
+            # Burrow writes an optional-segment variant pair compactly as an
+            # infix parenthetical (k(r)ovvu = {kovvu, krovvu}); Starling lists
+            # one resolution. Match against every resolution's key, but keep the
+            # original bhw as the reported Burrow form. (Plain forms yield one
+            # key, so this is a no-op for them.)
+            bhw_norms = normalize_for_match_variants(bhw)
+            if starling_norm in bhw_norms:
                 # Keep direct exact as fallback; inline/dialect extraction is
                 # evaluated after the scan and should take precedence.
                 if (best_exact_match is None) or (
@@ -457,9 +463,11 @@ def _match_entry(
                         bhw,
                         meaning,
                     )
-            if (bhw_norm in starling_norm or starling_norm in bhw_norm) and min(
-                len(bhw_norm), len(starling_norm)
-            ) >= 2:
+            if any(
+                (bhw_norm in starling_norm or starling_norm in bhw_norm)
+                and min(len(bhw_norm), len(starling_norm)) >= 2
+                for bhw_norm in bhw_norms
+            ):
                 if lang_match.confidence >= best_headword_match_conf:
                     best_headword_match = True
                     best_headword_match_conf = lang_match.confidence
