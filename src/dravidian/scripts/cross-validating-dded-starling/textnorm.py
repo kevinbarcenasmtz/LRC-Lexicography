@@ -198,7 +198,14 @@ def normalize_for_match(text: str) -> str:
     # untouched; only the exact zh sequences are folded.
     decomposed = decomposed.replace("ẓ", "ẓ").replace("r̤", "ẓ")
     filtered = "".join(ch for ch in decomposed if not unicodedata.combining(ch))
-    return " ".join(filtered.split())
+    collapsed = " ".join(filtered.split())
+    # Burrow's source typesets the modifier-letter glottal stop as its own unit
+    # with a trailing space (Konda "muˀ er", "loˀ i", "riˀ -/ri-") where Starling
+    # writes the syllable-closing glottal tight ("muʔer", "loʔi"). GLOTTAL_FOLD
+    # has already reduced every glottal notation to the ʔ sentinel above, so drop
+    # a space that immediately follows it and the two reconcile. Applied to both
+    # sides (Starling is already tight), so it can only merge, never split.
+    return re.sub(r"ʔ +", "ʔ", collapsed)
 
 
 # Burrow writes a pair of variant forms compactly with a short optional segment
