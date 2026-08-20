@@ -165,7 +165,20 @@ def normalize_for_match(text: str) -> str:
     # that sit INSIDE a parenthetical only, so the two reconcile, while a top-level
     # comma-separated headword list (a genuine form separator -- the same
     # distinction the DravidiLex import makes, commit 703f775) is left intact.
-    text = re.sub(r"\(([^()]*)\)", lambda m: "(" + m.group(1).replace(",", "") + ")", text)
+    # The closing ")" is optional so an UNTERMINATED parenthetical is handled too:
+    # Burrow's DSAL markup sometimes closes the bold span mid-parenthetical
+    # ("<b>āgu (ān-, āy-</b>, etc.)"), so the parser stores a truncated headword
+    # with a dangling "(" ("āgu (ān-, āy-"). Its internal comma would otherwise
+    # survive here and break the substring match against Starling's balanced
+    # "āgu (ān-, āy-, etc.), agu", even though the core form is identical. On a
+    # balanced parenthetical the behaviour is unchanged -- [^()]* can never cross
+    # a ")", so the ")" is always captured when present (DED 333/530/2781/3098/
+    # 4572/4687/4778).
+    text = re.sub(
+        r"\(([^()]*)(\))?",
+        lambda m: "(" + m.group(1).replace(",", "") + (m.group(2) or ""),
+        text,
+    )
     # Burrow occasionally leaves a stray space around the "/" that separates
     # alternative stems within one citation form -- Burrow "nolt-/ noṭ-" vs
     # Starling "nolt-/noṭ-". Collapse whitespace around "/" so the two reconcile
