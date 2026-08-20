@@ -921,7 +921,15 @@ class BurrowEntryParser:
                     language_abbrev=span.lang_abbrev,
                     language_name=lang_name,
                     headwords=headwords,
-                    gloss=gloss_text[:200],
+                    # Store the full gloss as bounded by _extract_gloss (which
+                    # already stops at the next language marker / DED(S) ref).
+                    # A former [:200] cap silently dropped inline sub-dialect
+                    # forms sitting past 200 chars -- e.g. DED 513's
+                    # "(ASu.) ḍiyyōr", which the matcher's gloss extractor then
+                    # could not reach. Uncapped glosses already ran to ~2700
+                    # chars, so this only lets the ~112 capped ones reach their
+                    # natural bounded length.
+                    gloss=gloss_text,
                     source_text=f"{span.lang_abbrev} {', '.join(headwords)}",
                 )
             )
