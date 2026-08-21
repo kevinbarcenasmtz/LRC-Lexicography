@@ -232,6 +232,37 @@ def extract_gloss_forms_for_abbrevs(
 
         forms.append((following_token, used_id, normalized_marker, meaning_text))
 
+    # Postposed dialect markers. Burrow also writes the form BEFORE its marker --
+    # "; <form> (<dialect>) <gloss>" (e.g. "; huppe (M.) rat", "; ketul (Mu. Ma.)
+    # hut", "; paiyana (Tr.) to be spread") -- which the preposed loop above never
+    # sees. Scan for a SEGMENT-INITIAL form token (right after a ";" boundary or
+    # the gloss start) immediately followed by a dialect marker that includes a
+    # target abbrev, and take that token as the form. Anchoring on the segment
+    # boundary AND the marker is what keeps this safe: it never reaches back across
+    # a gloss into a *different* dialect's form (the failure mode of a naive
+    # backward look), and a mid-segment English gloss word is never segment-initial
+    # right before a marker.
+    for pm in re.finditer(r"(?:^|;)\s*([^\s;()]+)\s+\(([^)]+)\)", gloss):
+        form_tok = pm.group(1).rstrip(".,;")
+        group_text = pm.group(2)
+        if not form_tok or form_tok.lower() in _GLOSS_STOPWORDS:
+            continue
+        if not _DIALECT_MARKER_GROUP_RE.match(group_text.strip()):
+            continue
+        group_abbrevs = {
+            (part if part.endswith(".") else part + ".")
+            for part in re.split(r"\s+", group_text.strip())
+            if part
+        }
+        if target_set.isdisjoint(group_abbrevs):
+            continue
+        normalized_marker = " ".join(
+            part.strip().strip(".") + "." for part in group_text.split()
+        )
+        after = gloss[pm.end():]
+        meaning_text = _clean_inline_meaning(re.split(r"[;(]", after, 1)[0].strip(" ,)"))
+        forms.append((form_tok, False, normalized_marker, meaning_text))
+
     return forms
 
 
