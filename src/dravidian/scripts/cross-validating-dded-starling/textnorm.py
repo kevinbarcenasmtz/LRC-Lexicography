@@ -250,6 +250,14 @@ def normalize_for_match_variants(text: str) -> List[str]:
     ``normalize_for_match``. Expansion can only ADD candidate keys, so it can
     only merge a currently-unmatched headword, never split a matching pair.
     """
+    # Drop the "<->" scrape artifact Burrow's DSAL source leaves inside a few
+    # headwords (Te. "b(r)<-> atuku", "per(u)<-> vu", Kuwi "surpu reˀ <-> (rec-)")
+    # -- stray markup that is not part of the citation form. It must go BEFORE the
+    # optional-infix search below: sitting right after the "(r)" it puts a non-word
+    # char after the ")" and so blocks _OPTIONAL_INFIX_RE from expanding
+    # "b(r)atuku" -> {batuku, bratuku}. Stripping here both cleans the whole-form
+    # key and lets the infix expansion fire (recovers DED 5372 Te. bratuku).
+    text = re.sub(r"\s*<->\s*", "", text)
     keys = {normalize_for_match(text)}
     if _OPTIONAL_INFIX_RE.search(text):
         keys.add(normalize_for_match(_OPTIONAL_INFIX_RE.sub("", text)))
