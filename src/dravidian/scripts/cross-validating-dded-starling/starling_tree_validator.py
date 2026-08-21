@@ -364,6 +364,14 @@ def _match_entry(
 ) -> MatchOutcome:
     """Try to match a Starling language entry against Burrow attestations."""
     starling_norm = normalize_for_match(entry.headword)
+    # Multiform headwords that Burrow SPLITS into separate single tokens (Ma.
+    # "a, ā" stored as ["a", "ā"]) while Starling lists them joined ("a, ā",
+    # which normalize_for_match folds the comma delimiter to "/" -> "a/a"):
+    # match when any "/"-delimited ATOM of the Starling form exactly equals a
+    # Burrow token's atom. Exact full-atom equality only (never substring), so
+    # single-char deictic bases (a/ā, i/ī) reconcile without the spurious-match
+    # risk that the >=2 substring length guard below defends against.
+    starling_atoms = {a for a in starling_norm.split("/") if a}
 
     best_match_result = None
     best_att = None
@@ -455,7 +463,8 @@ def _match_entry(
             # original bhw as the reported Burrow form. (Plain forms yield one
             # key, so this is a no-op for them.)
             bhw_norms = normalize_for_match_variants(bhw)
-            if starling_norm in bhw_norms:
+            bhw_atoms = {a for bn in bhw_norms for a in bn.split("/") if a}
+            if starling_norm in bhw_norms or (starling_atoms & bhw_atoms):
                 # Keep direct exact as fallback; inline/dialect extraction is
                 # evaluated after the scan and should take precedence.
                 if (best_exact_match is None) or (
