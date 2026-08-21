@@ -183,7 +183,15 @@ def normalize_for_match(text: str) -> str:
     # alternative stems within one citation form -- Burrow "nolt-/ noṭ-" vs
     # Starling "nolt-/noṭ-". Collapse whitespace around "/" so the two reconcile
     # (recurs across Kannada/Kui/Telugu/Naiki/Kota/Kodagu/Muria/Toda).
-    text = re.sub(r"\s*/\s*", "/", text)
+    #
+    # Burrow and Starling also disagree on WHICH delimiter joins those stems:
+    # Burrow uses "/" (irum/iṛum, sēlār/sēlāṛ) while Starling lists them
+    # comma-separated (irum, iṛum). Any comma still present HERE is top-level --
+    # in-paren commas were dropped just above -- i.e. a genuine multiform
+    # separator, so fold it to the same "/". Applied identically to both sides
+    # and order-preserving, so it can only merge a currently-unmatched pair,
+    # never split a matching one (cf. the ẓ/r̤, ŋ, and Toda folds).
+    text = re.sub(r"\s*[,/]\s*", "/", text)
     base = (
         text.replace("*", "")
         .replace("_", "")
