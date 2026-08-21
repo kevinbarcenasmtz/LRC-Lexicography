@@ -372,6 +372,16 @@ def _match_entry(
     # single-char deictic bases (a/ā, i/ī) reconcile without the spurious-match
     # risk that the >=2 substring length guard below defends against.
     starling_atoms = {a for a in starling_norm.split("/") if a}
+    # Space-insensitive EXACT match: the two sources disagree on internal spacing
+    # of a single citation form -- an OCR/scrape space splitting one word (Kuwi
+    # "sap ta" for Starling "sapta"), or spacing inside a grammatical parenthetical
+    # (Burrow "kal (obl. kad-, pl. kalk)" vs Starling "kal (obl.kad-,pl.kalk)"), or
+    # a spaced half-length dot (Toda "pu · f" vs "pūf"). Compare with all spaces
+    # removed, but ONLY as full-string equality (never substring): this reconciles
+    # differently-spaced spellings of the SAME form without the spurious-substring
+    # risk that broke DED 410 Chanda when an earlier attempt space-normalized then
+    # substring-matched a stray "pl." fragment.
+    starling_despaced = starling_norm.replace(" ", "")
 
     best_match_result = None
     best_att = None
@@ -464,7 +474,12 @@ def _match_entry(
             # key, so this is a no-op for them.)
             bhw_norms = normalize_for_match_variants(bhw)
             bhw_atoms = {a for bn in bhw_norms for a in bn.split("/") if a}
-            if starling_norm in bhw_norms or (starling_atoms & bhw_atoms):
+            bhw_despaced = {bn.replace(" ", "") for bn in bhw_norms}
+            if (
+                starling_norm in bhw_norms
+                or (starling_atoms & bhw_atoms)
+                or (starling_despaced and starling_despaced in bhw_despaced)
+            ):
                 # Keep direct exact as fallback; inline/dialect extraction is
                 # evaluated after the scan and should take precedence.
                 if (best_exact_match is None) or (
