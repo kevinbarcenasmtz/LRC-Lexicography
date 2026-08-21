@@ -1,0 +1,53 @@
+﻿{
+  "total_language_entries": 19354,
+  "entries_with_ded": 19354,
+  "entries_without_ded": 0,
+  "entries_matched": 19021,
+  "entry_match_rate": 98.3,
+  "unique_branches": 7948,
+  "branch_status_breakdown": {
+    "fully_attested": 7704,
+    "partially_attested (6/7)": 7,
+    "partially_attested (4/5)": 29,
+    "not_attested": 50,
+    "partially_attested (1/2)": 62,
+    "partially_attested (3/4)": 18,
+    "partially_attested (2/4)": 4,
+    "partially_attested (3/6)": 1,
+    "partially_attested (2/5)": 2,
+    "partially_attested (7/8)": 5,
+    "partially_attested (4/6)": 7,
+    "ded_not_in_corpus": 10,
+    "partially_attested (5/6)": 12,
+    "partially_attested (2/3)": 8,
+    "partially_attested (4/7)": 2,
+    "partially_attested (7/14)": 1,
+    "partially_attested (3/5)": 8,
+    "partially_attested (10/12)": 1,
+    "partially_attested (1/3)": 5,
+    "partially_attested (8/11)": 1,
+    "partially_attested (6/9)": 1,
+    "partially_attested (8/9)": 4,
+    "partially_attested (10/11)": 1,
+    "partially_attested (5/7)": 1,
+    "partially_attested (6/8)": 1,
+    "partially_attested (5/8)": 1,
+    "partially_attested (5/11)": 1,
+    "partially_attested (1/4)": 1
+  },
+  "confidence_distribution": {
+    "100%-110%": 13269,
+    "90%-100%": 5752
+  },
+  "records_processed": 20,
+  "subgroup_db_orphans_excluded": 653,
+  "subgroup_db_orphans_by_database": {
+    "gndet": 635,
+    "kuiet": 5,
+    "telet": 4,
+    "ndret": 4,
+    "braet": 3,
+    "kogaet": 1,
+    "gonet": 1
+  }
+}

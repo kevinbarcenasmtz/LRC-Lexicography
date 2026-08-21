@@ -2,3 +2,14 @@
 *.ipynb	diff=jupyternotebook
 
 *.ipynb	merge=jupyternotebook
+
+# ---------------------------------------------------------------------------
+# Cross-machine (Windows <-> macOS) determinism for tracked data files.
+#
+# core.autocrlf=true on Windows vs LF on macOS would otherwise make every
+# ledger/summary write show up as a whole-file diff. Pin these to LF so both
+# machines produce byte-identical output.
+# ---------------------------------------------------------------------------
+data/dravidian/burrow_ded/review_ledger.json  text eol=lf
+tree_validation_output/*.json                 text eol=lf
+tree_validation_output/*.csv                  text eol=lf

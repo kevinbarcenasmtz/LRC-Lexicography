@@ -107,7 +107,7 @@ def save_ledger(ledger: Dict[str, Any], path: str | Path) -> None:
     p.parent.mkdir(parents=True, exist_ok=True)
     fd, tmp_name = tempfile.mkstemp(dir=str(p.parent), prefix=f".{p.name}.", suffix=".tmp")
     try:
-        with os.fdopen(fd, "w", encoding="utf-8-sig") as f:
+        with os.fdopen(fd, "w", encoding="utf-8-sig", newline="\n") as f:
             json.dump(ledger, f, ensure_ascii=False, indent=2)
         os.replace(tmp_name, p)
     except Exception:
