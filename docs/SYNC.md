@@ -140,26 +140,33 @@ look like a whole-file diff. Two guards are in place:
 - `review_ledger.py::save_ledger` now writes with `newline="\n"` so both
   machines emit byte-identical JSON.
 
-The existing ledger was renormalized to LF (content verified identical,
-168 entries preserved).
+The existing ledger was renormalized to LF (content verified identical at the
+time; the committed ledger holds 174 entries / 145 `genuine_divergence`).
 
 ---
 
-## Known gap: pilot import is blocked
+## Language tree source
 
-`src/dravidian/scripts/build_dravidilex_import.py` requires
+`build_dravidilex_import.py` reads a language-tree workbook to build
+`dravidilex_languages.csv` (`build_languages_csv()`, called at line 394):
 
+```python
+TREE_XLSX = DATA_DIR / "three-tier-language tree.xlsx"   # line 44
 ```
-data/dravidian/three-tier-language tree.xlsx      (Krishnamurti 2003)
-```
 
-It is **not on this Windows machine and has never been tracked in git**
-(`git log --all --diff-filter=ADR -- "*three-tier*"` is empty). It is loaded
-unconditionally at `build_dravidilex_import.py:394` in `build_languages_csv()`,
-so the import cannot run without it.
+That Krishnamurti-2003 workbook is **superseded**. A newer tree lives on the Mac
+and is already on Box; the old three-tier file is being retired. It was never
+tracked in git (`git log --all --diff-filter=ADR -- "*three-tier*"` is empty) and
+is not on the Windows machine, so nothing here needs deleting — only the
+`TREE_XLSX` constant needs repointing at the replacement.
 
-The generated `data/dravidian/lrc_import/dravidilex_languages.csv` *is* tracked,
-so a past run did have the file. Check the Mac, then Box. Once located, put it
-on Box with the Tier 2 set and add it to the manifest above — it is a
-hand-authored source, not a derived artifact, so it should never have been
-living on one machine only.
+Two things to check when repointing:
+
+- **Path/filename** — if the replacement is dropped in at the same path under a
+  different name, update line 44 (and the header comment at line 8).
+- **Sheet layout** — `build_languages_csv()` does `wb.active` and reads
+  Family/Subfamily/Language positionally. If the newer workbook has a different
+  active sheet or column order, the path change alone is not enough.
+
+`data/dravidian/lrc_import/index.md` also describes the old tree (lines 5, 21)
+and should be updated to name the replacement.
