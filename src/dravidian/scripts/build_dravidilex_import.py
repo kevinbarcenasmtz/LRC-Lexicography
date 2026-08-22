@@ -669,6 +669,15 @@ def build_sources(record, dedr_index, missing_ded):
     return sources
 
 
+def import_extra_key(column_name):
+    """Normalize Starling/LRC extra-data key spelling for stable site display."""
+    if column_name == "Additional Forms":
+        return "Additional forms"
+    if column_name == "ID":
+        return "Starling ID"
+    return column_name
+
+
 def build_import_rows(header, rows, buck_tags, dedr_index):
     """Map tree rows onto the Utilities reflex-upload format.
 
@@ -730,8 +739,12 @@ def build_import_rows(header, rows, buck_tags, dedr_index):
             value = row.get(col)
             if value is None or str(value).strip() == "":
                 continue
-            key = "Starling ID" if col == "ID" else col
-            record[key] = str(value).strip()
+            key = import_extra_key(col)
+            text_value = str(value).strip()
+            if key in record and record[key] != text_value:
+                record[key] = f"{record[key]}\n{text_value}"
+            else:
+                record[key] = text_value
         if row.get("Parent Word ID"):
             sources = build_sources(record, dedr_index, missing_ded)
             if sources:
