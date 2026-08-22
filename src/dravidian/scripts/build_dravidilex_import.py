@@ -5,8 +5,10 @@ Inputs
 - data/dravidian/starling/output.xlsx
     Tree-structured Starling export (one row per word, linked by Parent Word ID),
     produced by src/dravidian/notebooks/destructuring_of_scraped_json.ipynb.
-- data/dravidian/three-tier-language tree.xlsx
-    Family / Subfamily / Language tiers (Krishnamurti 2003).
+- data/dravidian/lrc_import/dravidilex_languages.csv
+    Family / Subfamily / Language tiers for the LRC import. This tracked CSV is
+    the cross-machine source of truth; the older
+    data/dravidian/three-tier-language tree.xlsx is accepted as a fallback only.
 
 Outputs (data/dravidian/lrc_import/)
 ------------------------------------
@@ -14,9 +16,9 @@ Outputs (data/dravidian/lrc_import/)
     Same tree as output.xlsx, but every protoform row carries the DED
     number(s) of all reflexes in its subtree (all distinct values kept).
 - dravidilex_languages.csv
-    Family,Subfamily,Language rows for the Filament Utilities language
-    uploader. Includes intermediate proto-languages that appear in the
-    Starling data so protoform rows can resolve a Language at import time.
+    Normalized Family,Subfamily,Language rows for the Laravel import command.
+    Includes intermediate proto-languages that appear in the Starling data so
+    protoform rows can resolve a Language at import time.
 - dravidilex_batch_import.json
     Reflex rows in the Utilities uploader format (Headwords / Gloss /
     Language required; HeadwordEntries gives the Laravel importer already-split
@@ -43,6 +45,7 @@ DATA_DIR = REPO_ROOT / "data" / "dravidian"
 STARLING_XLSX = DATA_DIR / "starling" / "output.xlsx"
 TREE_XLSX = DATA_DIR / "three-tier-language tree.xlsx"
 OUT_DIR = DATA_DIR / "lrc_import"
+LANGUAGES_CSV = OUT_DIR / "dravidilex_languages.csv"
 # Scraped Burrow & Emeneau DEDR entries, keyed by DED number for the Sources
 # column (data/dravidian/burrow_ded/burrow_corpus.cleaned.json).
 BURROW_CORPUS = DATA_DIR / "burrow_ded" / "burrow_corpus.cleaned.json"
@@ -210,7 +213,6 @@ SELF_SUBFAMILY_LABELS = {
 # three-tier tree; placed under the tier they belong to (Krishnamurti 2003).
 # Values are (family label, subfamily label) using the shortened names above.
 PROTO_LANGUAGE_TIERS = {
-    "Proto-Dravidian": ("Proto-Dravidian", "Proto-Dravidian"),
     "Proto-South Dravidian": ("South", "Proto-South Dravidian"),
     "Proto-Central Dravidian": ("Central", "Central Dravidian"),
     "Proto-North Dravidian": ("North", "North Dravidian"),
@@ -390,9 +392,11 @@ def write_xlsx(path, header, rows):
 
 
 def build_languages_csv():
-    """Family,Subfamily,Language rows for the Utilities language uploader."""
-    wb = openpyxl.load_workbook(TREE_XLSX)
-    ws = wb.active
+    """Family,Subfamily,Language rows for the Laravel import command.
+
+    The tracked CSV is the practical source of truth across machines. The older
+    xlsx is kept as a fallback for local historical workflows only.
+    """
     entries = []
     seen = set()
 
@@ -406,15 +410,32 @@ def build_languages_csv():
             seen.add(key)
             entries.append(key)
 
-    row_iter = ws.iter_rows(values_only=True)
-    next(row_iter)  # header
-    for family, subfamily, language in row_iter:
-        if family is None:
-            continue
-        # Family- or subfamily-only tier rows carry no importable language;
-        # proto-languages get real rows from PROTO_LANGUAGE_TIERS below.
-        if language:
-            add(family.strip(), subfamily.strip() if subfamily else None, language.strip())
+    if LANGUAGES_CSV.exists():
+        with open(LANGUAGES_CSV, encoding="utf-8-sig", newline="") as f:
+            for row in csv.DictReader(f):
+                family = (row.get("Family") or "").strip()
+                subfamily = (row.get("Subfamily") or "").strip()
+                language = (row.get("Language") or "").strip()
+                if family and language:
+                    add(family, subfamily or None, language)
+    elif TREE_XLSX.exists():
+        wb = openpyxl.load_workbook(TREE_XLSX)
+        ws = wb.active
+        row_iter = ws.iter_rows(values_only=True)
+        next(row_iter)  # header
+        for family, subfamily, language in row_iter:
+            if family is None:
+                continue
+            # Family- or subfamily-only tier rows carry no importable language;
+            # proto-languages get real rows from PROTO_LANGUAGE_TIERS below.
+            if language:
+                add(family.strip(), subfamily.strip() if subfamily else None, language.strip())
+        wb.close()
+    else:
+        raise FileNotFoundError(
+            f"Missing language tiers: expected tracked CSV {LANGUAGES_CSV} "
+            f"or fallback spreadsheet {TREE_XLSX}"
+        )
 
     for language, (family, subfamily) in {**PROTO_LANGUAGE_TIERS, **EXTRA_LANGUAGES}.items():
         key = (family, subfamily, language)
@@ -784,7 +805,13 @@ def main():
     import_rows = build_import_rows(header, rows, buck_tags, dedr_index)
 
     known_languages = {language for _, _, language in languages}
-    unmapped = sorted({r["Language"] for r in import_rows} - known_languages)
+    # Etyma/root rows are not imported as LexReflex records, so their Language
+    # value does not need a LexLanguage row. In particular, the built-in
+    # protolanguage page already represents Proto-Dravidian; adding it here as a
+    # normal language duplicates it in the sidebar.
+    unmapped = sorted(
+        {r["Language"] for r in import_rows if not r.get("IsEtymon")} - known_languages
+    )
     if unmapped:
         raise SystemExit(f"languages missing from languages CSV: {unmapped}")
 
