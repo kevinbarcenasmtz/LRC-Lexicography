@@ -792,7 +792,7 @@ def main():
     languages = build_languages_csv()
     lang_path = OUT_DIR / "dravidilex_languages.csv"
     with open(lang_path, "w", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
+        writer = csv.writer(f, lineterminator="\n")
         writer.writerow(["Family", "Subfamily", "Language"])
         writer.writerows(languages)
     print(f"wrote {lang_path.relative_to(REPO_ROOT)} ({len(languages)} languages)")
