@@ -120,8 +120,10 @@ lrc_venv/
 # Hand-curated triage state — irreplaceable, no script regenerates this
 !data/dravidian/burrow_ded/review_ledger.json
 
-# Validation metric history — tiny JSON summaries, the audit trail of every fix
-!tree_validation_output/tree_validation_summary*.json
+# Current validation summary only. The .before-x/.pre-x snapshots taken during
+# A/B runs stay ignored — they accumulated to 34 files and were cleared; recover
+# any you need from history rather than re-tracking them.
+!tree_validation_output/tree_validation_summary.json
 
 # Active review worklists
 !tree_validation_output/loop_worklist.json
