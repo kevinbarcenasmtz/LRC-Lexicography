@@ -49,6 +49,11 @@ LANGUAGES_CSV = OUT_DIR / "dravidilex_languages.csv"
 # Scraped Burrow & Emeneau DEDR entries, keyed by DED number for the Sources
 # column (data/dravidian/burrow_ded/burrow_corpus.cleaned.json).
 BURROW_CORPUS = DATA_DIR / "burrow_ded" / "burrow_corpus.cleaned.json"
+# Starling ID -> real single-record permalink for root/etymon entries, built by
+# crawl_root_permalinks.py + match_root_stragglers.py (Starling exposes no
+# permalink for a root anywhere in the scraped HTML; these were recovered by
+# walking basename=dravet, text_number=1..2500 and matching back by content).
+ROOT_PERMALINKS = DATA_DIR / "starling" / "dravet_root_permalinks.json"
 
 # Source abbreviations (must match the `code` column of the committed
 # dravidilex_sources.csv that ImportDravidilexCSV seeds LexSource from).
@@ -726,6 +731,26 @@ def build_import_rows(header, rows, buck_tags, dedr_index):
             homograph_counts[entry] = homograph_counts.get(entry, 0) + 1
             root_link[row["ID"]] = (entry, homograph_counts[entry])
 
+    # Starling exposes no permalink for a root/proto-form record anywhere in
+    # the HTML we scrape (neither the listing nor the single-record view
+    # links to one), but a direct single=1&basename=dravet&text_number=N view
+    # does work once you know N -- recovered separately for most roots by
+    # crawl_root_permalinks.py + match_root_stragglers.py. Roots without a
+    # recovered permalink fall back to a link to their first descendant with
+    # a URL instead, as supporting evidence rather than a direct citation.
+    root_permalinks = {}
+    if ROOT_PERMALINKS.exists():
+        with open(ROOT_PERMALINKS, encoding="utf-8") as f:
+            root_permalinks = json.load(f)
+
+    first_child_url = {}  # (etymon entry, homograph number) -> URL
+    for row in rows:
+        if row.get("Parent Word ID"):
+            link = root_link.get(row["ID"])
+            url = row.get("URL")
+            if link and url and link not in first_child_url:
+                first_child_url[link] = str(url).strip()
+
     import_rows = []
     for row in rows:
         starling_language = row["Language"]
@@ -750,6 +775,13 @@ def build_import_rows(header, rows, buck_tags, dedr_index):
                 record["Semantic Tag (Buck)"] = tag[0]
             # Etyma cannot hold sources; surface Starling provenance as Other Info.
             record["Source (StarlingDB)"] = ROOT_STARLING_ATTRIBUTION
+            real_url = root_permalinks.get(row["ID"])
+            if real_url:
+                record["StarlingDB record"] = real_url
+            else:
+                representative_url = first_child_url.get(link)
+                if representative_url:
+                    record["StarlingDB record (nearest reflex)"] = representative_url
         elif link:
             record["HeadwordEntries"] = headword_entries(record["Headwords"])
             record["Etyma"] = link[0]

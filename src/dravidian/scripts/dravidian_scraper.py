@@ -71,10 +71,12 @@ class StarLingGeneralScraper:
                 value = re.sub(r'\s+', ' ', value_span.get_text(' ', strip=True)).strip()
                 value_html = value_span.decode_contents().strip()
             else:
-                # Get all text after field name
+                # Get all text after field name. field_name already has its
+                # trailing colon stripped, but the div's raw text doesn't, so
+                # an empty value would otherwise leave a bare ":" behind.
                 value = re.sub(
                     r'\s+', ' ', div.get_text(' ', strip=True)
-                ).replace(field_name, '', 1).strip()
+                ).replace(field_name, '', 1).strip().lstrip(':').strip()
                 # Markup fallback: clone the div and drop the label + subquery
                 # (+ icon) chrome, then keep whatever markup remains.
                 value_html = ''
