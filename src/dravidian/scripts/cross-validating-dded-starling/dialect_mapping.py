@@ -237,7 +237,9 @@ LANGUAGE_INVENTORY: Dict[str, LanguageInfo] = {
     ),
     "Ir.": LanguageInfo(
         burrow_abbrev="Ir.",
-        starling_base="Iruḷa",
+        # Starling spells this "Irula" (plain l) throughout; DEDR's retroflex
+        # "Iruḷa" is kept as the corpus display but must not be the match target.
+        starling_base="Irula",
         branch=LanguageBranch.NILGIRI,
         dialects=[],
     ),
@@ -287,6 +289,20 @@ LANGUAGE_INVENTORY: Dict[str, LanguageInfo] = {
     ),
 }
 
+# A few Burrow abbreviations appear in the source with inconsistent
+# orthography -- a plain consonant where the canonical form is retroflex, or a
+# dropped trailing period. Map the stray spellings onto their canonical
+# inventory key so match_languages resolves them like the canonical form.
+_ABBREV_ALIASES: Dict[str, str] = {
+    "Mand.": "Manḍ.",  # DED 34: plain-d spelling of Manda (canonical Manḍ.)
+    "Koḍ": "Koḍ.",     # DED 215/2826/5297: Kodagu missing its trailing period
+    "Kui.": "Kui",     # DED 837: Kui with a stray trailing period (canonical is bare)
+    "Kod.": "Koḍ.",    # DED 4547: plain-d "Kod." (no dot-below) spelling of Kodagu
+    "Konḏa.": "Konḍa", # DED 3684: macron-below-d + period variant of Konḍa
+    "Ko..": "Ko.",     # DED 3700: Kota with a doubled trailing period
+    "Koḏ.": "Koḍ.",    # DED 2690: macron-below-d (U+1E0F) OCR variant of Kodagu Koḍ.
+}
+
 # Reverse indexes (built from LANGUAGE_INVENTORY)
 _STARLING_TO_BURROW: Dict[str, str] = {}
 _DIALECT_TO_BASE: Dict[str, str] = {}
@@ -306,6 +322,14 @@ def _build_indexes() -> None:
         for dialect in info.dialects:
             if dialect not in _DIALECT_TO_BASE:
                 _DIALECT_TO_BASE[dialect] = info.starling_base
+
+    # Register stray-orthography abbreviation variants against the canonical
+    # LanguageInfo (does not touch _STARLING_TO_BURROW, so the canonical
+    # abbreviation stays the reverse-lookup target).
+    for variant, canonical in _ABBREV_ALIASES.items():
+        info = _BURROW_TO_INFO.get(canonical)
+        if info and variant not in _BURROW_TO_INFO:
+            _BURROW_TO_INFO[variant] = info
 
 
 _build_indexes()
@@ -497,18 +521,47 @@ def get_dialects(base_language: str) -> List[str]:
 #   Ko.  = Koya Gondi (DGG, Subrahmanyam 1968); distinct from top-level Ko. = Kota
 #   A.   = Adilabad fieldnotes (Burrow & Bhattacharya 1951) / Adilabad dialect
 #   Ch.  = Chindwara Gondi (dialect)
+#   S.   = Seoni Gondi dialect. Evidence: DED 133 Go. gloss "... (Mu. Ko. S.)
+#          adm-, (M.) ādmānā id." <-> Starling "Seoni Gondi" adm-; DED 718
+#          Go. gloss "...(S.) urum- to lighten" <-> Starling "Seoni Gondi"
+#          urum-. No conflict with Kuwi's own "S." = Schulze -- the inline
+#          abbreviation tables are keyed per top-level Starling language, so
+#          Gondi's "S." and Kuwi's "S." never collide.
 GONDI_INLINE_ABBREVS: Dict[str, List[str]] = {
     "Tr.": ["Betul Gondi"],
     "W.": ["Mandla Gondi (Williamson)"],
     "Ph.": ["Mandla Gondi (Phailbus)"],  # not in §31; retained as uncertain
     "Mu.": ["Muria Gondi"],
+    # East/West Muria sub-labels Burrow uses alongside plain "Mu." (DED 4968
+    # "(MuE.) maloṛ ... (MuW.) malol, molol"); both are Muria Gondi.
+    "MuE.": ["Muria Gondi"],
+    "MuW.": ["Muria Gondi"],
     "Ma.": ["Maria Gondi"],
     "M.": ["Maria Gondi (Mitchell)"],
     "L.": ["Maria Gondi (Lind)"],
     "G.": ["Gommu Gondi"],
     "Ko.": ["Koya Gondi"],
+    # Burrow also tags Koya forms with a spelled-out "Koya Su."/"Koya T." group
+    # (Subrahmanyam / Tyler sub-sources); the gloss extractor tokenises those to
+    # {"Koya.", "Su."}/{"Koya.", "T."}, so "Koya." routes them to Koya Gondi too.
+    # (The leading-"Koya" marker shape is admitted by _DIALECT_MARKER_GROUP_RE.)
+    "Koya.": ["Koya Gondi"],
     "A.": ["Adilabad Gondi"],
+    # Burrow's actual Adilabad-dialect sigil in the consolidated Go. gloss is
+    # "(SR.)" (e.g. DED 910 "(SR.) yeḍung" <-> Starling "Adilabad Gondi"
+    # yeḍung (SR)). Starling attaches "SR" only to Adilabad Gondi (51x) with
+    # no collision against any other Gondi dialect. Deliberately NOT mapping
+    # bare "Su." here: it recovers nothing beyond SR. and would collide with
+    # Koya's spelled-out "(Koya Su.)" marker group (routed via "Koya." above).
+    "SR.": ["Adilabad Gondi"],
+    # Adilabad Su. sub-source, tagged "(ASu.)" in the consolidated Go. gloss
+    # (e.g. DED 340 "(ASu.) āg-", DED 3515 "(ASu.) dobbā"): 170 occurrences
+    # corpus-wide, always inside a Gondi gloss flanked by other Gondi sub-
+    # sigils. Distinct token from bare "Su." (skipped above for the Koya
+    # collision) -- "ASu." is unambiguously Adilabad, so it is safe to map.
+    "ASu.": ["Adilabad Gondi"],
     "Ch.": ["Chindwara Gondi"],
+    "S.": ["Seoni Gondi"],
 }
 
 # Kuwi inline source/dialect citations (parallel structure to Gondi above).

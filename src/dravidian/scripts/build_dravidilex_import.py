@@ -5,8 +5,10 @@ Inputs
 - data/dravidian/starling/output.xlsx
     Tree-structured Starling export (one row per word, linked by Parent Word ID),
     produced by src/dravidian/notebooks/destructuring_of_scraped_json.ipynb.
-- data/dravidian/three-tier-language tree.xlsx
-    Family / Subfamily / Language tiers (Krishnamurti 2003).
+- data/dravidian/lrc_import/dravidilex_languages.csv
+    Family / Subfamily / Language tiers for the LRC import. This tracked CSV is
+    the cross-machine source of truth; the older
+    data/dravidian/three-tier-language tree.xlsx is accepted as a fallback only.
 
 Outputs (data/dravidian/lrc_import/)
 ------------------------------------
@@ -14,22 +16,26 @@ Outputs (data/dravidian/lrc_import/)
     Same tree as output.xlsx, but every protoform row carries the DED
     number(s) of all reflexes in its subtree (all distinct values kept).
 - dravidilex_languages.csv
-    Family,Subfamily,Language rows for the Filament Utilities language
-    uploader. Includes intermediate proto-languages that appear in the
-    Starling data so protoform rows can resolve a Language at import time.
+    Normalized Family,Subfamily,Language rows for the Laravel import command.
+    Includes intermediate proto-languages that appear in the Starling data so
+    protoform rows can resolve a Language at import time.
 - dravidilex_batch_import.json
     Reflex rows in the Utilities uploader format (Headwords / Gloss /
-    Language required; every other key lands in LexReflexExtraData).
+    Language required; HeadwordEntries gives the Laravel importer already-split
+    LexReflex.entries; every other key lands in LexReflexExtraData).
     The tree is preserved through Starling ID / Parent Word ID extra data.
 - dravidilex_batch_import.xlsx
     Human-reviewable spreadsheet of the same rows.
 """
 
 import csv
+import html
 import json
 import re
 from collections import defaultdict
+from html.parser import HTMLParser
 from pathlib import Path
+from urllib.parse import parse_qs, urlparse
 
 import openpyxl
 from openpyxl.utils import get_column_letter
@@ -39,6 +45,42 @@ DATA_DIR = REPO_ROOT / "data" / "dravidian"
 STARLING_XLSX = DATA_DIR / "starling" / "output.xlsx"
 TREE_XLSX = DATA_DIR / "three-tier-language tree.xlsx"
 OUT_DIR = DATA_DIR / "lrc_import"
+LANGUAGES_CSV = OUT_DIR / "dravidilex_languages.csv"
+# Scraped Burrow & Emeneau DEDR entries, keyed by DED number for the Sources
+# column (data/dravidian/burrow_ded/burrow_corpus.cleaned.json).
+BURROW_CORPUS = DATA_DIR / "burrow_ded" / "burrow_corpus.cleaned.json"
+# Starling ID -> real single-record permalink for root/etymon entries, built by
+# crawl_root_permalinks.py + match_root_stragglers.py (Starling exposes no
+# permalink for a root anywhere in the scraped HTML; these were recovered by
+# walking basename=dravet, text_number=1..2500 and matching back by content).
+ROOT_PERMALINKS = DATA_DIR / "starling" / "dravet_root_permalinks.json"
+
+# Source abbreviations (must match the `code` column of the committed
+# dravidilex_sources.csv that ImportDravidilexCSV seeds LexSource from).
+SOURCE_DEDR = "DEDR"
+SOURCE_CVOTGD = "CVOTGD"
+SOURCE_STARLING = "STARLING"
+
+# Roots/etyma cannot carry sources (no lex_etyma_source table), so their
+# Starling provenance rides as a plain "Other Info" extra-data line instead.
+ROOT_STARLING_ATTRIBUTION = "Starostin, Dravidian Etymology database (StarlingDB)"
+
+SOURCE_HTML_ALLOWED_TAGS = {"a", "b", "br", "i", "small", "sup"}
+
+STARLING_DATABASE_LABELS = {
+    "/data/drav/dret": "Dravidian etymology",
+    "/data/drav/sdret": "South Dravidian etymology",
+    "/data/drav/gonet": "Gondwan etymology",
+    "/data/drav/kogaet": "Kolami-Gadba etymology",
+    "/data/drav/telet": "Telugu etymology",
+    "/data/drav/kuiet": "Kui-Kuwi etymology",
+    "/data/drav/ktet": "Kota-Toda etymology",
+    "/data/drav/ndret": "North Dravidian etymology",
+    "/data/drav/gndet": "Gondi etymology",
+    "/data/drav/pemet": "Pengo-Manda etymology",
+    "/data/drav/konet": "Konda etymology",
+    "/data/drav/braet": "Brahui etymology",
+}
 
 # Starling uses both spellings; keep one.
 LANGUAGE_NORMALIZATION = {
@@ -176,7 +218,6 @@ SELF_SUBFAMILY_LABELS = {
 # three-tier tree; placed under the tier they belong to (Krishnamurti 2003).
 # Values are (family label, subfamily label) using the shortened names above.
 PROTO_LANGUAGE_TIERS = {
-    "Proto-Dravidian": ("Proto-Dravidian", "Proto-Dravidian"),
     "Proto-South Dravidian": ("South", "Proto-South Dravidian"),
     "Proto-Central Dravidian": ("Central", "Central Dravidian"),
     "Proto-North Dravidian": ("North", "North Dravidian"),
@@ -224,6 +265,7 @@ def load_starling_rows():
     rows = []
     dropped = 0
     kept_spaced_with_data = 0
+    formless = []
     for values in row_iter:
         row = dict(zip(header, values))
         # Drop empty North Dravidian placeholders (see ARTIFACT_LANGUAGE) using
@@ -241,6 +283,17 @@ def load_starling_rows():
         for key, value in row.items():
             if isinstance(value, str) and "_" in value and key not in UNDERSCORE_EXEMPT_COLUMNS:
                 row[key] = fix_underscore_letters(value)
+        # Split source-qualified `form "gloss"` Headwords into a clean form plus a
+        # preserved source gloss (word-379500 bug). Done after underscore repair
+        # so both parts inherit it, and here at load time so the tree xlsx and the
+        # import files stay consistent. The source gloss rides in a transient key
+        # (not in `header`) so it never leaks into the tree xlsx or extra data.
+        if row.get("Headword"):
+            form, source_gloss = split_embedded_gloss(str(row["Headword"]).strip())
+            row["Headword"] = form
+            row["_meaning_source"] = source_gloss
+            if source_gloss is None and '"' in form:
+                formless.append(row.get("ID"))
         rows.append(row)
     wb.close()
     if dropped:
@@ -248,6 +301,9 @@ def load_starling_rows():
     if kept_spaced_with_data:
         print(f"WARNING: kept {kept_spaced_with_data} spaced 'Proto-North Dravidian' "
               f"rows that carry data — review; not treated as artifacts")
+    if formless:
+        print(f"WARNING: {len(formless)} headwords are a bare quoted gloss with no "
+              f"form — left unchanged, need the markup re-scrape: {formless}")
     return header, rows
 
 
@@ -323,19 +379,29 @@ def write_batches(batch_dir, records):
     print(f"wrote {n_batches} chunks of <={BATCH_SIZE} to {batch_dir.relative_to(REPO_ROOT)}/")
 
 
+def _xlsx_cell(value):
+    """openpyxl can't write a list/dict cell — JSON-encode complex values
+    (e.g. the Sources array) so the spreadsheet stays human-reviewable."""
+    if isinstance(value, (list, dict)):
+        return json.dumps(value, ensure_ascii=False)
+    return value
+
+
 def write_xlsx(path, header, rows):
     wb = openpyxl.Workbook(write_only=True)
     ws = wb.create_sheet("Sheet1")
     ws.append(header)
     for row in rows:
-        ws.append([row.get(col) for col in header])
+        ws.append([_xlsx_cell(row.get(col)) for col in header])
     wb.save(path)
 
 
 def build_languages_csv():
-    """Family,Subfamily,Language rows for the Utilities language uploader."""
-    wb = openpyxl.load_workbook(TREE_XLSX)
-    ws = wb.active
+    """Family,Subfamily,Language rows for the Laravel import command.
+
+    The tracked CSV is the practical source of truth across machines. The older
+    xlsx is kept as a fallback for local historical workflows only.
+    """
     entries = []
     seen = set()
 
@@ -349,15 +415,32 @@ def build_languages_csv():
             seen.add(key)
             entries.append(key)
 
-    row_iter = ws.iter_rows(values_only=True)
-    next(row_iter)  # header
-    for family, subfamily, language in row_iter:
-        if family is None:
-            continue
-        # Family- or subfamily-only tier rows carry no importable language;
-        # proto-languages get real rows from PROTO_LANGUAGE_TIERS below.
-        if language:
-            add(family.strip(), subfamily.strip() if subfamily else None, language.strip())
+    if LANGUAGES_CSV.exists():
+        with open(LANGUAGES_CSV, encoding="utf-8-sig", newline="") as f:
+            for row in csv.DictReader(f):
+                family = (row.get("Family") or "").strip()
+                subfamily = (row.get("Subfamily") or "").strip()
+                language = (row.get("Language") or "").strip()
+                if family and language:
+                    add(family, subfamily or None, language)
+    elif TREE_XLSX.exists():
+        wb = openpyxl.load_workbook(TREE_XLSX)
+        ws = wb.active
+        row_iter = ws.iter_rows(values_only=True)
+        next(row_iter)  # header
+        for family, subfamily, language in row_iter:
+            if family is None:
+                continue
+            # Family- or subfamily-only tier rows carry no importable language;
+            # proto-languages get real rows from PROTO_LANGUAGE_TIERS below.
+            if language:
+                add(family.strip(), subfamily.strip() if subfamily else None, language.strip())
+        wb.close()
+    else:
+        raise FileNotFoundError(
+            f"Missing language tiers: expected tracked CSV {LANGUAGES_CSV} "
+            f"or fallback spreadsheet {TREE_XLSX}"
+        )
 
     for language, (family, subfamily) in {**PROTO_LANGUAGE_TIERS, **EXTRA_LANGUAGES}.items():
         key = (family, subfamily, language)
@@ -368,11 +451,71 @@ def build_languages_csv():
     return entries
 
 
+def split_embedded_gloss(headword):
+    """Separate a source-qualified reflex cell into (form, source gloss).
+
+    StarlingDB's source-qualified rows (e.g. "Telugu (Krishnamurti)") render the
+    form and a quoted gloss in one cell, which the destructuring notebook then
+    stored whole as the Headword — e.g. `aḍalu "to be afraid, tremble, shake"`
+    on word 379500. It affects a sixth of the pilot rows, concentrated in
+    dialect-source languages (Gondi, Kuvi, Kolami, Kota, Parji).
+
+    The form is everything before the first double quote; the gloss is what sits
+    between the first and last quote (nested quotes inside a gloss are kept).
+    The embedded gloss is usually MORE specific than the row's own Meaning (which
+    carries the parent etymon's general sense), so it is worth preserving as a
+    'Meaning (source)' extra-data field rather than discarding.
+
+    Guard: a handful of rows are a bare quoted gloss with no form before it
+    (e.g. `"hoe"`) — a distinct scrape defect that only the markup re-scrape can
+    repair. Splitting those would blank the headword, so they are left untouched
+    (form == original) and flagged by the caller.
+    """
+    if '"' not in headword:
+        return headword, None
+    form = headword.split('"', 1)[0].strip()
+    if form == "":
+        return headword, None  # form-less: leave unchanged, caller flags it
+    first, last = headword.index('"'), headword.rindex('"')
+    gloss = headword[first + 1:last] if last > first else headword[first + 1:]
+    gloss = gloss.strip()
+    return form, (gloss or None)
+
+
 def etymon_entry(headword):
     """Etyma entries are stored without asterisks — including on inner
     variants like "*aḍái ~ *aḍí" — because the site's etymon views prepend a
     single <sup>*</sup> for the whole entry (IELex convention)."""
     return str(headword).replace("*", "").strip()
+
+
+def headword_entries(headword):
+    """Split reflex headwords only on top-level commas.
+
+    Starling/DEDR headword cells often use parenthetical morphology such as
+    `aṭai (-v-, -nt-)`. Those commas are display text, not entry separators, so
+    the Laravel importer consumes this pre-shaped list instead of comma-splitting
+    raw Headwords.
+    """
+    entries = []
+    current = []
+    depth = 0
+    for char in str(headword):
+        if char in "([":
+            depth += 1
+        elif char in ")]" and depth > 0:
+            depth -= 1
+        if char == "," and depth == 0:
+            entry = "".join(current).strip()
+            if entry:
+                entries.append(entry)
+            current = []
+            continue
+        current.append(char)
+    entry = "".join(current).strip()
+    if entry:
+        entries.append(entry)
+    return entries
 
 
 def load_buck_tags():
@@ -400,7 +543,168 @@ def load_buck_tags():
     return tags
 
 
-def build_import_rows(header, rows, buck_tags):
+class SourceHtmlSanitizer(HTMLParser):
+    """Allow only source-entry markup that the lexicon word page should render."""
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.parts = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag not in SOURCE_HTML_ALLOWED_TAGS:
+            return
+        if tag == "br":
+            self.parts.append("<br>")
+            return
+        if tag == "a":
+            href = ""
+            for name, value in attrs:
+                if name == "href" and value and value.startswith(("http://", "https://")):
+                    href = value
+                    break
+            if href:
+                self.parts.append(f'<a href="{html.escape(href, quote=True)}">')
+            return
+        self.parts.append(f"<{tag}>")
+
+    def handle_endtag(self, tag):
+        if tag in SOURCE_HTML_ALLOWED_TAGS and tag != "br":
+            self.parts.append(f"</{tag}>")
+
+    def handle_data(self, data):
+        self.parts.append(html.escape(data))
+
+
+def sanitize_source_html(source_html):
+    sanitizer = SourceHtmlSanitizer()
+    sanitizer.feed(source_html)
+    sanitizer.close()
+    return "".join(sanitizer.parts)
+
+
+def clean_dedr_html(raw):
+    """Normalize a scraped Burrow DEDR entry into clean, well-formed HTML.
+
+    Keeps the linguistically meaningful `<b>`/`<i>` markup; strips the scrape's
+    structural cruft: the `<div class='hw_result'>` wrappers, the `<number>`
+    entry-number tag (covered by our source header + the reflex's `Number in
+    DED`), the malformed `<xref="cdial">…</xref="cdial">` cross-reference
+    pseudo-tags (text kept), and the trailing `<bibl>` line (our bold source
+    header already carries the citation). The remaining HTML is allowlist
+    sanitized before import because source text renders as HTML on word pages.
+    """
+    s = re.sub(r"</?div[^>]*>", "", raw)
+    s = re.sub(r"<number>.*?</number>", "", s, flags=re.S)
+    s = re.sub(r'</?xref="[^"]*">', "", s)
+    s = re.sub(r"<bibl>.*?</bibl>", "", s, flags=re.S)
+    s = re.sub(r"</?super>", lambda m: m.group(0).replace("super", "sup"), s)
+    return sanitize_source_html(re.sub(r"\s+", " ", s).strip())
+
+
+def load_dedr_entries():
+    """DED number -> (page, cleaned_html) from the scraped Burrow corpus.
+
+    Filtered to edition="DEDR" (the Appendix reuses the same numbers). A few
+    DED numbers were scraped more than once; keep the fullest paragraph.
+    """
+    with open(BURROW_CORPUS, encoding="utf-8-sig") as f:
+        corpus = json.load(f)
+    best_len = {}
+    index = {}
+    for entry in corpus.get("entries", []):
+        if entry.get("edition") != "DEDR":
+            continue
+        try:
+            num = int(entry.get("ded_number"))
+        except (TypeError, ValueError):
+            continue
+        raw = entry.get("raw_html") or ""
+        if num in best_len and len(raw) <= best_len[num]:
+            continue
+        best_len[num] = len(raw)
+        index[num] = (entry.get("page"), clean_dedr_html(raw))
+    return index
+
+
+def starling_url_metadata(url):
+    query = parse_qs(urlparse(url).query)
+    basename = query.get("basename", [""])[0]
+    return STARLING_DATABASE_LABELS.get(basename, basename), query.get("text_number", [""])[0]
+
+
+def build_starling_entry(record):
+    """STARLING source body as a citation, not a duplicate entry.
+
+    Word/gloss/tree details already render in the main table and Other Info.
+    Keep only source-locator facts here: Starling branch/database, Starling ID,
+    text number, and link to the original record.
+    """
+    parts = []
+    url = record.get("URL")
+    citation_bits = []
+    if url:
+        database_label, text_number = starling_url_metadata(url)
+        if database_label:
+            citation_bits.append(database_label)
+        if text_number:
+            citation_bits.append(f"text no. {text_number}")
+    if record.get("Starling ID"):
+        citation_bits.append(f"record {record['Starling ID']}")
+    if citation_bits:
+        parts.append(f"<small>{html.escape(' · '.join(citation_bits))}")
+    if url:
+        if citation_bits:
+            parts.append("<br>")
+        parts.append(f'<a href="{html.escape(url, quote=True)}">View original record</a>')
+    if citation_bits:
+        parts.append("</small>")
+    return sanitize_source_html("".join(parts))
+
+
+def build_sources(record, dedr_index, missing_ded):
+    """The `Sources` array for one reflex: DEDR (full Burrow entry, per DED
+    number), CVOTGD (page/entry number only — not scraped yet), and STARLING."""
+    sources = []
+    ded_value = record.get("Number in DED")
+    if ded_value:
+        for num in dict.fromkeys(int(x) for x in re.findall(r"\d+", str(ded_value))):
+            entry = dedr_index.get(num)
+            if entry is None:
+                missing_ded[num] = missing_ded.get(num, 0) + 1
+                continue
+            page, cleaned = entry
+            sources.append({
+                "source": SOURCE_DEDR,
+                "page_number": str(page) if page else "",
+                "original_entry": cleaned,
+            })
+    cvotgd = record.get("Number in CVOTGD")
+    if cvotgd:
+        # Not scraped — a page/entry-number citation only (TODO: scrape CVOTGD).
+        sources.append({
+            "source": SOURCE_CVOTGD,
+            "page_number": str(cvotgd).strip(),
+            "original_entry": "",
+        })
+    if record.get("URL"):
+        sources.append({
+            "source": SOURCE_STARLING,
+            "page_number": "",
+            "original_entry": build_starling_entry(record),
+        })
+    return sources
+
+
+def import_extra_key(column_name):
+    """Normalize Starling/LRC extra-data key spelling for stable site display."""
+    if column_name == "Additional Forms":
+        return "Additional forms"
+    if column_name == "ID":
+        return "Starling ID"
+    return column_name
+
+
+def build_import_rows(header, rows, buck_tags, dedr_index):
     """Map tree rows onto the Utilities reflex-upload format.
 
     Parentless rows are marked `IsEtymon` (with a `HomographNumber`, since
@@ -408,8 +712,13 @@ def build_import_rows(header, rows, buck_tags):
     `Etyma` + `EtymaHomographNumber` pointing at its root, so the uploader can
     create the etymon→reflex tree. Roots always precede their descendants in
     file order, which batching into contiguous chunks preserves.
+
+    Every reflex also gets a `Sources` array (DEDR full entry by DED number,
+    CVOTGD number, STARLING); roots carry Starling only as an "Other Info" line,
+    since etyma cannot hold sources.
     """
     extra_columns = [col for col in header if col not in ("Headword", "Meaning", "Language")]
+    missing_ded = {}
 
     root_link = {}  # row ID -> (etymon entry, homograph number)
     homograph_counts = {}
@@ -422,6 +731,26 @@ def build_import_rows(header, rows, buck_tags):
             homograph_counts[entry] = homograph_counts.get(entry, 0) + 1
             root_link[row["ID"]] = (entry, homograph_counts[entry])
 
+    # Starling exposes no permalink for a root/proto-form record anywhere in
+    # the HTML we scrape (neither the listing nor the single-record view
+    # links to one), but a direct single=1&basename=dravet&text_number=N view
+    # does work once you know N -- recovered separately for most roots by
+    # crawl_root_permalinks.py + match_root_stragglers.py. Roots without a
+    # recovered permalink fall back to a link to their first descendant with
+    # a URL instead, as supporting evidence rather than a direct citation.
+    root_permalinks = {}
+    if ROOT_PERMALINKS.exists():
+        with open(ROOT_PERMALINKS, encoding="utf-8") as f:
+            root_permalinks = json.load(f)
+
+    first_child_url = {}  # (etymon entry, homograph number) -> URL
+    for row in rows:
+        if row.get("Parent Word ID"):
+            link = root_link.get(row["ID"])
+            url = row.get("URL")
+            if link and url and link not in first_child_url:
+                first_child_url[link] = str(url).strip()
+
     import_rows = []
     for row in rows:
         starling_language = row["Language"]
@@ -433,25 +762,51 @@ def build_import_rows(header, rows, buck_tags):
         }
         if language != starling_language:
             record["Language (Starling)"] = starling_language
+        source_gloss = row.get("_meaning_source")
+        if source_gloss and source_gloss.strip().lower() != record["Gloss"].strip().lower():
+            record["Meaning (source)"] = source_gloss
         link = root_link.get(row["ID"])
         if not row.get("Parent Word ID"):
             record["IsEtymon"] = "1"
+            record["EtymonEntry"] = link[0]
             record["HomographNumber"] = str(link[1])
             tag = buck_tags.get(row["ID"])
             if tag:
                 record["Semantic Tag (Buck)"] = tag[0]
-                if tag[1]:
-                    record["Semantic Field (Buck)"] = tag[1]
+            # Etyma cannot hold sources; surface Starling provenance as Other Info.
+            record["Source (StarlingDB)"] = ROOT_STARLING_ATTRIBUTION
+            real_url = root_permalinks.get(row["ID"])
+            if real_url:
+                record["StarlingDB record"] = real_url
+            else:
+                representative_url = first_child_url.get(link)
+                if representative_url:
+                    record["StarlingDB record (nearest reflex)"] = representative_url
         elif link:
+            record["HeadwordEntries"] = headword_entries(record["Headwords"])
             record["Etyma"] = link[0]
             record["EtymaHomographNumber"] = str(link[1])
         for col in extra_columns:
+            if not row.get("Parent Word ID") and col == "Depth":
+                continue
             value = row.get(col)
             if value is None or str(value).strip() == "":
                 continue
-            key = "Starling ID" if col == "ID" else col
-            record[key] = str(value).strip()
+            key = import_extra_key(col)
+            text_value = str(value).strip()
+            if key in record and record[key] != text_value:
+                record[key] = f"{record[key]}\n{text_value}"
+            else:
+                record[key] = text_value
+        if row.get("Parent Word ID"):
+            sources = build_sources(record, dedr_index, missing_ded)
+            if sources:
+                record["Sources"] = sources
         import_rows.append(record)
+    if missing_ded:
+        print(f"WARNING: {sum(missing_ded.values())} reflex-DED references point at "
+              f"{len(missing_ded)} DED numbers absent from the DEDR corpus "
+              f"(no DEDR source attached): {sorted(missing_ded)[:15]}")
     return import_rows
 
 
@@ -469,7 +824,7 @@ def main():
     languages = build_languages_csv()
     lang_path = OUT_DIR / "dravidilex_languages.csv"
     with open(lang_path, "w", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
+        writer = csv.writer(f, lineterminator="\n")
         writer.writerow(["Family", "Subfamily", "Language"])
         writer.writerows(languages)
     print(f"wrote {lang_path.relative_to(REPO_ROOT)} ({len(languages)} languages)")
@@ -477,10 +832,18 @@ def main():
     buck_tags = load_buck_tags()
     if buck_tags:
         print(f"injecting {len(buck_tags)} Buck semantic tags onto root rows")
-    import_rows = build_import_rows(header, rows, buck_tags)
+    dedr_index = load_dedr_entries()
+    print(f"loaded {len(dedr_index)} DEDR entries for the Sources column")
+    import_rows = build_import_rows(header, rows, buck_tags, dedr_index)
 
     known_languages = {language for _, _, language in languages}
-    unmapped = sorted({r["Language"] for r in import_rows} - known_languages)
+    # Etyma/root rows are not imported as LexReflex records, so their Language
+    # value does not need a LexLanguage row. In particular, the built-in
+    # protolanguage page already represents Proto-Dravidian; adding it here as a
+    # normal language duplicates it in the sidebar.
+    unmapped = sorted(
+        {r["Language"] for r in import_rows if not r.get("IsEtymon")} - known_languages
+    )
     if unmapped:
         raise SystemExit(f"languages missing from languages CSV: {unmapped}")
 

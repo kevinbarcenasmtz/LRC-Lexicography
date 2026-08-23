@@ -11,22 +11,9 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 from pathlib import Path
 
-APPENDIX_START_PAGE = 509
-
-
-def classify_edition(page: int) -> str:
-    return "Appendix" if page >= APPENDIX_START_PAGE else "DEDR"
-
-
-def detect_edition_from_text(full_text: str) -> str | None:
-    if re.search(r"\[DEDR\s+\d+\]", full_text):
-        return "Appendix"
-    if re.search(r"DED(\(S(?:,\s*N)?\)|S)\s+\d+", full_text):
-        return "DEDR"
-    return None
+from editions import classify_edition, detect_edition_from_text
 
 
 def patch_corpus(input_path: str, output_path: str | None = None) -> None:

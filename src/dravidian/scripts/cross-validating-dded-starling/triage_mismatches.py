@@ -48,21 +48,18 @@ from typing import Optional
 
 import pandas as pd
 
-from burrow_entry_parser import BurrowEntryParser
 from review_ledger import load_ledger, reviewed_keys
-from starling_tree_validator import build_validation_audit_frames
+from reporting import build_validation_audit_frames
+from textnorm import clean_ded_number
 
 _DED_COL = "Validation DED #"
 _LANG_COL = "Starling language"
 _BRANCH_COL = "Validation branch label"
 _NOTE_COL = "Validation note"
 
-_entry_parser = BurrowEntryParser()
-
-
 def _clean_ded_series(series: pd.Series) -> pd.Series:
-    """Normalize the DED column to plain integer strings: 47.0 / '0047' -> '47'."""
-    return series.map(lambda v: _entry_parser.clean_ded_number(str(v)) if pd.notna(v) else "")
+    """Normalize the DED column to the validator's key semantics: 47.0 / '0047' -> '47'."""
+    return series.map(lambda v: (clean_ded_number(v) or "") if pd.notna(v) else "")
 
 
 def load_issue_rows(results_path: str, source: str = "results") -> pd.DataFrame:

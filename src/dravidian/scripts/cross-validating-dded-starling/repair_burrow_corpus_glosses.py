@@ -19,73 +19,10 @@ import re
 from pathlib import Path
 from typing import Any, Dict, List
 
-
-def _recover_attestation_gloss_from_full_text(
-    full_text: str,
-    source_abbrev: str,
-    source_headwords: List[str],
-    fallback_gloss: str,
-) -> str:
-    headwords = [h.strip() for h in (source_headwords or []) if h and h.strip()]
-    if not full_text or not source_abbrev or not headwords:
-        return fallback_gloss
-
-    normalized = re.sub(r"\s+", " ", full_text).strip()
-    abbrev_esc = re.escape(source_abbrev.strip())
-    # Anchor on the FULL comma-separated headword chain, not just the first
-    # form (kept in sync with the identical fix in starling_tree_validator.py).
-    hw_esc = r"\s*,\s*".join(re.escape(h) for h in headwords)
-    marker_re = re.compile(
-        rf"{abbrev_esc}\s+(?:\([^)]*\)\s*)*{hw_esc}",
-        re.IGNORECASE,
-    )
-    m_marker = marker_re.search(normalized)
-    if not m_marker:
-        return fallback_gloss
-
-    tail = normalized[m_marker.end() :].strip()
-
-    # Stop at next top-level language token to prevent bleed into next attestation.
-    # Konḍa/Kui/Kuwi are the only language names in the whole inventory written
-    # WITHOUT a trailing period, so the main alternative (which requires one)
-    # silently walks past them -- added explicitly so attestations followed by
-    # one of these three still get bounded correctly (kept in sync with the
-    # identical function in starling_tree_validator.py).
-    ignore_tokens = {
-        "Tr.",
-        "W.",
-        "Ph.",
-        "Mu.",
-        "Ma.",
-        "A.",
-        "Ch.",
-        "Voc.",
-        "Cf.",
-        "e.g.",
-    }
-    for m in re.finditer(
-        r"\s([A-Z][A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+\.|Konḍa|Kui|Kuwi)\s+\S", tail
-    ):
-        tok = m.group(1)
-        if tok in ignore_tokens:
-            continue
-        # Konḍa/Kui/Kuwi (unlike the period-bearing tokens above) can also
-        # appear as an ordinary cross-reference mid-sentence, e.g. DED 3246's
-        # "...(cf. Kui trēba; with loss of t-)..." inside Kuwi's OWN gloss --
-        # not a new attestation. A real attestation-introducing mention is
-        # never preceded by "cf." (kept in sync with the identical check in
-        # starling_tree_validator.py).
-        if tok in ("Konḍa", "Kui", "Kuwi") and re.search(
-            r"\bcf\.\s*$", tail[: m.start()], re.IGNORECASE
-        ):
-            continue
-        tail = tail[: m.start()].strip()
-        break
-
-    tail = re.sub(r"\s+DEDS?\b.*$", "", tail, flags=re.IGNORECASE).strip()
-    if not tail:
-        return fallback_gloss
-    return tail if len(tail) > len(fallback_gloss) else fallback_gloss
+from textnorm import (
+    antecedent_is_multiform,
+    recover_attestation_gloss_from_full_text,
+)
 
 
 def _normalize_spacing(gloss: str) -> str:
@@ -103,7 +40,7 @@ def _normalize_spacing(gloss: str) -> str:
 # the identical pattern in burrow_entry_parser.py's parse_language_sections,
 # which runs the same resolution earlier but can miss this shape when the
 # leading "(" was consumed into the headword capture during parsing and
-# only restored here by _recover_attestation_gloss_from_full_text above).
+# only restored here by recover_attestation_gloss_from_full_text above).
 _QUALIFIED_ID_RE = re.compile(r"^\(([^)]*)\)\s*id\.\s*(.*)$", re.IGNORECASE)
 
 # Strips a leading qualifier off an already-resolved last_real_gloss before
@@ -137,7 +74,7 @@ def repair_corpus(data: Dict[str, Any]) -> Dict[str, Any]:
             headwords = [str(h or "") for h in headwords]
             old_gloss = str(att.get("gloss", "") or "")
 
-            repaired = _recover_attestation_gloss_from_full_text(
+            repaired = recover_attestation_gloss_from_full_text(
                 full_text,
                 abbrev,
                 headwords,
@@ -160,8 +97,13 @@ def repair_corpus(data: Dict[str, Any]) -> Dict[str, Any]:
                 continue
             g = (att.get("gloss", "") or "").strip()
             m_qualified_id = _QUALIFIED_ID_RE.match(g)
+            # An "id." whose antecedent lists several forms is ambiguous (the
+            # reference points at one form's meaning, not the whole section) and
+            # cannot be resolved by a string rule -- leave the literal "id."
+            # rather than glue in the wrong meaning (see antecedent_is_multiform).
+            resolvable = bool(last_real_gloss) and not antecedent_is_multiform(last_real_gloss)
             if g.lower() == "id.":
-                if last_real_gloss:
+                if resolvable:
                     att["gloss"] = last_real_gloss
                     changed += 1
             elif m_qualified_id:
@@ -172,7 +114,7 @@ def repair_corpus(data: Dict[str, Any]) -> Dict[str, Any]:
                 # accumulate across multiple attestations.
                 qualifier = m_qualified_id.group(1).strip()
                 suffix = m_qualified_id.group(2).strip().lstrip(";").strip()
-                if last_real_gloss:
+                if resolvable:
                     bare_gloss = _LEADING_PAREN_RE.sub("", last_real_gloss).strip()
                     combined = f"({qualifier}) {bare_gloss}" if qualifier else bare_gloss
                     new_gloss = f"{combined}; {suffix}" if suffix else combined
@@ -180,7 +122,7 @@ def repair_corpus(data: Dict[str, Any]) -> Dict[str, Any]:
                         att["gloss"] = new_gloss
                         changed += 1
             elif g.lower().startswith("id."):
-                if last_real_gloss:
+                if resolvable:
                     suffix = g[3:].lstrip(";").strip()
                     new_gloss = f"{last_real_gloss}; {suffix}" if suffix else last_real_gloss
                     if new_gloss != g:

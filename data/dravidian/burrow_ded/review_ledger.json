@@ -1,0 +1,1733 @@
+﻿{
+  "schema_version": 1,
+  "entries": {
+    "0": {
+      "status": "parser_bug_fixed",
+      "note": "Starling source data uses a literal Number in DED: \"0\" as its own sentinel for 'no Burrow correspondence' (9 occurrences across the dataset). _clean_ded_number in starling_tree_validator.py treated \"0\" as a truthy DED reference, so the validator looked it up in Burrow (which numbers DED entries starting at 1) and reported false 'DED 0 not found in Burrow corpus' mismatches. Fixed by normalizing \"0\" to None in _clean_ded_number. Re-validated: entry_match_rate 69.9% -> 70.0%, ded_not_in_corpus 26->17, no_ded_number 27->36.",
+      "reviewed_at": "2026-06-18T02:19:47",
+      "reviewed_by": "unspecified"
+    },
+    "990": {
+      "status": "parser_bug_fixed",
+      "note": "Sub-entry marker glued to first language: DSAL HTML wraps (a)/(b)/... with the sub-entry-initial language in one <i> tag (e.g. <b><i>(a) Ta.</i> ...</b>), which _LANG_CHAR skipped (must start uppercase), dropping Tamil. Fixed by _OPT_SUBENTRY non-capturing prefix in all _PATTERNS. All Tamil rows now match. v6 reparse: 505 entries changed, 0 losses, Ta. gained on 69 DEDs.",
+      "reviewed_at": "2026-06-18T03:06:40",
+      "reviewed_by": "unspecified"
+    },
+    "137": {
+      "status": "parser_bug_fixed",
+      "note": "Sub-entry marker glued to first language: DSAL HTML wraps (a)/(b)/... with the sub-entry-initial language in one <i> tag (e.g. <b><i>(a) Ta.</i> ...</b>), which _LANG_CHAR skipped (must start uppercase), dropping Tamil. Fixed by _OPT_SUBENTRY non-capturing prefix in all _PATTERNS. All Tamil rows now match. v6 reparse: 505 entries changed, 0 losses, Ta. gained on 69 DEDs.",
+      "reviewed_at": "2026-06-18T03:06:41",
+      "reviewed_by": "unspecified"
+    },
+    "2674": {
+      "status": "parser_bug_fixed",
+      "note": "Sub-entry marker glued to first language: DSAL HTML wraps (a)/(b)/... with the sub-entry-initial language in one <i> tag (e.g. <b><i>(a) Ta.</i> ...</b>), which _LANG_CHAR skipped (must start uppercase), dropping Tamil. Fixed by _OPT_SUBENTRY non-capturing prefix in all _PATTERNS. All Tamil rows now match. v6 reparse: 505 entries changed, 0 losses, Ta. gained on 69 DEDs.",
+      "reviewed_at": "2026-06-18T03:06:41",
+      "reviewed_by": "unspecified",
+      "languages": {
+        "Pengo": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:29:41",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "410": {
+      "status": "parser_bug_fixed",
+      "note": "Same sub-entry-marker fix; Tamil recovered (ittini exact). Residual: (a) headword 'i' still dropped by len(hw)>1 filter [Phase 2 single-char bug]; 'iṉṟu...' row fails on separate Starling underscore-notation vs Burrow diacritic normalization gap. Also noted: DED 410 has 4 duplicate corpus entries. [UPDATE 2026-06-18: the underscore-normalization gap is now fixed (see ledger key 'underscore-normalization'); the 'iṉṟu' Toda row now matches exact. Remaining 410 residuals: Phase-2 single-char 'i' headword filter, other Toda headword mismatches, and the 4 duplicate corpus entries.]",
+      "reviewed_at": "2026-06-18T03:26:26",
+      "reviewed_by": "unspecified",
+      "languages": {
+        "Irula": {
+          "status": "genuine_divergence",
+          "note": "Burrow's DEDR publishes NO Irula (Ir.) reflex in this entry -- full_text contains zero Ir./Iruḷa/Irula tokens (regex-swept), stored+reparse panels identical (parser lost nothing), validation note lists Burrow langs with Irula absent. Starling attests an Irula reflex (its note cites Starling's own Irula grammar page nos., e.g. 'Ir. 114', not a Burrow form). Genuine cross-source coverage difference; no code recovers a form Burrow never printed. Part of the Irula 10/10 genuine-divergence group (unmatched_diagnostics.md).",
+          "reviewed_at": "2026-08-19T11:34:53",
+          "reviewed_by": "unspecified"
+        },
+        "Telugu": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:29:41",
+          "reviewed_by": "claude-triage"
+        },
+        "Manda": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:29:41",
+          "reviewed_by": "claude-triage"
+        },
+        "Kui": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:29:41",
+          "reviewed_by": "claude-triage"
+        },
+        "Kuwi (Fitzgerald)": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:29:41",
+          "reviewed_by": "claude-triage"
+        },
+        "Kuwi (Schulze)": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:29:41",
+          "reviewed_by": "claude-triage"
+        },
+        "Kurukh": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:29:41",
+          "reviewed_by": "claude-triage"
+        },
+        "Malto": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:29:41",
+          "reviewed_by": "claude-triage"
+        },
+        "Kinwat Kolami": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:29:41",
+          "reviewed_by": "claude-triage"
+        },
+        "Kolami (Setumadhava Rao)": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:29:41",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "underscore-normalization": {
+      "status": "parser_bug_fixed",
+      "note": "Systemic normalization gap (cross-cutting, not DED-specific). Starling encodes diacritics in ASCII with a trailing underscore (e.g. in_r_u = Burrow iṉṟu, ir_r_ai = iṟṟai, cir_ai = ciṟai). _normalize_for_match stripped diacritics via NFKD but left underscores, so Starling and Burrow forms never reconciled, producing 'language matched but headword mismatch' rows. Fixed by adding '.replace(\"_\", \"\")' to _normalize_for_match in both starling_tree_validator.py:89 and burrow_entry_parser.py:198 (kept in sync). 0/34,875 Burrow headwords contain underscores, so the change is strictly additive on the Starling side -- no regressions possible. Impact: entries_matched 13,793->14,383 (+590 rows across ~299 DEDs); entry_match_rate 70.3%->73.3%. Residual ~140 underscore rows still mismatch on other divergences (special vowels e.g. Toda twās_/twɨd_y, leading retroflex r_ placement, secondary parenthetical forms) -- out of scope for this fix.",
+      "reviewed_at": "2026-06-18T03:26:26",
+      "reviewed_by": "unspecified"
+    },
+    "length-dot-normalization": {
+      "status": "parser_bug_fixed",
+      "note": "Systemic normalization gap (cross-cutting, not DED-specific). Burrow marks vowel length with a raised dot after the vowel (te·l = tēl, twa· = twā, aŋga·l = aŋgāl); Starling encodes the same length as a macron over the vowel, which _normalize_for_match already removed via NFKD + strip-combining. The dots are standalone (non-combining) characters, so they survived normalization and Starling/Burrow forms never reconciled -- producing 'language matched but headword mismatch' rows. Two visually-identical confusables occur: U+0387 GREEK ANO TELEIA (1,071 in matched forms, dominant) and U+00B7 MIDDLE DOT (3; what DED 2891 uses). Fixed by adding a _LENGTH_DOTS translate table (U+00B7, U+0387, plus IPA length marks U+02D0/U+02D1) applied after .lower() in _normalize_for_match, in both starling_tree_validator.py and burrow_entry_parser.py (kept in sync). Matcher-side only -- stored corpus headwords keep their dots, so no corpus regen needed, and the change is symmetric (Starling is already length-agnostic via macron-stripping), so no regressions. Impact: entries_matched 14,383->15,004 (+621 rows; 555 exact, 61 loose-substring of the projected cohort); entry_match_rate 73.3%->76.4%. Diagnosed from DED 2891 (Kota tēl/te·l, Toda twās_/twa·s̱).",
+      "reviewed_at": "2026-06-18T03:58:29",
+      "reviewed_by": "unspecified"
+    },
+    "eng-velar-nasal-normalization": {
+      "status": "parser_bug_fixed",
+      "note": "Systemic matcher-side normalization gap: Starling writes the velar nasal as eng (U+014B). Burrow uses n+combining-dot-above (U+1E45), which NFKD reduces to plain 'n'. Eng has no decomposition so it survived normalization, causing false-positive headword mismatches (e.g. 2591/Tulu, 3014/Kannada taggu vs taggu, 63/Tamil). Both are notational variants of the same phoneme - not a data divergence. Fixed by folding eng to 'n' via _ENG_FOLD translate table in _normalize_for_match in BOTH starling_tree_validator.py and burrow_entry_parser.py (matcher-side, no corpus regen). entry_match_rate 76.4 to 77.6, entries_matched 15004 to 15226 (+222). Residual eng rows that did not clear have additional genuine divergences (special vowels) and are left as genuine divergences.",
+      "reviewed_at": "2026-06-18T04:13:01",
+      "reviewed_by": "unspecified"
+    },
+    "ded-letter-suffix-normalization": {
+      "status": "parser_bug_fixed",
+      "note": "Burrow's DDSA page numbers DEDR split-entry 4896 as '4896(a)' (and mislabels its (b) sub-entry as '4896(a)' too, yielding two corpus copies). The corpus stored ded_number='4896(a)', which _clean_ded_number left intact (int-parse fails), so Starling's lookup for plain '4896' missed -> all 12 rows fell to 'DED 4896 not found in Burrow corpus'. Fixed matcher-side: _clean_ded_number now strips a trailing parenthetical letter (^(\\d+)\\s*\\([a-z]\\)$ -> base) so '4896(a)'/'4896(b)' index under '4896'. Both corpus copies fold into one paragraph via setdefault (attestation union). Only letter-suffixed entry in the 5,685-entry corpus, so isolated, but the fold is general. entries_matched 15,226->15,235 (+9), ded_not_in_corpus branches 17->10 (-7). Residual: 3 rows now correctly classify as diacritic/hyphen headword divergences (Br. mukk-ing/mukking, Te. mulugu, Kol. mu-lg-). Matcher-side, no corpus regen. validator _clean_ded_number only (parser's clean_ded_number left as-is to avoid corpus-level dup collision). Duplicate (4896(a)x2) left for the broader dedupe pass.",
+      "reviewed_at": "2026-06-18T04:33:39",
+      "reviewed_by": "unspecified"
+    },
+    "naiki-dialect-qualified-abbrev": {
+      "status": "parser_bug_fixed",
+      "note": "The parser silently dropped every Naiki attestation. Burrow marks Naiki as 'Nk. (Ch.)' (vs. Naikri 'Nk.'), but _LANG_CHAR forbids the internal space, so all four _PATTERNS stopped the abbrev at 'Nk.' and failed on the ' (Ch.)' before the headword -- ~314 markers across the corpus, in all three wrapper forms (<b><i> 259, bare <i> 54, <i><b> 1). This surfaced as 'Naiki not in DED N; Burrow has ...Naikri' (e.g. 5154, 4205). Fixed parser-side: added an optional in-marker parenthetical qualifier (_OPT_LANG_QUALIFIER/_LANG_ABBREV) to all four patterns, and made _clean_lang_abbrev keep the qualifier only when the inventory recognises the full form ('Nk. (Ch.)' = Naiki) else strip it to the base abbrev. The strip also correctly recovers ~25 bibliographic-tag markers ('Te. (SAN)', 'Ka. (DCV)', 'Ta. (lex.)') as their base languages, previously dropped too. Corpus regen: +327 attestations (Nk. (Ch.) +298, Te. +14, Ka. +6, Tu./Ma./Ta. +3 each), 0 losses. entries_matched 15,235->15,449 (+214), entry_match_rate 77.6%->78.7%, not_attested branches 690->668. Parser-side, corpus regenerated. Deferred (separate root causes seen in 5154): Ma. nested-<i>obl.</i> in headword bold, Kuwi text-before-<i>, To. malformed source markup.",
+      "reviewed_at": "2026-06-18T04:54:40",
+      "reviewed_by": "unspecified"
+    },
+    "nested-tag-headword-bold": {
+      "status": "parser_bug_fixed",
+      "note": "Pattern A (<b><i>Lang.</i> headword</b>) required the headword run to end at </b>, so any nested tag inside the headword's bold span broke ([^<]+)</b> and silently dropped the language -- no fallback recovered it (Pattern E's (?<!<b>) blocks it; B/D needs a separate <b>). Three markup flavors, one root cause: nested <i>obl.</i> grammatical qualifiers (DED 1 Tu./Te./Pa./Konda), italicised scientific names (DED 62 Ma./Tu. Sphaeranthus indicus), and <at>...</at> encoding artifacts (DED 11 To.). 613 dropped languages / 703 attestations across the corpus. Fixed parser-side: Pattern A terminator </b> -> (?=<) (stop the headword run at the next tag, nested or closing -- transparent for clean markup), plus trim a trailing '(' artifact in headword cleaning (431/703 recoveries needed it). v8 reparse: +703 attestations (To. 132, Pa. 72, Kui 56, Te. 52, Kol. 45, Ko. 43, Ta. 41, Ma. 40, Pe. 39, Konda 38, Ka. 33, Nk. 26...), 0 losses, 0 headword-value changes for already-parsed languages (verified by faithful in-memory sim). entries_matched 15,449->15,841 (+392), entry_match_rate 78.7%->80.7%, fully_attested 5,404->5,617, not_attested 668->518. Parser-side, corpus regenerated. Deferred siblings (separate root causes): Kuwi-type text-before-<i> (48), To-type abbrev mid-italic/malformed source (17).",
+      "reviewed_at": "2026-06-18T05:13:56",
+      "reviewed_by": "unspecified"
+    },
+    "kuwi-type-embedded-forms": {
+      "status": "parser_bug_fixed",
+      "note": "Pattern A/C/B-D/E all require <i>Lang</i>'s headword to follow within the same bold span or a cleanly-separated <b>headword</b> right after </i>; none tolerate a stray </b> sitting between </i> and the headword's <b> tag. DSAL's markup leaks the previous language's leftover gloss text into an outer <b> span that doesn't close until just past the next language's <i>Lang</i> marker (e.g. DED 5154 Kui's \"(obl. for all ma-).\" sits inside a <b> that closes right after <i>Kuwi</i>: <b>ma-). <i>Kuwi</i></b> (F.) <b>mambu</b>), so the whole language was silently dropped. Fixed parser-side: added Pattern F, <i>Lang</i></b> ... <b>headword</b>, an optional </b> right after </i> before the existing qualifier-then-headword logic. v9 reparse (diffed against a freshly-regenerated v8 baseline, not the cumulative raw-scrape diff): +101 attestations across 93 DED entries, 0 losses (Kuwi 47, Go. 18, Ga. 13, Kor. 5, Kol. 4, Konda 4, Ka. 4, Tu. 2, Ta. 1, Kur. 1, Br. 1, Kod. 1). entries_matched 15841->15983 (+142), entry_match_rate 80.7%->81.4%, fully_attested 5617->5650, not_attested 518->493. This was the deferred 'Kuwi-type' sibling of nested-tag-headword-bold (the Ma-type fix); the 'To-type' sibling (abbrev buried mid-italic after lowercase gloss text, e.g. the same DED 5154's Ko./To. pair: <i>incl.). To.</i> em</b>) remains open -- same drilled DED 5154 surfaced both, but To-type needs a separate fix since the language marker isn't at the start of its <i> span.",
+      "reviewed_at": "2026-06-18T15:00:33",
+      "reviewed_by": "unspecified"
+    },
+    "5154": {
+      "status": "parser_bug_fixed",
+      "note": "Generalized the Gondi inline-dialect mechanism (GONDI_INLINE_ABBREVS) to Kuwi/Kui citation sigils (F.=Fitzgerald, S.=Schulze, Su.=Sunkarametta, P.=Parja, Isr.=Israel, K.=Khuttia). Recovers incl.-sense forms (mārrō/māro) embedded in Burrow's consolidated Kuwi gloss. Matcher-side only, no corpus regen. Systemic effect across corpus: entry_match_rate 81.4%->84.3% (+557 entries). Remaining DED 5154 issues out of scope here: Kui's bare āju (incl.) sense-suffix form (no dialect prefix - different mechanism) and Toda embedded in Kota via malformed <i> tag closure (parser-side) - both confirmed real, deferred to separate triage passes.",
+      "reviewed_at": "2026-06-18T15:46:51",
+      "reviewed_by": "unspecified",
+      "languages": {
+        "Toda": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:29:41",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "leading-qualifier-glued-abbrev": {
+      "status": "parser_bug_fixed",
+      "note": "Burrow glues grammatical/sense qualifiers -- (tr.), (intr.), (loc.), occasionally a botanical name -- onto the front of the next language's abbreviation inside the same <i> tag (e.g. <b><i>(loc.). Ka.</i> akkuḷisu</b>). _LANG_CHAR must start uppercase, so no _PATTERNS entry could anchor -- the whole language silently dropped (same failure family as the Naiki/Ma-type fixes). Fixed via new _OPT_LEADING_QUALIFIER consumed right after <i> in Pattern A, plus an optional \\(? after <b> for the rarer paren-leaks-outside variant. Parser-side; v9 corpus reparse: +124 attestations, 0 losses, 107 entries changed (diffed cleaned-corpus-to-cleaned-corpus directly, since the script's own printed diff is cumulative since the raw scrape). Validator: entry_match_rate 84.3%->84.6%, entries_matched 16,540->16,615 (+75). One known residual: DED 1147 (a)). Ka. (doubly-nested cross-reference paren) not recovered -- accepted rather than complicating the regex for one case.",
+      "reviewed_at": "2026-06-18T16:07:21",
+      "reviewed_by": "unspecified"
+    },
+    "headword-qualifier-after-lang-marker": {
+      "status": "parser_bug_fixed",
+      "note": "Pattern A's headword capture (</i>\\s+([^<]+)(?=<)) didn't skip an optional dialect-qualifier parenthetical glued between the closing language marker and the headword when both share the same <b> span (e.g. <b><i>Go.</i> (Tr.) aḍrai id.</b> in DED 107, <b><i>Kuwi</i> (S.) aḍḍe ānai</b> in DED 83). The captured headword text then included the leading (Qual.) string, and the downstream headword-cleanup filter -- which drops any captured string starting with ( as a bogus qualifier-only token -- discarded the whole attestation, silently dropping an otherwise-valid language match. Fix: added a shared _OPT_HEADWORD_QUALIFIER constant (the same qualifier-skip already used by Patterns B/C/F) to Pattern A, with a mandatory \\s+ boundary kept before it rather than \\s* -- Pattern A's capture has no literal anchor tag downstream to stop it from swallowing adjacent prose, so an initial \\s* version introduced false-positive languages from italicised non-language tokens glued directly to following punctuation with no space (Artocarpus, Cyprinus, Grammar, Nāyadh.); caught via the corpus-regen diff and corrected before shipping. Net effect: +63 attestations / 59 entries gained, 0 losses; entry_match_rate 84.6% -> 84.9%, entries_matched 16615 -> 16657.",
+      "reviewed_at": "2026-06-18T16:29:02",
+      "reviewed_by": "unspecified"
+    },
+    "nested-tag-headword-bold-bcf": {
+      "status": "parser_bug_fixed",
+      "note": "Patterns C, B/D, and F's headword capture (<b>([^<]+)</b>) required the headword to end at a literal </b> with zero tags inside, so a nested grammatical qualifier (<i>pl.</i>, <i>obl.</i>) mid-headword broke the match and silently dropped the language entirely (e.g. DED 5440's Kuwi: <i><b>Kuwi</b></i> (F.) <b>vegū (<i>pl.</i> veska)</b>). Same root-cause family as the already-fixed Ma-type bug (af90534), which only patched Pattern A -- Patterns B/D, C, F had the identical weakness, confirmed still present today (DED 1's Go. had the same shape and was still missing). Fix: a new _HEADWORD_SPAN_ACROSS_NESTED capture spans across nested non-</b> tags instead of stopping at the first one, then strips the nested-tag markup during headword cleanup (_HTML_TAG_RE). Unlike Pattern A's simpler (?=<) lookahead (safe because its headword has no closing tag of its own), this needed an additional guard: a naive span-across-everything-except-</b> version caused a regression, swallowing a DIFFERENT language's own <i>NextLang.</i> marker into the PRECEDING language's still-open headword span whenever that span did not close until after the next marker (DED 4900: <b>muŋgi pōtu. <i>Go.</i></b> -- Go. vanished, swallowed into a bogus Ga. headword). Caught via a full-corpus old-vs-new parser diff before regenerating the real corpus. Fixed by adding a second negative lookahead that blocks spanning into <i>Uppercase... (a language marker) while still allowing lowercase grammatical qualifiers through. Net effect: +163 attestations / 121 entries, 0 losses. entry_match_rate 84.9% -> 86.6%, entries_matched 16657 -> 17003 (+346).",
+      "reviewed_at": "2026-06-18T17:15:15",
+      "reviewed_by": "unspecified"
+    },
+    "primary-dialect-marker-gloss-truncation": {
+      "status": "parser_bug_fixed",
+      "note": "Burrow's consolidated multi-dialect entries (Go., Kuwi, Kui) cite their first dialect's form immediately after the language marker with its own parenthetical, e.g. Kuwi (F.) vegu (pl. veska), (Su. Isr.) vegu..., (P.) vergu..., (S.) weggu.... The (F.) marker for that primary citation sits exactly where the existing headword-qualifier-skip mechanism (shared by Patterns A/B/D/C/F) treats it as a generic qualifier and discards it during parsing -- so it never survives into the stored gloss. The matcher's dialect-recovery mechanism (_extract_gloss_forms_for_abbrevs, the same one behind the previously-shipped Kuwi/Kui inline-dialect-citation fix) only finds markers that DO survive in the gloss ((Su. Isr.), (P.), (S.)), so when matching a specific Starling dialect like Kuwi (Fitzgerald) whose own marker was the consumed primary one, it falls back to a direct headword match using the full untrimmed gloss as meaning -- bleeding every later dialect's citation text into what's displayed for an otherwise-correct match, and tripping a false meaning_mismatch flag in the triage queue. Sized corpus-wide: ~1108 Go. + 1035 Kuwi + 41 Kui entries structurally exposed. Fixed matcher-side only (no parser change, no corpus regen): a new _truncate_gloss_before_first_marker trims the displayed meaning at the first dialect marker when matching a tracked dialect's primary form, deliberately returning empty when there's no text before the first marker (more honest than showing unrelated text, and avoids the false-positive flag since _is_meaning_mismatch treats an empty side as nothing to compare). Caught and fixed a related bug along the way: both call sites in _validate_branch/_validate_branch_direct had if matched_burrow_gloss: vr.burrow_gloss = matched_burrow_gloss, which silently discarded an intentionally-empty truncation result and fell back to the same untrimmed att.gloss -- fixed by using matched_burrow_gloss unconditionally whenever get_inline_abbrevs_for_starling_dialect applies. No entry_match_rate change (86.6%, as expected for a display-only fix) -- row_issues/triage queue dropped from 5567 to 5161 (-406 rows). Two new, separate findings surfaced and deliberately left open: Manda/Kui (not tracked as dialects of anything) have their own _recover_attestation_gloss_from_full_text boundary-extension bug; several already-tracked dialects (Maria Gondi, Parja Kuwi, Pengo, Sunkarametta Kuwi, Kuwi (Israel)) get a clean but semantically-empty extracted form because Burrow elides their gloss via a shared id. reference to the primary form, a pre-existing gap in the already-shipped inline-dialect-extraction mechanism.",
+      "reviewed_at": "2026-06-18T17:52:30",
+      "reviewed_by": "unspecified"
+    },
+    "periodless-language-gloss-boundary": {
+      "status": "parser_bug_fixed",
+      "note": "_recover_attestation_gloss_from_full_text (duplicated in repair_burrow_corpus_glosses.py and starling_tree_validator.py) recognizes the next language has started via a regex requiring a trailing period ([A-Z][A-Za-z]+.) -- but Konda, Kui, and Kuwi are the only three language names in the whole inventory written without a trailing period, so the scanner silently walks past them and keeps extending the gloss into their text. Confirmed via DED 5440: Mand.'s parser-level gloss is correctly short ('pl. ) id.'), but the corpus-repair step's recovered gloss bled all the way through Kui and Kuwi's own citations into '...weska dry wood.' Fixed by adding Konda|Kui|Kuwi as recognized boundary alternatives in both copies. Caught a regression while verifying: a literal cross-reference mention -- DED 3246's '...(cf. Kui treba; with loss of t-)...' inside Kuwi's OWN gloss -- isn't a real attestation boundary, but the naive token match treated it as one, truncating Kuwi (Israel)'s recovered gloss before reaching its own '(Isr.) revu path (animal)' citation and flipping that match from Yes to Language only (entries_matched 17003 -> 17002). Confirmed via full corpus scan this is the only such cf. + period-less-name occurrence. Fixed by skipping a period-less-name match when immediately preceded by cf. -- re-verified via full corpus diff: only that one row changes back (Language only -> Yes), no other regressions, entries_matched restored to 17003. No entry_match_rate change overall (gloss-only fix, 86.6% throughout) -- row_issues/triage queue: 5161 -> 5154 (-7 rows, net of fixing the regression). One new, narrower finding surfaced and deliberately left open: the existing id.-chain resolution in parse_language_sections only substitutes a real meaning back in when an attestation's gloss is exactly 'id.' or starts with 'id.' -- it doesn't handle a leading grammatical note like '(pl.) id.' (DED 5440's Mand./Kui), so those rows still show the literal id. placeholder instead of the chained-back real meaning.",
+      "reviewed_at": "2026-06-18T18:13:20",
+      "reviewed_by": "unspecified"
+    },
+    "qualified-id-chain-resolution": {
+      "status": "parser_bug_fixed",
+      "note": "Qualified-'id.' gloss chain resolution. Burrow glosses of the form '(qualifier) id.' -- a grammatical/sense qualifier (e.g. '(pl.)', '(obl. am-)') glued onto an 'idem' reference -- were matched by neither existing id.-resolution case (g == 'id.' / g.startswith('id.')), so the attestation displayed the literal qualifier + 'id.' placeholder instead of the chained-back real meaning. Fixed with a _QUALIFIED_ID_RE pattern plus a _LEADING_PAREN_RE strip (so chained links like DED 5440 Konda->Pe.->Mand. each show '(own qualifier) base meaning' without accumulating prior links' qualifiers), added to both burrow_entry_parser.py and repair_burrow_corpus_glosses.py (parser + repair, kept in sync). ~200 attestations match the shape; 0 '(...) id.' residue corpus-wide after the fix. Examples: DED 5440 Mand. -> '(pl.) firewood, fuel.', DED 5154 Pa. -> '(obl. am-) we.', DED 3729 Tu. -> '(obl. nuta-) 100.'. Gloss-display-only: entry_match_rate unchanged 86.6%, entries_matched 17003, triage queue unchanged. The prior session paused this fix uncommitted over a suspected 3-case regression (literal 'id.' at DED 5154/3729). Re-verified this session via a 3-stage pipeline trace (parser -> repair pass1 -> pass2) + corpus-wide scan: the regression does NOT reproduce (0 residue); the prior isolation experiment ran on an inconsistent code state. A defensive pass-1 guard (stop _recover_attestation_gloss_from_full_text clobbering a resolved gloss with raw 'id.' text) was prototyped and REJECTED -- it caused real gloss data loss (truncating long glosses past the parser's 200-char cap, e.g. DED 2237 Go. 277->212, DED 3398 Te. 304->208) and introduced 3 new '(...) id.' residue at DED 178; reverted in favor of shipping the original fix unchanged.",
+      "reviewed_at": "2026-06-19T13:20:57",
+      "reviewed_by": "unspecified"
+    },
+    "totype-embedded-marker": {
+      "status": "parser_bug_fixed",
+      "note": "To.-type embedded language markers. Malformed DSAL markup where a language abbreviation sits at the END of an <i> span (after lowercase qualifier or scientific-name text) with no <b>/<b>( immediately before the <i> -- the closing </i> lands after the abbrev instead of before it, so no anchored pattern (A/B/D/C/F/E) could reach it and the whole language was dropped. Two real shapes: sense-qualifier-before-abbrev (DED 5154 '...am<-> <i>incl.). To.</i>') and scientific-name-before-abbrev (DED 5 '<i>Tu.</i> agase-mara <i>Agati grandiflora. Te.</i></b> (B) <b>agase-...'). Fixed parser-side with a new _STRICT_PATTERNS list (one bold-headword To.-type pattern) gated by a new _is_known_lang_abbrev allow-list check in _find_all_lang_spans -- because the pattern scans into an <i> span it lacks the <i>Abbrev anchor, so without the known-language gate italic citation titles/botanical authorities (Volume, Sanskrit, Linn.) were captured as bogus languages. Validated read-only old-vs-new sim before shipping: +181 attestations across 134 DEDs, 0 losses (Ma. 36, Ka. 24, Te. 17, Tu. 17, Go. 12, Kol. 10, Ko. 10, To. 9, Konda 8, Kuwi 7, Ga. 7), 1 surviving-headword improvement (DED 2366 Ta.). Corpus regen: +183 total attestations, 0 losses, qualified-id residue still 0. entry_match_rate 86.6% -> 87.1% (+95 entries matched, 17003 -> 17098), not_attested 397->367, triage queue 4948->4894 (-54). Scoped to the bold-headword variant only (headword in its own <b>). The plain-text-headword variant (~54 more candidates) was prototyped but deliberately deferred -- where a form is elided the marker is followed directly by the English gloss (DED 814 Ma. '<i>Calotropis gigantea. Ma.</i> gigantic swallow-wort...'), which a text capture would store as a bogus headword. DED 5154's own To. is one of these text-variant cases ('</i> em</b>', bare-text headword), so it remains unrecovered for now -- the canonical example needs the deferred text variant. The earlier-recorded '21 To.-type misses' was a large undercount; the true bold-recoverable population is ~181, and a further ~47 clean text-variant cases remain (gated behind a headword-quality guard, future work).",
+      "reviewed_at": "2026-06-19T13:45:54",
+      "reviewed_by": "unspecified"
+    },
+    "inline-dialect-marker-meaning-noise": {
+      "status": "parser_bug_fixed",
+      "note": "Matcher-side fix in _extract_gloss_forms_for_abbrevs (starling_tree_validator.py). Found via DED 5440: a marker's segment was split with a single whitespace split, dumping everything after the first token into \"meaning\" -- breaking when Burrow cites more than one comma-separated form per marker ((Ma.) vaẖk, veẖki) or attaches a bare (pl. ...) to a non-primary form ((Su. Isr.) vegu (pl. veska)), producing false meaning-mismatch flags for Maria Gondi/Kuwi (Israel)/Parja Kuwi/Sunkarametta Kuwi. Fixed by leaving the matched form untouched (zero Match-status risk, confirmed via full row-level diff: 0 of 20,293 rows changed Match/form) and only suppressing \"meaning\" to \"\" when it's provably citation noise -- a bare (...) grammatical-number/id. citation, or a bare alternate-form word, ASCII-gated (only non-ASCII bare words count as noise) after an initial unguarded version wrongly emptied 364 genuine ASCII glosses (caught before shipping via row-level diff against the pre-fix baseline, not just the topline match-rate). Display-only: entry_match_rate unchanged 87.1%/17,098 entries_matched; triage queue 4894->4658 (-236 rows).",
+      "reviewed_at": "2026-06-19T16:42:04",
+      "reviewed_by": "unspecified"
+    },
+    "multi-headword-gloss-leak": {
+      "status": "parser_bug_fixed",
+      "note": "Fixed _recover_attestation_gloss_from_full_text (starling_tree_validator.py + its twin in repair_burrow_corpus_glosses.py) to anchor its full_text marker regex on the entire comma-separated headword chain (e.g. Kannada \"matti, maddi, mar̤ti\") instead of just headwords[0]. The old anchor-on-first-token logic left every additional alternate spelling dangling in the recovered gloss ahead of the real prose, and since repair_burrow_corpus_glosses.py's copy writes att[\"gloss\"] directly into the corpus, the leak was baked into burrow_corpus.cleaned.json itself, not just a runtime display artifact. Required a full corpus regen + validator re-run. Verified via full row-level diff: 0 Match changes, 0 Matched-Burrow-form changes, 2,293 Matched-Burrow-meaning improvements; entries_matched/entry_match_rate unchanged (17098/87.1%). Noise heuristic (leading comma-chain / orphaned paren) fell from 3,662 to 1,514 validator rows (corpus-level: 6,231 to 2,025). 12/12 manually spot-checked changes correct. Remaining noise has 4 separate deferred causes: duplicate-headword collisions across sub-entries in one paragraph, \"Ma.\" being ignore-listed as a bounding token for unrelated Gondi-marker disambiguation, a qualified-id.-chain re-prepending bug, and a few headwords with embedded qualifiers the base parser never captured.",
+      "reviewed_at": "2026-06-23T10:33:30",
+      "reviewed_by": "unspecified"
+    },
+    "scraper-styled-run-spacing": {
+      "status": "parser_bug_fixed",
+      "note": "dravidian_scraper.py StarLingGeneralScraper.extract_field_data (not a triage-ded row -- a scraper bug). Evidence: in starling_complete_data_scrape.json, a field's stored plain text is 'KOR (T)dakkeareca nut' while its own _field_html sibling is 'KOR (T) <i>dakke</i> areca nut'; likewise 'Also Pengoaya-tariwoman;teya...' vs html '...aya-tari</i> woman; <i>teya</i> ...'. BeautifulSoup get_text(strip=True) concatenated adjacent text nodes/styled runs (e.g. across <i> boundaries) with no separator, gluing words together. Fixed both extraction branches (the span.unicode path and the no-span fallback) to use get_text(' ', strip=True) plus a whitespace-run collapse. Verified directly by calling the patched extract_field_data on the two evidence _field_html strings: both now produce correctly spaced output ('(T) dakke areca nut' / 'Pengo aya-tari woman; teya boy'). Future-scrape-only fix -- did not re-scrape and did not modify the existing starling_complete_data_scrape.json, so no measurable corpus/validator impact this run.",
+      "reviewed_at": "2026-08-16T01:52:59",
+      "reviewed_by": "unspecified"
+    },
+    "pseudo-language-fields": {
+      "status": "parser_bug_fixed",
+      "note": "starling_tree_validator.py _METADATA_KEYS was missing 'Additional Forms' (capital F; only lowercase 'Additional forms' was excluded) and 'Miscellaneous' entirely, so both leaked through _is_language_key and were scored as fake always-'No' language entries (e.g. DED 88 Miscellaneous, DED 364 Additional Forms in the audit report). Added both. Also ran a full audit of every distinct non-underscore field key across all records and _sub_entries in starling_complete_data_scrape.json (99 distinct keys) and found two more of the same class that the audit surfaced: 'Stems' (occurs with its own Number in DED at DED 333/445/530 -- same always-'No' leak) and 'Notes on correspondences' (only ever on DED-less sub-entries in this scrape, but same non-language shape); added both. Remaining 59 keys that pass _is_language_key were all reviewed and are genuine language/dialect names. Before/after (combined with the other 5 fixes in this batch, single validator run): total_language_entries 20,275 -> 20,007 (-268, exactly 171 Miscellaneous + 83 Additional Forms + 3 Stems + 11 Notes on correspondences rows removed from the denominator); DED 88 Miscellaneous and DED 364 Additional Forms rows confirmed gone from the new results.",
+      "reviewed_at": "2026-08-16T01:51:43",
+      "reviewed_by": "unspecified"
+    },
+    "gloss-secondary-form-scan": {
+      "status": "parser_bug_fixed",
+      "note": "starling_tree_validator.py _match_entry only scanned att.headwords, id.-reference forms, and (for tracked Gondi/Kuwi/Kui dialects) inline-abbrev gloss forms; a same-language secondary form sitting later in a semicolon-separated Burrow gloss (only the FIRST form-group is captured in att.headwords) was reported as 'Language only ... headword mismatch'. Added a new fallback, placed after every existing match path fails and before the language_only verdict (so it cannot downgrade any existing match): scans the best attestation's recovered gloss via recover_attestation_gloss_from_full_text (truncated at the first sibling-dialect marker for tracked Gondi/Kuwi/Kui dialects to avoid cross-dialect leakage), splits on ';', and does a normalize_for_match containment check per segment, guarded to normalized headword length >= 3 chars or >= 2 tokens. New match_type 'gloss_secondary'; renders via the existing generic 'Yes (match_type, conf)' path in reporting.py, no changes needed there. Verified directly (unit-level _match_entry calls) and in the full run: DED 137 Tu. addalipuni (gloss '...addalipuni to rebuke, frighten.') now Yes (gloss_secondary, 1.00); DED 83 Konda aḍi- (-t-) and Sunkarametta Kuwi addu ānai now Yes (gloss_secondary); DED 7 Ka. aŋ-gāl and Tu. aŋgai now Yes (gloss_secondary, 1.00). Combined with the other 5 fixes in this batch (single validator run): entries_matched 17,080 -> 18,184 (+1,104), entry_match_rate 87.1 -> 94.0 percent; this fix is the largest single contributor to that gain.",
+      "reviewed_at": "2026-08-16T01:52:21",
+      "reviewed_by": "unspecified"
+    },
+    "headword-paren-comma-split": {
+      "status": "parser_bug_fixed",
+      "note": "burrow_entry_parser.py parse_language_sections split span.headword_text.split(',') without regard to paren depth, so 'atu (-pp-, -tt-)' became bogus headwords 'atu (-pp-' and '-tt-)' -- the latter surfaced as the matched form for DED 79 Ta. in the audit report (exact match degraded to substring). Added _split_headword_chain: only splits on a comma at paren depth 0. Verified at the parser level: DED 79 Ta. atu (-pp-, -tt-), DED 79 Kod. adi- (adip-, adit-), DED 83 Ta. atai (-pp-, -tt-), DED 137 Ta. atir (-v-, -nt-) all now parse as one headword instead of two fragments. Also confirmed recover_attestation_gloss_from_full_text's marker anchoring (textnorm.py, joins headwords with r'\\s*,\\s*') still finds the DED 79 Ta. marker in full_text now that the single headword carries its own internal ', ' verbatim -- direct check returned the real gloss, not the fallback. Corpus regen: 950 headword-list merges across attestations (comma-inside-parens fragments joined into one), zero attestation losses, zero count/abbrev misalignments in a group-by-group diff against the pre-batch backup. Side effect surfaced in the row-level regression check: 36 rows that were 'Yes (substring)' before are 'Language only' after, in every case because the OLD match was a false positive -- the truncated fragment (e.g. '-nt-)', 'ma-', 'van-)') coincidentally substring-matched the Starling headword by accident of the very bug being fixed here. 29 of the 36 are DED entries where Burrow's r-with-under-diaeresis (r-underdot digraph, e.g. DED 11 Ta. akar-underdot vs Starling akaz-with-dot-below) is the same phoneme as Starling's z-with-dot-below written in a different Dravidianist transliteration convention -- exactly the 'z/r fold ruling' item already flagged as pending in the project's canonical-transcription policy notes (deliberately left out of reporting.py's _CANONICAL_CORE_FOLD). The other 7 are Brahui -ing suffix hyphenation differences (e.g. Starling mann-ing vs Burrow manning) and two genuine minor content divergences (DED 4572 Ta. po, DED 5270 Salur Gadba var-). None are damage from this fix; all are pre-existing divergences that a coincidental bug was masking.",
+      "reviewed_at": "2026-08-16T01:52:34",
+      "reviewed_by": "unspecified"
+    },
+    "barred-i-fold": {
+      "status": "parser_bug_fixed",
+      "note": "textnorm.py normalize_for_match NFKD-decomposes i-diaeresis to plain i, but barred-i U+0268 (and capital U+0197) has no NFKD decomposition and survived unfolded, so Starling adi-with-barred-i- (adip-, adit-) failed to match Burrow adi-with-diaeresis- (adip-, adit-) (DED 79 Kodagu), likewise Toda arpin variants. This is part of the project's approved conservative transcription fold (2026-08-16 canonical-transcription policy; barred-i/i-diaeresis is one of the pairs already in reporting.py's _CANONICAL_CORE_FOLD for display, but the matcher itself had no equivalent fold). Added BARRED_I_FOLD (U+0268, U+0197 -> i) to normalize_for_match, the single shared copy used by both the validator and burrow_entry_parser.py. Verified directly: normalize_for_match('adi(barred-i)- (adi(barred-i)p-, adi(barred-i)t-)') == normalize_for_match('adi-with-diaeresis- (...)') is True. In the full run: DED 79 Kodagu and DED 79 Toda (arpin) both now Yes (exact, 1.00), previously Language only.",
+      "reviewed_at": "2026-08-16T01:52:45",
+      "reviewed_by": "unspecified"
+    },
+    "seoni-gondi-inline-sigil": {
+      "status": "parser_bug_fixed",
+      "note": "dialect_mapping.py GONDI_INLINE_ABBREVS had entries for Tr./W./Ph./Mu./Ma./M./L./G./Ko./A./Ch. but no 'S.' (Seoni Gondi dialect), so any Burrow Go. gloss citing an (S.) form for Seoni could never be matched to Starling's 'Seoni Gondi' dialect entries. Evidence: DED 133 Go. gloss '... (Mu. Ko. S.) adm-, (M.) admana id.' corresponds to Starling Seoni Gondi adm-; DED 718 Go. gloss '...(S.) urum- to lighten' corresponds to Starling Seoni Gondi urum-. No conflict with Kuwi's own 'S.' = Schulze -- the inline abbreviation tables are keyed per top-level Starling language and never cross-reference each other. Added S.: [Seoni Gondi]. burrow_language_mappings.md does not document a Gondi inline-sigil table (only the base-language variant-group list, which already listed Seoni Gondi), so no doc update was needed there. Verified in the full run: DED 133 Seoni Gondi adm- and DED 718 Seoni Gondi urum- both now Yes (gloss_dialect_exact, 0.95), previously Language only.",
+      "reviewed_at": "2026-08-16T01:52:52",
+      "reviewed_by": "unspecified"
+    },
+    "appendix-page-edition-mislabel": {
+      "status": "parser_bug_fixed",
+      "note": "load_burrow_corpus (starling_tree_validator.py) skipped Appendix on edition=='Appendix' only, but 10 Appendix supplement entries (pages 509-512, e.g. DED 1/3/4/7/27/44/45/47/49/50) were mislabelled edition='DEDR' by patch_corpus_editions.py: editions.detect_edition_from_text matches the 'DED(S) N' backward-reference these entries carry (DED(S)=DED Supplement) and forced DEDR, overriding the authoritative page>=509 classification. Result: the Appendix's IA-loanword reflexes were merged into the real DEDR paragraph for those DED#s (they reuse the main dictionary's numbers). Fixed matcher-side in load_burrow_corpus: skip when edition=='Appendix' OR page>=APPENDIX_START_PAGE (imported from editions.py), so the page signal is authoritative and the mislabel cannot leak. page>=509 vs <509 is a clean partition of the corpus (62 Appendix / 5623 DEDR, verified). Impact: appendix-skipped 52->62; one eliminated false positive (DED 1 Starling Tamil 'a' had matched 'Language only' against Burrow 'akkata' \"excl. of wonder\", which came only from the DED(S) 21 supplement, not DEDR DED 1 which has no Tamil -> now correctly 'No'). entry_match_rate unchanged 94.0% (no matched 'Yes' entry depended on an appendix form). Verified via full row-level diff baseline vs fixed: 20007 rows both sides, 0 added/removed, exactly 1 Match-status change (the eliminated false positive).",
+      "reviewed_at": "2026-08-16T12:31:01",
+      "reviewed_by": "unspecified"
+    },
+    "duplicate-scraped-paragraph-dedup": {
+      "status": "parser_bug_fixed",
+      "note": "The raw scrape (burrow_corpus.json) holds duplicate paragraph records for 84 DED#s on the same page -- a re-scrape of the same page where one copy was truncated at an '(a)'/'(b)' sub-entry boundary (e.g. two DED 137 records on page 14: a 5-attestation copy truncated after the (a) section + a 7-attestation fuller copy). load_burrow_corpus groups by cleaned DED# via setdefault and CONCATENATES every same-numbered entry's attestations, so the overlapping languages were counted twice (DED 137's Ma./Ka./Tu./Te. appeared twice; ~117 DED#s multi-entry overall, incl. genuine (a)/(b) splits like 4896 and the mislabelled appendix siblings handled separately). Fixed by deduplicating each paragraph's attestation list AFTER concatenation+gloss-repair on the fully-repaired (language_abbrev, headwords-tuple, gloss) tuple: byte-identical duplicates fold, genuine (a)/(b) forms of the same language keep distinct headwords/gloss and survive; order-preserving (first occurrence wins). 988 duplicate attestations folded. entry_match_rate unchanged 94.0% (removing duplicate Burrow attestations cannot change whether a Starling form finds a match); benefit is de-doubled coverage_by_ded_paragraph counts and audit rows. Verified in the same full row-level diff as appendix-page-edition-mislabel (0 regressions).",
+      "reviewed_at": "2026-08-16T12:31:01",
+      "reviewed_by": "unspecified"
+    },
+    "id-expansion-overglue": {
+      "status": "resolved",
+      "note": "RESOLVED 2026-08-17 (option A'). Both id. resolvers (burrow_entry_parser.parse_language_sections and repair_burrow_corpus_glosses.repair_corpus) previously copied the ENTIRE previous attestation gloss; on a multi-FORM antecedent this over-glues (DED 7 Ka. opened with all of Toda's gloss). Finding (re-verified vs source): which antecedent form id. points at is EDITORIAL, not positional -- DED 7 needs the last form (wirxity 'husband's brother's wife'), DED 54/88 need the head (ancal 'relay...', ataikkay 'areca-nut'); head vs nearest directly contradict, and the true form is even non-cognate (oragitti unlike wirxity). Gold set = FULL population of 192 multi-form-antecedent id. refs (of 2985 total; 2793 single-form already correct), all hand-labeled. Scores: A' leave = 0 corruptions; B head = 74% correct but 26% fabricated-wrong (50/192); C nearest = 40% correct, 60% wrong (antecedents often end in their own id./citation); D whole-copy (old) = 100% wrong on multiform. Under honesty>completeness, shipped A'. Fix: textnorm.antecedent_is_multiform(); both resolvers guard resolvable = last_real_gloss and not multiform -> single-form resolves as before, multiform keeps literal 'id.' (faithful to Burrow). Guard can only SKIP resolution, never assert a new meaning. Verification: corpus regen changed 202 glosses (all toward literal id./cleaner); validator diff vs baseline = 0 rows added/removed, entry_match_rate 94.0% held, entries_matched 18184->18185 (+1), 3 Match-status changes ALL positive (DED 4847 Seoni Gondi Language-only->Yes; DED 5554 Kui & DED 7 Kannada an-gal upgraded gloss_secondary->substring/exact), 0 matches lost; 141 rows changed only in displayed Matched Burrow meaning. Accepted cost: ~139 head-would-be-right cases now show 'id.' (e.g. DED 88 Toda adky). Prior corpus saved as burrow_corpus.cleaned.before-id-fix.json. TODO: re-sync burrow_corpus.cleaned.json to shared Box folder (item 7 Sources reads it).",
+      "reviewed_at": "2026-08-16T12:31:01",
+      "reviewed_by": "unspecified",
+      "resolution_date": "2026-08-17",
+      "chosen_rule": "A' (leave-ambiguous-unresolved)"
+    },
+    "single-char-vowel-headword": {
+      "status": "parser_bug_fixed",
+      "note": "The len(hw) > 1 filter in burrow_entry_parser.py dropped single-char headwords, discarding the headword language of ~20 deictic/pronominal-base entries (DED 1, 328, 332, 334, 410, 533, 534, 557, 606, 728, 764, 827, 870, 3684, 3720, 5160). Added _VOWEL_HEADWORDS whitelist (a a i i u u e e o o) so bare-vowel headwords survive. Corpus regen: +23 vowel-headword slots recovered, 0 attestations/languages lost. Validator: entries_matched 18185->18190 (+5), match rate 94.0% held. NOTE: DED 1's own Ta. headword remains unrecovered -- separate pattern-coverage gap, logged under single-char-vowel-headword-ded1-ta.",
+      "reviewed_at": "2026-08-18T00:13:20",
+      "reviewed_by": "unspecified"
+    },
+    "single-char-vowel-headword-ded1-ta": {
+      "languages": {
+        "Tamil": {
+          "status": "parser_bug_fixed",
+          "note": "RESOLVED. Added Pattern G to burrow_entry_parser._PATTERNS: <i><b>Lang.</b></i> followed by a lone-vowel PLAIN-TEXT headword (the deictic-base markup where the leading headword-language marker uses Pattern-C markup but the headword is a bare vowel in running prose, e.g. DED 1 '<i><b>Ta.</b></i> a demonstr. base'). A lone vowel is the quality guard -- an English gloss word is never a single vowel -- so it cannot capture prose; only 1 match corpus-wide (DED 1 Ta. 'a'). Corpus regen +1 (DED 1 Ta. ['a']), 0 losses. DED 1 (the flagship demonstrative entry) now parses its full headword-language set including its defining Tamil.",
+          "reviewed_at": "2026-08-18T00:25:12",
+          "reviewed_by": "unspecified"
+        }
+      }
+    },
+    "zh-transcription-fold": {
+      "status": "parser_bug_fixed",
+      "note": "Retroflex zh (Tamil/Malayalam ழ, /ɻ/): Starling writes ẓ (z + U+0323 dot below), Burrow writes r̤ (r + U+0324 diaeresis below) -- same phoneme, two transliteration conventions. Added a surgical fold in textnorm.normalize_for_match: both sequences -> U+1E93, applied after NFKD but before combining marks are stripped (which would otherwise leave incompatible z vs r). r + U+0323 (ṛ) is a DIFFERENT phoneme and is deliberately left untouched. Matcher-side, zero corpus change (single source of truth in textnorm.py governs both parser and validator). Resolves the long-pending ẓ/r̤ ruling. Sim on 792 Language-only rows predicted 182 flips; validator (bundled with Pattern G) entries_matched 18190->18381 (+191, ~190 attributable to zh), entry_match_rate 94.0%->95.0%. The paired ch->c fold was evaluated and DECLINED: flipped only 1 row (DED 46 achchānā/accānā) while reaching every ch headword -- poor risk/reward, and a fold can only create collisions (risking a spurious match that masks a real divergence).",
+      "reviewed_at": "2026-08-18T00:25:07",
+      "reviewed_by": "unspecified"
+    },
+    "A-suffix-ded-fold": {
+      "status": "parser_bug_fixed",
+      "note": "Matcher/indexing fix (not a parser bug, zero corpus regen). Burrow marks some split entries with a bare-letter DED suffix (3621A 'bug' vs 3621 'night'; also 583A, 1634A, 1693A, 3160A, 3326A, 3431A, 4145A, 4265A, 5400A, 5410A), where Starling keys both halves on the plain base number. Extended textnorm.clean_ded_number's suffix-fold regex from (a) only to also match a bare trailing letter, so the loader merges each split half's attestations under the base key (mirrors the existing 4896(a)/(b) fold). Each Starling branch still only matches forms textually present in its half. entry_match_rate 95.00->95.10, entries_matched 18381->18410 (+29), 0 losses. Dominated by DED 3621 (14 No + several Language-only recovered).",
+      "reviewed_at": "2026-08-18T01:52:33",
+      "reviewed_by": "unspecified"
+    },
+    "totype-bold-embedded-marker": {
+      "status": "parser_bug_fixed",
+      "note": "Parser-side, corpus regen. Complement of totype-embedded-marker (ee716f1). Burrow botanical entries fold the previous language's trailing scientific name + the next language's marker into one <i> span with a plain-text headword in a fresh bold run: <b><i>Sesbania grandiflora. Ma.</i> akatti <i>S. grandiflora</i></b>. Marker at <i> end behind sci-name, headword bare text -> fell between Pattern A (marker at <i> start), leading-qualifier, and _STRICT_PATTERNS (excludes <b> before <i>, needs fresh-<b> headword). Fixed with a 2nd _STRICT_PATTERNS entry anchored on <b>\\s*<i>...Abbrev.</i> plain-text-headword, gated by _is_known_lang_abbrev + _FORM_FIRST first-char guard. Mandatory <b> before <i> = discriminator vs elided-form case (DED 814 'erukku <i>Calotropis gigantea. Ma.</i> gigantic swallow-wort', marker in running text, English gloss follows), deliberately NOT matched. Sim: +224, 0 lost, 0 changed headwords, 0 English-gloss contamination. Regen: +221 (Ma 116, Ka 34, Te 27, Tu 15, Kod 10, To 5, Pa/Ko 4, +6), 0 losses. Row-level diff: No->Yes 62, Lang->Yes 1, Yes->non-Yes 0. entry_match_rate 95.1->95.4, entries_matched 18410->18473 (+63). Also fixes previous language's over-extended gloss.",
+      "reviewed_at": "2026-08-18T02:21:22",
+      "reviewed_by": "unspecified"
+    },
+    "leading-qualifier-glued-abbrev-patternC": {
+      "status": "parser_bug_fixed",
+      "note": "Parser-side, corpus regen. Extends leading-qualifier-glued-abbrev (32aeb26, Pattern A / <b><i> order) to the <i><b> marker order. The PREVIOUS language's trailing grammatical qualifier ((intr.)/(tr.)/(loc.)) is glued in front of the next marker inside the italic, so the abbrev capture starts on '(' and fails _is_valid_lang, dropping the whole language (which fed many per-dialect Starling rows, esp. Gondi/Gadba). Two shapes: (C) <i><b>(intr.). Go.</b></i> (Tr.) <b>wOranA</b> (DED 946) fixed by adding _OPT_LEADING_QUALIFIER to Pattern C; (C2) <i><b>(tr.).</b> Go.</i> (Tr.) <b>nindAnA</b> (DED 3682, qualifier in its own <b>) fixed by a new Pattern C2. Both headwords are <b>-bounded (contamination-proof). Sim: +28, 0 lost, 0 changed. Regen: +24 unique (Go 10, Ga 10, Kuwi 2, Te 1, Kol 1; 28->24 = dup-scraped Ga folding at load), 0 losses. Row-level diff (20007 rows): No->Yes 42, No->Lang 1, Yes->non-Yes 0. entry_match_rate 95.4->95.7, entries_matched 18473->18515 (+42). Sized: shape C = 27 markers/21 DEDs, shape C2 = 1 (DED 3682).",
+      "reviewed_at": "2026-08-18T02:32:12",
+      "reviewed_by": "unspecified"
+    },
+    "leading-qualifier-plain-before-boldlang-patternC3": {
+      "status": "parser_bug_fixed",
+      "note": "Parser-side, corpus regen. 3rd tag-order of the leading-qualifier family (after Pattern A, C, C2). Qualifier/subentry marker as plain text INSIDE the italic but BEFORE the bold-wrapped language marker: <i>(neut.). <b>Go.</b></i> (Tr.) <b>nalung</b> (DED 3655), <i>(a) <b>Kol.</b></i> <b>so-ng-</b> (DED 2876). New Pattern C3; collapses to Pattern C when qualifier empty (C runs first, wins position, no double-count). Bold-bounded headword = contamination-proof. Sim: +25, 0 lost, 0 changed, 0 suspicious (Ta 10 - many entry-initial headword markers with a qualifier). Regen: +17 unique, 0 losses. Row diff (20007 rows): No->Yes 11, No->Lang 1, Yes->Lang 1. The 1 Yes->Lang is a FALSE-POSITIVE CORRECTION (DED 2402 Salur Gadba saḍpi - not in Burrow at all; Burrow's Gadba form is saṛit; prior gloss_secondary Yes was spurious, Language-only is correct). entry_match_rate 95.7 held, entries_matched 18515->18525 (+10).",
+      "reviewed_at": "2026-08-18T02:53:40",
+      "reviewed_by": "unspecified"
+    },
+    "citation-glued-marker": {
+      "status": "parser_bug_fixed",
+      "note": "Parser-side, corpus regen. A bibliographic source citation opens '(' INSIDE the marker tag but closes ')' only AFTER it, breaking the abbrev capture and dropping the whole language. Sources seen: (TVB (DED 2686 Te.), (VPK (886 Te.), (SSTW (931 Kol.), (LSI (3884 Go.), and esp. (LSB - the Linguistic Survey source that Belari and Kurumba are ALWAYS cited with, so those two minor languages were systematically dropped corpus-wide. New Pattern CIT: capture abbrev alone, consume the citation ('(' inside marker through first ')' after it) + usual qualifiers, then <b>headword</b>. Mandatory '(' after abbrev gates it off normal markers. Handles both <i><b>Lang. (CIT</b></i> and bold-less <i>Lang. (CIT</i>. Sim: +25 (Kurub 10, Bel 8, Te 2, Kol 2, Kuwi/To/Go 1), 0 lost, 0 changed, 0 suspicious; spot-verified DED 215/226/583/2677 all correct (incl. Bel. simbi 'to carry' distinct from Ka. simbi 'ring'). Regen: +25, 0 losses. Row diff (20007 rows): No->Yes 5, No->Lang 3, Yes->non-Yes 0. Modest match gain (Kurub/Bel sparsely in Starling) but parser now complete. entry_match_rate 95.7 held, entries_matched 18525->18530 (+5).",
+      "reviewed_at": "2026-08-18T02:58:38",
+      "reviewed_by": "unspecified"
+    },
+    "sciname-before-marker-bold-order": {
+      "status": "parser_bug_fixed",
+      "note": "Parser-side, corpus regen. The <i><b> (bold-order) analog of the To.-type bold-embedded fix (44287fc, which handled <b><i> order). The previous language's trailing scientific name is folded into this marker's bold span before the abbrev, headword in a fresh <b>: <i><b>Zizyphus oenoplia. Ka.</b></i> (Lush.) <b>suri-muḷḷu</b> (DED 2730). New _STRICT_PATTERNS shape (3), gated by _is_known_lang_abbrev (scans arbitrary sci-name text before abbrev). Mandatory lowercase-text+space before abbrev keeps it off ordinary <i><b>Ka.</b></i>. Bold-bounded headword = contamination-proof. Sim: +17 (Go 5, Ma 3, Te 2, Kuwi 2, Kol 2, Konḍa/Ka/Tu 1), 0 lost, 0 changed, 0 suspicious. Regen: +15, 0 losses. Row diff (20007 rows): No->Yes 7, Yes->non-Yes 0. entry_match_rate 95.7->95.8, entries_matched 18530->18537 (+7).",
+      "reviewed_at": "2026-08-18T03:01:43",
+      "reviewed_by": "unspecified"
+    },
+    "sciname-before-marker-running-text": {
+      "status": "parser_bug_fixed",
+      "note": "Parser-side, corpus regen. CLOSES the long-deferred To.-type running-text plain-text-headword variant. Running-text sci-name before marker, NO <b> anchor: <i>M. edule. Tu.</i> alimarů, alimārů (DED 257). The deferred risk was the elided-form case (DED 814 <i>Calotropis gigantea. Ma.</i> gigantic swallow-wort) where the English gloss would be captured as headword - no structural <b> signal distinguishes them. Solved with a LEXICAL guard _rt_headword_ok (not structural): accept a plain-text run only if it reads as a Dravidian form (diacritic/length-dot present, OR first token not a common English gloss word AND not running into gloss prose); reject otherwise. New _RT_SCINAME_PATTERN iterated separately from _STRICT_PATTERNS with the guard. Verified guard: DED 814 Ma. rejected (gigantic->None), alimarů/atti kept. Sim: +57, 0 lost, 0 changed, 0 suspicious (63 unparsed spans - 6 guard-rejected elided/empty). Regen: +53, 0 losses (Ka 16, Tu 12, To 6, Te 4, Pa/Koḍ 3, ...). Row diff (20007 rows): No->Yes 20, Lang->Yes 1, No->Lang 1, Yes->non-Yes 0. entry_match_rate 95.8->95.9, entries_matched 18537->18558 (+21).",
+      "reviewed_at": "2026-08-18T03:08:45",
+      "reviewed_by": "unspecified"
+    },
+    "hyphen-normalization": {
+      "status": "parser_bug_fixed",
+      "note": "normalize_for_match (textnorm.py) mapped an internal hyphen to a SPACE rather than deleting it, so Starling's root/suffix citation hyphen (Brahui hamp-ing, all-ī, ir-aṭ) never reconciled with Burrow's joined form (hamping, allī, iraṭ). Changed .replace('-', ' ') to .replace('-', ''), aligning the code with its own docstring ('strip … hyphens'). Matcher-side, zero corpus regen. entry_match_rate 95.9%->96.5%, +115 matches (Brahui Language-only 107->5; also Gadba/Telugu spacing), No and N/A unchanged = zero regression.",
+      "reviewed_at": "2026-08-18T06:55:09",
+      "reviewed_by": "unspecified"
+    },
+    "konda-gondi-kui-no-ded": {
+      "languages": {
+        "Konda": {
+          "status": "not_a_bug_wontfix",
+          "note": "635 Konda validation rows report 'Parent branch has no DED number' (Match = N/A). Verified against live StarlingDB pages (not just the scrape): all 635/635 originate from a SEPARATE database, /data/drav/gndet (Gondi-Kui / Gondwan etymology), not the main /data/drav/dravet Dravidian DB the validator matches against. Live pages (text_number=3, 129) confirm these entries carry no 'Number in DED' field -- their fields are Proto-Gondi-Kui, Meaning, Dravidian etymology, Proto-Gondi, Konda, Proto-Kui-Kuwi, Notes; scraped Konda forms (aḍi- (-t-), ḍāŋ- (-it-)) match the live pages exactly. These are subgroup-level Proto-Gondi-Kui reconstructions that aren't DED-keyed, so there is nothing in Burrow's DED corpus to match -- NOT a parser bug. The other 630 Konda nodes come from dravet, carry a DED number in ancestry, and are matchable. FUTURE LEAD (scraper/data, not matcher): each gndet entry shows a 'Dravidian etymology' hyperlink cross-ref; a two-hop join (Gondi-Kui entry -> Dravidian etymology -> DED number) could recover some -- out of scope for the current matcher.",
+          "reviewed_at": "2026-08-18T10:59:00",
+          "reviewed_by": "unspecified"
+        }
+      }
+    },
+    "subgroup-db-orphan-exclusion": {
+      "status": "not_a_bug_wontfix",
+      "note": "Excluded all orphan language entries sourced from non-DED-keyed subgroup etymology databases (reached via Starling cross-reference links) from the validation match results. Generalizes ledger key konda-gondi-kui-no-ded: the 653 'no DED number' orphan rows come entirely from 7 subgroup DBs -- gndet/Gondi-Kui 635 (Konda), kuiet/Kui-Kuwi 5, telet/Telugu 4, ndret/North-Dravidian 4, braet/Brahui 3, kogaet/Kolami-Gadba 1, gonet/Gondi 1 -- none from the main DED-keyed dravet DB, so none are matchable against Burrow's DED corpus. starling_tree_validator.py now gates the orphan-reporting block on node source database (_is_subgroup_db_source via _url basename); subgroup orphans are counted (summary.subgroup_db_orphans_excluded + _by_database) but kept out of results/queue. Validator-scoping change, corpus untouched. entry_match_rate unchanged 96.5% (these were never in the matched/with_ded denominator); total_language_entries 20,007->19,354, entries_without_ded 653->0, N/A queue rows 653->0.",
+      "reviewed_at": "2026-08-18T12:43:40",
+      "reviewed_by": "unspecified"
+    },
+    "glottal-stop-fold": {
+      "status": "parser_bug_fixed",
+      "note": "normalize_for_match (textnorm.py) did not reconcile glottal-stop notation: Starling writes it as ʔ (U+0294), Burrow as modifier ˀ (U+02C0, e.g. Maria Gondi oˀ, Kuwi siṭˀ) or as an apostrophe (rendered ’ U+2019, e.g. Kurukh alra’ānā vs Starling alraʔānā). Added GLOTTAL_FOLD mapping ˀ/ʼ/’/' -> single sentinel ʔ, applied in the pre-NFKD translate chain (chars are non-combining). Consistent 1:1 fold, so it can only merge forms, never split a match (cf. ẓ/r̤, ŋ folds). Matcher-side, zero corpus regen. entry_match_rate 96.5%->96.8%, +67 matches: Kurukh Language-only 26->6, Kuwi (Israel) 28->10, Maria Gondi 15->6; No/N-A frozen = 0 regression. Remaining glottal-bearing Language-only rows are truncated-stem Burrow forms (a separate parsing issue), not notation.",
+      "reviewed_at": "2026-08-18T12:50:05",
+      "reviewed_by": "unspecified"
+    },
+    "spacing-diacritic-strip": {
+      "status": "parser_bug_fixed",
+      "note": "normalize_for_match (textnorm.py) did not reconcile Burrow's SPACING nasalization/breve modifiers with Starling's COMBINING marks. Burrow writes ˜ (U+02DC, e.g. cī˜kaṭi, ī˜ga) or ˘ (U+02D8, e.g. nū˘vu) after the vowel where Starling uses the combining tilde (U+0303), which NFKD+strip-combining already removes on the Starling side -- leaving a permanent mismatch. Added SPACING_DIACRITICS = {˜, ˘, ~} stripped in the translate chain, so both sides drop the mark consistently (same rationale as LENGTH_DOTS). Matcher-side, zero corpus regen. entry_match_rate 96.8%->96.9%, +23 matches spanning Telugu (12), Kurukh (4), Parji, Betul Gondi, Manda, Maria Gondi, Kolami; No/N-A frozen = 0 regression.",
+      "reviewed_at": "2026-08-18T12:57:53",
+      "reviewed_by": "unspecified"
+    },
+    "abbrev-orthography-variants": {
+      "status": "parser_bug_fixed",
+      "note": "Category-A language-grouping fix (matcher-side, dialect_mapping.py, zero corpus regen). Three abbreviation/base-name resolution gaps: (1) Burrow's plain-d 'Mand.' (DED 34) now aliased to canonical retroflex 'Manḍ.' -> Manda; (2) Burrow's period-less 'Koḍ' (DED 215/2826/5297) now aliased to canonical 'Koḍ.' -> Kodagu, via new _ABBREV_ALIASES map; (3) 'Ir.' base corrected 'Iruḷa'->'Irula' since Starling spells it plain-l 'Irula' (33x) and never retroflex (0x); DEDR 'Iruḷa' retained as baked corpus display. Match rate 96.9%->97.0%, entries_matched 18763->18769 (+6), 0 regression (total 19354 frozen). Found via --primary language triage.",
+      "reviewed_at": "2026-08-18T13:21:35",
+      "reviewed_by": "unspecified"
+    },
+    "paren-comma-normalization": {
+      "status": "parser_bug_fixed",
+      "note": "Matcher-side (zero-regen) fold in textnorm.normalize_for_match: strip commas that sit INSIDE a parenthetical only, so Starling's tense/morphology notation (-pp-, -tt-) reconciles with Burrow's space-separated (-pp- -tt-). Parenthetical-only (not blanket) to preserve top-level comma-separated headword lists as genuine separators -- same two-role comma distinction the DravidiLex import made in commit 703f775. Reconciles Tamil 34/905/1588/4922 and Kodagu 2654/4027/587 (587's barred-i already folded). entry_match_rate held 97.0%; entries_matched 18769->18774 (+5); total 19354 unchanged; 0 regression (monotonic fold).",
+      "reviewed_at": "2026-08-19T04:19:24",
+      "reviewed_by": "unspecified"
+    },
+    "abbrev-alias-trailing-period-variants": {
+      "status": "parser_bug_fixed",
+      "note": "Matcher-side (zero-regen) dialect_mapping._ABBREV_ALIASES additions folding stray-orthography abbrevs onto canonical keys: Kui.->Kui (837), Kod.->Koḍ. plain-d Kodagu (4547), Konḏa.->Konḍa macron-below-d+period (3684), Ko..->Ko. doubled period (3700). Extends the shipped 178ed8d alias batch. +3 matched (837/4547/3700 exact). 3684's language now resolves but the row stays No on a residual headword-granularity issue (Starling paradigm 'nīn (obl. nī-)' vs Burrow bare 'nīn') -- a separate secondary/paradigm-form lever, not this mapping gap.",
+      "reviewed_at": "2026-08-19T04:29:13",
+      "reviewed_by": "unspecified"
+    },
+    "ipa-vowel-codepoint-fold": {
+      "status": "parser_bug_fixed",
+      "note": "Matcher-side (zero-regen) textnorm.IPA_VOWEL_FOLD: Starling turned-e ǝ (U+01DD)->schwa ə (U+0259) reconciles DED 190 Kannada ǝyb/əyb; Starling open-o ɔ (U+0254)->o reconciles DED 3498 Kannada dɔṇḍE/doṇḍE. Neither has an NFKD decomposition so both would otherwise survive unfolded. 1:1 monotonic fold. +2 matched.",
+      "reviewed_at": "2026-08-19T04:29:14",
+      "reviewed_by": "unspecified"
+    },
+    "slash-spacing-normalization": {
+      "status": "parser_bug_fixed",
+      "note": "Matcher-side (zero-regen) textnorm: collapse whitespace around '/' that separates alternative stems within one citation form -- Burrow 'nolt-/ noṭ-' vs Starling 'nolt-/noṭ-'. Reconciles Naiki 1208/1291, Kota 1369, Kui 3790, Telugu 3793, Kannada 3480 and spillover across groups. Monotonic. Combined safe-batch validator (aliases+IPA fold+slash): entry_match_rate 97.0->97.1, entries_matched 18774->18787 (+13), total 19354 unchanged, 0 regression.",
+      "reviewed_at": "2026-08-19T04:29:14",
+      "reviewed_by": "unspecified"
+    },
+    "plaintext-running-text-language-markers": {
+      "status": "parser_bug_fixed",
+      "note": "Parser-side (corpus regen) fix in burrow_entry_parser.py: recover plain-text (untagged) language markers in running text -- the abbrev is NOT wrapped in <i>, so no existing anchored pattern fired and the form was glued into the previous language's gloss. Two new _PLAINTEXT_MARKER_PATTERNS gated by a mandatory sentence-boundary lookbehind (?<=\\.\\s) + _is_known_lang_abbrev: shape 1 '<b>Tu. aṇḍi</b>' (marker+headword one bold, DED 126), shape 2 'Tu. <b>āḍe</b>' / '(Voc. 97). Konḍa <b>al-...</b>' (untagged marker, bold headword, DED 758/260/382/392/1040/835). Two false-positive guards: (a) _plaintext_marker_is_crossref rejects cross-ref introducers Cf./cf./see/s.v./esp./viz./under/e.g./= that themselves end in a period (DED 64/776/835-Kor/990/810); (b) _plaintext_marker_in_parenthetical rejects markers inside an open '(' -- grammatical sub-form lists '(obl. Old Ta. niṉ-, mod. Ta. uṉ-)' (3684/3688), '(whence borrowed forms, e.g. ...)' (2448), Gondi sub-dialect qualifier '(pl. W. Mu. Ma. ...)' mislabel (400). Corpus regen: +65 attestations across 55 entries, 0 lost. Validator: entry_match_rate 97.1->97.3, entries_matched 18787->18824 (+37), total 19354 unchanged; row-level diff = 0 Yes->No regressions, +37 No->Yes. Hits Tulu/Konda/Malayalam/Malto/Parji/Kodagu. CORPUS REGEN'D -- re-sync to Box.",
+      "reviewed_at": "2026-08-19T11:24:39",
+      "reviewed_by": "unspecified"
+    },
+    "sciname-before-marker-bold-abbrev": {
+      "status": "parser_bug_fixed",
+      "note": "Parser-side (corpus regen) 4th _STRICT_PATTERNS entry: recover a language marker whose abbrev is BOLDED at the end of an italic scientific-name span, with the sci-name as plain text inside the italic and the headword in a fresh bold run -- '<i>P. quadrifida. <b>Ma.</b></i> <b>pacaḷa, paśaḷa</b>' (DED 3824). Inverse of strict shape (3) (sci-name INSIDE the bold); shape (1) already handles the plain-abbrev variant '<i>P. emblica. Koḍ.</i> <b>nellike</b>', so only this bold-abbrev order was still dropping the marker (Ma. in 3755/4250, the Ka./Ma./Te./Tu. cascade in 3824). Gated by mandatory lowercase sci-name text before <b>Abbrev + _is_known_lang_abbrev; <b>-bounded headword is contamination-proof. Corpus regen +19 attestations/12 entries (Ka/Ma/Te 5/5/4, Ko/Pa/Go/Tu/Ga 1 each), 0 lost. Validator entry_match_rate 97.3 held (18824->18831, +7), total 19354 unchanged; row-level 0 Yes->No, +7 No->Yes. Closes the deferred sci-name-plain-before-boldlang order (Malayalam/Tulu/Kannada/Parji). CORPUS REGEN'D -- re-sync to Box.",
+      "reviewed_at": "2026-08-19T11:30:33",
+      "reviewed_by": "unspecified"
+    },
+    "koya-spelled-out-inline-marker": {
+      "status": "parser_bug_fixed",
+      "note": "Matcher-side (zero-regen) recovery of Koya Gondi forms buried in the consolidated Go. gloss under Burrow's SPELLED-OUT '(Koya Su.)'/'(Koya T.)' sub-source tags (Subrahmanyam/Tyler) -- distinct from the short '(Ko.)' sigil which already worked. Two coordinated changes: (1) gloss_extraction._DIALECT_MARKER_GROUP_RE widened with an optional leading 'Koya ' so those groups pass the marker gate (an ordinary gloss parenthetical like '(large tree)' is still rejected -- bare words, no dot, no 'Koya'); (2) dialect_mapping.GONDI_INLINE_ABBREVS registers 'Koya.' -> Koya Gondi (the extractor tokenises 'Koya Su.' to {Koya., Su.}, so 'Koya.' routes it). Validator: entry_match_rate 97.3->97.4, entries_matched 18831->18856 (+25, ALL Koya Gondi: DED 131/905/1407/1425/4764/4981/... -- more than the 10 diagnostics-sampled since it generalized corpus-wide), total 19354 unchanged; row-level diff 0 Yes->No, +25 No->Yes.",
+      "reviewed_at": "2026-08-19T11:33:40",
+      "reviewed_by": "unspecified"
+    },
+    "1572": {
+      "languages": {
+        "Irula": {
+          "status": "genuine_divergence",
+          "note": "Burrow's DEDR publishes NO Irula (Ir.) reflex in this entry -- full_text contains zero Ir./Iruḷa/Irula tokens (regex-swept), stored+reparse panels identical (parser lost nothing), validation note lists Burrow langs with Irula absent. Starling attests an Irula reflex (its note cites Starling's own Irula grammar page nos., e.g. 'Ir. 114', not a Burrow form). Genuine cross-source coverage difference; no code recovers a form Burrow never printed. Part of the Irula 10/10 genuine-divergence group (unmatched_diagnostics.md).",
+          "reviewed_at": "2026-08-19T11:34:53",
+          "reviewed_by": "unspecified"
+        }
+      }
+    },
+    "524": {
+      "languages": {
+        "Irula": {
+          "status": "genuine_divergence",
+          "note": "Burrow's DEDR publishes NO Irula (Ir.) reflex in this entry -- full_text contains zero Ir./Iruḷa/Irula tokens (regex-swept), stored+reparse panels identical (parser lost nothing), validation note lists Burrow langs with Irula absent. Starling attests an Irula reflex (its note cites Starling's own Irula grammar page nos., e.g. 'Ir. 114', not a Burrow form). Genuine cross-source coverage difference; no code recovers a form Burrow never printed. Part of the Irula 10/10 genuine-divergence group (unmatched_diagnostics.md).",
+          "reviewed_at": "2026-08-19T11:34:53",
+          "reviewed_by": "unspecified"
+        }
+      }
+    },
+    "530": {
+      "languages": {
+        "Irula": {
+          "status": "genuine_divergence",
+          "note": "Burrow's DEDR publishes NO Irula (Ir.) reflex in this entry -- full_text contains zero Ir./Iruḷa/Irula tokens (regex-swept), stored+reparse panels identical (parser lost nothing), validation note lists Burrow langs with Irula absent. Starling attests an Irula reflex (its note cites Starling's own Irula grammar page nos., e.g. 'Ir. 114', not a Burrow form). Genuine cross-source coverage difference; no code recovers a form Burrow never printed. Part of the Irula 10/10 genuine-divergence group (unmatched_diagnostics.md).",
+          "reviewed_at": "2026-08-19T11:34:53",
+          "reviewed_by": "unspecified"
+        }
+      }
+    },
+    "445": {
+      "languages": {
+        "Irula": {
+          "status": "genuine_divergence",
+          "note": "Burrow's DEDR publishes NO Irula (Ir.) reflex in this entry -- full_text contains zero Ir./Iruḷa/Irula tokens (regex-swept), stored+reparse panels identical (parser lost nothing), validation note lists Burrow langs with Irula absent. Starling attests an Irula reflex (its note cites Starling's own Irula grammar page nos., e.g. 'Ir. 114', not a Burrow form). Genuine cross-source coverage difference; no code recovers a form Burrow never printed. Part of the Irula 10/10 genuine-divergence group (unmatched_diagnostics.md).",
+          "reviewed_at": "2026-08-19T11:34:53",
+          "reviewed_by": "unspecified"
+        }
+      }
+    },
+    "555": {
+      "languages": {
+        "Irula": {
+          "status": "genuine_divergence",
+          "note": "Burrow's DEDR publishes NO Irula (Ir.) reflex in this entry -- full_text contains zero Ir./Iruḷa/Irula tokens (regex-swept), stored+reparse panels identical (parser lost nothing), validation note lists Burrow langs with Irula absent. Starling attests an Irula reflex (its note cites Starling's own Irula grammar page nos., e.g. 'Ir. 114', not a Burrow form). Genuine cross-source coverage difference; no code recovers a form Burrow never printed. Part of the Irula 10/10 genuine-divergence group (unmatched_diagnostics.md).",
+          "reviewed_at": "2026-08-19T11:34:53",
+          "reviewed_by": "unspecified"
+        }
+      }
+    },
+    "2559": {
+      "languages": {
+        "Irula": {
+          "status": "genuine_divergence",
+          "note": "Burrow's DEDR publishes NO Irula (Ir.) reflex in this entry -- full_text contains zero Ir./Iruḷa/Irula tokens (regex-swept), stored+reparse panels identical (parser lost nothing), validation note lists Burrow langs with Irula absent. Starling attests an Irula reflex (its note cites Starling's own Irula grammar page nos., e.g. 'Ir. 114', not a Burrow form). Genuine cross-source coverage difference; no code recovers a form Burrow never printed. Part of the Irula 10/10 genuine-divergence group (unmatched_diagnostics.md).",
+          "reviewed_at": "2026-08-19T11:34:54",
+          "reviewed_by": "unspecified"
+        }
+      }
+    },
+    "2625": {
+      "languages": {
+        "Irula": {
+          "status": "genuine_divergence",
+          "note": "Burrow's DEDR publishes NO Irula (Ir.) reflex in this entry -- full_text contains zero Ir./Iruḷa/Irula tokens (regex-swept), stored+reparse panels identical (parser lost nothing), validation note lists Burrow langs with Irula absent. Starling attests an Irula reflex (its note cites Starling's own Irula grammar page nos., e.g. 'Ir. 114', not a Burrow form). Genuine cross-source coverage difference; no code recovers a form Burrow never printed. Part of the Irula 10/10 genuine-divergence group (unmatched_diagnostics.md).",
+          "reviewed_at": "2026-08-19T11:34:54",
+          "reviewed_by": "unspecified"
+        }
+      }
+    },
+    "5259": {
+      "languages": {
+        "Irula": {
+          "status": "genuine_divergence",
+          "note": "Burrow's DEDR publishes NO Irula (Ir.) reflex in this entry -- full_text contains zero Ir./Iruḷa/Irula tokens (regex-swept), stored+reparse panels identical (parser lost nothing), validation note lists Burrow langs with Irula absent. Starling attests an Irula reflex (its note cites Starling's own Irula grammar page nos., e.g. 'Ir. 114', not a Burrow form). Genuine cross-source coverage difference; no code recovers a form Burrow never printed. Part of the Irula 10/10 genuine-divergence group (unmatched_diagnostics.md).",
+          "reviewed_at": "2026-08-19T11:34:54",
+          "reviewed_by": "unspecified"
+        }
+      }
+    },
+    "muria-east-west-inline-labels": {
+      "status": "parser_bug_fixed",
+      "note": "Matcher-side (zero-regen) mapping: register Burrow's East/West Muria sub-labels MuE. and MuW. -> Muria Gondi in GONDI_INLINE_ABBREVS (only plain Mu. was mapped). Burrow tags DED 4968 '(MuE.) maloṛ ... (MuW.) malol, molol'; without the mapping the extractor never targeted those forms. Validator entry_match_rate 97.4 held, entries_matched 18856->18859 (+3 Muria Gondi: 816/4968/2896), total 19354 unchanged; row-level diff 0 Yes->No. NOTE: the diagnostics' companion postposed-marker heuristic (form written BEFORE its (Mu.) tag, e.g. DED 1416 kētul) was implemented and REVERTED -- a diacritic-gated backward-look caused 8 Yes->No regressions (grabbed a preceding form belonging to a different dialect, e.g. DED 1855 Adilabad, 1628 Kuwi-Schulze), confirming the documented form/meaning ambiguity in extract_gloss_forms_for_abbrevs; left open.",
+      "reviewed_at": "2026-08-19T11:40:13",
+      "reviewed_by": "unspecified"
+    },
+    "kuwi-diacritic-and-page-inline-markers": {
+      "status": "parser_bug_fixed",
+      "note": "Matcher-side (zero-regen) widening of the shared inline-marker gate gloss_extraction._DIALECT_MARKER_GROUP_RE: (1) admit diacritic letters in an abbrev token (new _MARKER_ABBREV_TOKEN [A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+\\.) so Kuwi's retroflex '(Ṭ. Isr.)' passes -- previously the non-ASCII Ṭ. made ASCII-only [A-Za-z]+\\. reject the whole group and extraction returned []; (2) admit a trailing page citation 'p. 127' so '(Isr. p. 127)' passes. The trailing-period requirement per token is unchanged, so an ordinary gloss parenthetical ('large tree', 'Voc. 3440', 'pl. veṛku') is still rejected -- only real markers gain admission. Validator entry_match_rate 97.4->97.5, entries_matched 18859->18864 (+5: Kuwi Israel 228/4010/4275, Parja Kuwi 837/4711), total 19354 unchanged; row-level diff 0 Yes->No. NOTE: companion paradigm-paren-attach (keep '(āt-)' on the form for DED 333) was implemented and REVERTED -- it fixed 333 (+4) but regressed DED 4325 Maria Gondi (lengthening the form broke a substring match where Burrow's paren has different internal spacing ˀ vs Starling ʔ), the documented 'never lengthen the form' hazard; left open. Chose matcher-side Kuwi over the structural split (user decision).",
+      "reviewed_at": "2026-08-19T11:57:10",
+      "reviewed_by": "unspecified"
+    },
+    "gondi-SR-adilabad-sigil": {
+      "status": "parser_bug_fixed",
+      "note": "Burrow's consolidated Go. gloss tags Adilabad-dialect forms with the sigil (SR.) (e.g. DED 910 (SR.) yeḍung), but GONDI_INLINE_ABBREVS mapped Adilabad Gondi only to A., so those forms fuzzy-matched the base Go. primary as 'Language only'. Added SR. -> Adilabad Gondi (matcher-side, zero corpus regen; SR appears 51x in Starling, no dialect collision). Deliberately excluded bare Su. (0 extra recoveries, collides with Koya's (Koya Su.)). Adilabad Language-only 62->22; entry_match_rate 97.5%->97.7% (+40, 18864->18904), zero regressions.",
+      "reviewed_at": "2026-08-19T12:49:00",
+      "reviewed_by": "unspecified"
+    },
+    "toda-consonant-fold": {
+      "status": "parser_bug_fixed",
+      "note": "Matcher-side Toda orthography fold in textnorm.py (TODA_CONSONANT_FOLD): Starling ɫ (U+026B) and Burrow ł (U+0142) -> l; Starling ʒ (U+0292 ezh) and Burrow ζ (U+03B6 Greek zeta) -> z. Starling's single ɫ maps to Burrow's ł/ḷ/plain-l and ʒ to ζ/plain-z, so plain l/z is the only common target. Each char is 100% Toda-confined per dataset (ɫ/ʒ Starling-only, ł/ζ Burrow-only), so the 1:1 folds only merge Toda forms, never split a match in any language. Toda Language-only 57->9, +48 matched (all Toda->Yes), No frozen at 146, match rate 97.7%->97.9%. Zero-regen (matcher-side). Residual 9 = genuine divergences / separate ɵ fold.",
+      "reviewed_at": "2026-08-20T02:17:45",
+      "reviewed_by": "unspecified"
+    },
+    "telugu-optional-infix-paren": {
+      "status": "parser_bug_fixed",
+      "note": "Matcher-side optional-infix paren expansion in textnorm.py (normalize_for_match_variants + _OPTIONAL_INFIX_RE), wired into starling_tree_validator._match_entry's direct-headword compare. Burrow writes a Telugu variant pair compactly as an infix parenthetical X(Y)Z = {XZ, XYZ} (k(r)ovvu={kovvu,krovvu}, pur(u)gu, tal(l)i, ven(n)u); Starling lists one resolution. normalize_for_match alone flattened parens to spaces ('k r ovvu') and matched neither. Now each Burrow headword is compared against every resolution's key while still reporting Burrow's published k(r)ovvu form. Guard is narrow (infix flanked by word chars, 1-3 non-space chars) so it skips tense parens (-pp- -tt-), obl. notes, trailing sigils (B). Telugu Language-only 41->7, +37 matched (36 Telugu + 1 Telugu-Krishnamurti, all Lang-only->Yes), No frozen at 146, match rate 97.9%->98.1% (18952->18989), 0 regressions. Zero-regen (matcher-side). Residual 7 Telugu = genuine (a/i/e demonstrative bases vs vaḍu/viḍu/evaḍu, bratuku/braduku d-t, two (?)-uncertain forms, turugu/tuṭṭe).",
+      "reviewed_at": "2026-08-20T02:26:35",
+      "reviewed_by": "unspecified"
+    },
+    "kui-derivation-paren-html-entity": {
+      "status": "parser_bug_fixed",
+      "note": "Two-part fix for Burrow derivation-note headwords. (1) Matcher-side (textnorm.normalize_for_match): html.unescape + drop any parenthetical beginning with the derived-from arrow '(< ...)' -- etymology metadata Starling carries identically, so matching keys on the headword proper and a spacing diff around the arrow ((<kūkp- vs (< kūkp-) no longer blocks. (2) Parser-side (burrow_entry_parser, CORPUS REGEN'D): headwords are regex-sliced from str(blockquote) which preserves HTML entities (unlike the gloss get_text path), so html.unescape each headword at construction -- decodes 18 stored headwords from '(&lt; ...)' to '(< ...)' (Kui 13, Te 2, Pa/Kuwi/Pe), display now as published. Kui Language-only 12->6, +7 matched (Kui 6 + Pengo 1, all Lang-only->Yes), No frozen 146, match rate 98.1%->98.2% (18989->18996), 0 regressions, 0 attestation losses in regen. Residual 6 Kui = genuine (3 gloss-as-headword hoe/a-kind-of-bee, 3 different forms: ī, (W.) dialect variant ḍrāḍu, vau/vaspa).",
+      "reviewed_at": "2026-08-20T02:39:09",
+      "reviewed_by": "unspecified"
+    },
+    "glottal-modifier-trailing-space": {
+      "status": "parser_bug_fixed",
+      "note": "Matcher-side glottal-space fix in textnorm.normalize_for_match: after GLOTTAL_FOLD reduces every glottal notation to the ʔ sentinel, drop a space immediately following it (re.sub 'ʔ +'->'ʔ'). Burrow's SOURCE HTML typesets the modifier-letter glottal as its own unit with a trailing space (Konda 'muˀ er', 'loˀ i', 'riˀ -/ri-' -- verified in raw_html, NOT a parser artifact, so no regen) where Starling writes the syllable-closing glottal tight ('muʔer','loʔi'). Applied to both sides so it can only merge. +8 matched (Konda 5 + Kuwi-Israel 1 + Konda-Burrow/Bhattacharya 1 + Manda 1, all Lang-only->Yes), No frozen 146, match rate 98.2% (18996->19004), 0 regressions. Zero-regen (matcher-side). Konda Language-only 7->2; residual 2 = genuine (2617 sītel compound 'sītel dubu', 4205 pir_a mundi/pite).",
+      "reviewed_at": "2026-08-20T02:49:19",
+      "reviewed_by": "unspecified"
+    },
+    "adilabad-ASu-inline-sigil": {
+      "status": "parser_bug_fixed",
+      "note": "Added ASu. (Adilabad Su.) -> Adilabad Gondi to GONDI_INLINE_ABBREVS in dialect_mapping.py, the (ASu.) counterpart to the shipped (SR.) fix (a3de7c0). Burrow tags Adilabad-dialect forms (ASu.) inline in the consolidated Go. gloss (170 occurrences, always Gondi context); matcher-side/zero-regen. Adilabad Gondi Language-only 22->5, entry_match_rate 98.2%->98.3% (19,004->19,021, +17), No frozen at 146, 0 regressions. 5 residual = 495 genuine_divergence + 513 gloss-200-truncation + 1850 multi-Go-segment + 410 dup-entry/multi-word.",
+      "reviewed_at": "2026-08-20T03:11:56",
+      "reviewed_by": "unspecified"
+    },
+    "495": {
+      "languages": {
+        "Adilabad Gondi": {
+          "status": "genuine_divergence",
+          "note": "Starling Adilabad Gondi velkī (silk-cotton tree) is absent from Burrow DED 495 -- his Gondi has only (Ma.) lēki, (M.) leke, (LuS.) lèkee. Genuine divergence.",
+          "reviewed_at": "2026-08-20T03:12:01",
+          "reviewed_by": "unspecified"
+        },
+        "Muria Gondi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "gloss-200char-cap-removal": {
+      "status": "parser_bug_fixed",
+      "note": "Removed the gloss_text[:200] hard cap in burrow_entry_parser.py parse_language_sections (L924). The gloss is already bounded by _extract_gloss (stops at next language marker / DED(S) ref), so the cap only dropped legitimate in-span content -- notably inline sub-dialect forms past 200 chars (e.g. DED 513 (ASu.) ḍiyyōr) that the matcher's gloss extractor could not reach. Parser-side, CORPUS REGEN'D. Regen diff: attestation counts identical (30,334), 252 glosses grew to natural length, 1 shrank (DED 5202 Koḍ. 199->3='id.', a correctness improvement -- full antecedent now correctly detected as multiform, honest 'id.' kept instead of glued-in wrong Ka. meaning). entry_match_rate 98.3%->98.341% (19,021->19,033, +12 incl. DED 513), No frozen at 146, 0 regressions. Re-sync corpus to Box.",
+      "reviewed_at": "2026-08-20T03:17:39",
+      "reviewed_by": "unspecified"
+    },
+    "inline-form-scan-all-attestations": {
+      "status": "parser_bug_fixed",
+      "note": "Matcher-side fix in starling_tree_validator.py _match_entry: the inline-dialect-form scan (gloss_dialect_exact/_substring) previously inspected only best_att, so an inline form (e.g. (ASu.) gudd-) living in a sibling Go. attestation was missed. Now scans every language-matched attestation - best_att first (preserving single-att behavior), then siblings in Burrow order. Resolves DED 1850 Adilabad gudd- (Su.), 410 Adilabad ver/isar gundi, 4083 Muria pipli, 990 Koya ond. entry_match_rate 98.3%->98.4%, +10 matched (all from Language-only), No frozen at 146, 0 regressions. Zero-diff for corpus (match-time only).",
+      "reviewed_at": "2026-08-20T03:32:25",
+      "reviewed_by": "unspecified"
+    },
+    "unterminated-paren-comma-strip": {
+      "status": "parser_bug_fixed",
+      "note": "Matcher-side (textnorm.normalize_for_match, zero-regen): made the closing ')' optional in the intra-parenthetical comma-strip so an UNTERMINATED trailing parenthetical is handled too. Burrow's DSAL markup sometimes closes the bold span mid-parenthetical (<b>agu (an-, ay-</b>, etc.)), so the parser stores a truncated headword with a dangling '(' (agu (an-, ay-); its internal comma previously survived normalization and broke the substring match against Starling's balanced agu (an-, ay-, etc.), agu. Balanced parens are byte-identical ([^()]* can't cross ')'). +7 matched (19043->19050), No frozen at 146, 0 regressions. Recovered DED 333/530 Kannada, 4687 Kodagu, 4778 Brahui, 4572 Kodagu, 2781 Ollari Gadba, 3098 Tamil. Residual genuine divergences: 4968 Durg (molol/malol vowel), 3655 Kota/Toda (truncated to bare 'n' + [...] notation), 5270 Durg (va-/waiana), 4572 Tamil (gloss leaked into stored headword -- separate parser artifact).",
+      "reviewed_at": "2026-08-20T11:17:45",
+      "reviewed_by": "unspecified"
+    },
+    "naiki-ch-between-marker-qualifier": {
+      "status": "parser_bug_fixed",
+      "note": "Parser-side (burrow_entry_parser._find_all_lang_spans, CORPUS REGEN'D -- RE-SYNC TO BOX): fold a dialect qualifier sitting BETWEEN the language marker and the headword (outside the <i> marker) back into the abbrev when the inventory recognises the composite. Shape <i><b>Nk.</b></i> (Ch.) <b>arka</b> (DED 75/430) / <i>Nk.</i> (Ch.) <b>khir</b> (1623): _OPT_HEADWORD_QUALIFIER consumed and discarded (Ch.), so 'Nk. (Ch.)' (=Naiki) was stored as bare 'Nk.' (=Naikri, WRONG dialect; the form itself parsed correctly). Guarded by _is_known_qualified_abbrev -- only inventory composites fold, so 'Go. (Tr.)'/'Ga. (S.)'/'(LSI 4.572)' etc. in the same position are untouched (Nk.(Ch.) is the ONLY recognised between-marker composite). Regen isolated diff: exactly 4 entries relabeled Nk.->Nk.(Ch.), 0 content loss, total attest 29138 unchanged. +3 matched (19050->19053), No 146->143, Language-only frozen 158, 0 regressions. Recovered DED 75/1623/430 Naiki (all No->Yes). From unmatched_diagnostics.md Naiki group.",
+      "reviewed_at": "2026-08-20T11:57:07",
+      "reviewed_by": "unspecified"
+    },
+    "parser-oneoff-noncanonical-markup-batch": {
+      "status": "parser_bug_fixed",
+      "note": "Parser-side batch of 4 non-canonical-markup one-offs from unmatched_diagnostics.md (burrow_entry_parser.py + dialect_mapping.py, CORPUS REGEN'D -- RE-SYNC TO BOX). (1) NEW Pattern CQ '<i><b>Lang.</b> (biblio-qual)</i> <b>hw</b>' -- citation after the bold abbrev but inside the italic; Pattern C needs </b></i> immediately and CIT handles the (-opens-inside-bold inverse, so neither fired (DED 1563 Tu. girige (Eng.-Tulu Dict.), 5006 Ta. muṟaḷai (DCV)); generalizes to Ma./Ka./Te. dictionary citations. (2) _OPT_HEADWORD_QUALIFIER now skips a bare '?' uncertainty mark between marker and headword (DED 4143 '<i><b>Tu.</b></i> ? <b>peñci</b>'). (3) Pattern C tolerates the abbrev trailing period OUTSIDE the bold '</b>.?</i>' (DED 3918 '<i><b>Koḍ</b>.</i> <b>pattï</b>', via 'Koḍ' alias). (4) dialect_mapping _ABBREV_ALIASES += 'Koḏ.'(macron-below-d U+1E0F)->'Koḍ.' so the existing To.-type sci-name strict shape(2) surfaces DED 2690 '<b><i>L. vulgaris. Koḏ.</i> tore</b>'. Isolated regen diff: 15 entries changed, 0 losses, +18 attestations (Tu.5/Ma.4/Ka.3/Te.2/Ta.2/Koḏ.1/Koḍ1 -- 10 bonus beyond the 5 diagnosed). Match rate 98.4->98.5%, +7 matched (19053->19060), No 143->136, Language-only frozen 158, 0 regressions. Recovered DED 2690/3918 Kodagu, 1563/4143 Tulu, 5006 Tamil (all No->Yes).",
+      "reviewed_at": "2026-08-20T12:11:50",
+      "reviewed_by": "unspecified"
+    },
+    "tamil-comma-for-period-marker": {
+      "status": "parser_bug_fixed",
+      "note": "Parser-side (burrow_entry_parser.py, CORPUS REGEN'D -- RE-SYNC TO BOX): new _COMMA_MARKER_PATTERN + gated loop for the shape '<b><i>Ta</i>, par̤i (-pp-, -tt-)</b>' (DED 4002) where the abbrev terminal period is OCR'd as a comma OUTSIDE the italic. Pattern A's mandatory </i>\\s+ guard (blocks '<i>SciName</i>; word' sci-names from becoming bogus languages) cannot admit the comma, so a SEPARATE pattern captures the period-less abbrev and _find_all_lang_spans reconstructs the period + gates on _is_known_lang_abbrev('Ta.') -- a sci-name ('Artocarpus.') is not known and is rejected, so no false-positive hole opens. Isolated regen diff: EXACTLY 1 entry changed (4002), gained Ta.x1, 0 losses, no bogus languages corpus-wide. +1 matched (19060->19061), No 136->135, Language-only frozen 158, 0 regressions. Recovered DED 4002 Tamil par̤i (=Starling paẓi via shipped zh-fold). From unmatched_diagnostics.md Tamil group. Remaining scattered-parser tail (4473/3535/379/4885/2116) left for manual Excel fix or genuine_divergence logging per user.",
+      "reviewed_at": "2026-08-20T12:29:45",
+      "reviewed_by": "unspecified"
+    },
+    "comma-slash-delimiter-fold": {
+      "status": "parser_bug_fixed",
+      "note": "Multiform-delimiter mismatch (cross-cutting, matcher-side/zero-regen). Burrow joins the alternative stems of a multiform headword with \"/\" (irum/iṛum, sēlār/sēlāṛ) while Starling lists the same variants comma-separated (irum, iṛum), so the two never reconciled and produced 'language matched but headword mismatch' (Language-only) rows. Fixed in textnorm.normalize_for_match by extending the slash-whitespace-collapse regex to also fold the top-level comma delimiter to \"/\" (\\s*/\\s* -> \\s*[,/]\\s*). The fold runs AFTER in-paren commas are stripped, so only genuine top-level form-separator commas are affected -- Burrow's tense/morphology parentheticals (-pp-, -tt-) are untouched. Applied identically to both sides and order-preserving, so it can only merge, never split a matching pair. +4 all Language-only->Yes (19061->19065): DED 485 Muria + Chindwara Gondi (irum/iṛum, irup/iṛup), 2783 Betul Gondi (sēlār/sēlāṛ), 3748 Toda (nötš/nets̱). No frozen 135, Language-only 158->154, 0 regressions.",
+      "reviewed_at": "2026-08-20T19:09:42",
+      "reviewed_by": "unspecified"
+    },
+    "split-token-atom-exact-match": {
+      "status": "parser_bug_fixed",
+      "note": "Multiform split-token atom match (cross-cutting, matcher-side/zero-regen). Burrow sometimes SPLITS the alternative forms of a multiform headword into separate single tokens (Ma. 'a, ā' stored as ['a','ā'], 'i, ī' as ['i','ī']) while Starling lists them joined ('a, ā'), which normalize_for_match folds to 'a/a'. The whole-string exact test missed them ('a/a' != 'a'/'ā'), and the substring test that would catch 'a' in 'a/a' is blocked by the deliberate >=2 length guard (prevents spurious single-char substring matches). Fixed in starling_tree_validator._match_entry: ALSO accept a headword match when any '/'-delimited ATOM of the Starling form exactly equals a Burrow token atom -- exact full-atom equality only, never substring, so single-char deictic bases a/ā, i/ī reconcile without the spurious-match risk. +3 all Language-only->Yes (19065->19068): DED 1 Malayalam 'a, ā' (that) + 410 Malayalam 'i, ī' (this) demonstrative bases, 4572 Tamil 'pō (pōv-/pōkuv-/pōtuv-...)' (shared verb form; also clears a prior gloss-leak-display row). No frozen 135, Language-only 154->151, 0 regressions.",
+      "reviewed_at": "2026-08-20T20:06:21",
+      "reviewed_by": "unspecified"
+    },
+    "arrow-artifact-strip": {
+      "status": "parser_bug_fixed",
+      "note": "Scrape-artifact '<->' strip (matcher-side/zero-regen). Burrow's DSAL source leaves a stray '<->' markup token inside 3 headwords (Te. 'b(r)<-> atuku' DED 5372, 'per(u)<-> vu' DED 4411, Kuwi 'surpu reˀ <-> (rec-)' DED 2712) -- not part of the citation form. In DED 5372 it sits between the optional-infix '(r)' and 'atuku', putting a non-word char after ')' that blocked _OPTIONAL_INFIX_RE from expanding 'b(r)atuku'->{batuku,bratuku}. normalize_for_match_variants now strips '\\s*<->\\s*' before the infix search (also cleans the whole-form key). +1 Language-only->Yes (19068->19069): DED 5372 Telugu bratuku. No frozen 135, Language-only 151->150, 0 regressions. NOTE: matcher-side only -- the '<->' remains in the baked corpus DISPLAY form; a future parser pass could clean it at source (only 3 headwords, 4411/2712 have no unmatched Starling row so display-only there). Ledger key arrow-artifact-strip.",
+      "reviewed_at": "2026-08-20T20:11:00",
+      "reviewed_by": "unspecified"
+    },
+    "despaced-exact-match": {
+      "status": "parser_bug_fixed",
+      "note": "Space-insensitive EXACT match (cross-cutting, matcher-side/zero-regen). The two sources sometimes disagree on internal spacing of ONE citation form: an OCR/scrape space splitting a word (Kuwi 'sap ta'=Starling 'sapta' DED 2331), spacing inside a grammatical parenthetical (Burrow 'kal (obl. kad-, pl. kalk)' vs Starling 'kal (obl.kad-,pl.kalk)' DED 1298), a spaced optional-suffix paren (Malto 'nére(h)'=Starling 'nēreh' DED 5151), or a spaced half-length dot (Toda 'pu · f'=Starling 'pūf' DED 4345; '-mil muṭy'='-milmuṭy' DED 4932). starling_tree_validator._match_entry now ALSO accepts a headword match when the two normalized forms are equal with ALL spaces removed -- full-string equality ONLY (never substring), reconciling differently-spaced spellings of the same form without the spurious-substring risk that broke DED 410 Chanda in the earlier reverted space-normalize+substring attempt (despaced 'erpl.erk' != 'pl.er', so that fragment no longer false-matches). +6 all Language-only->Yes (19069->19075): DED 2331 Kuwi, 5151 Malto, 1298 Muria+Maria Gondi, 4345+4932 Toda. No frozen 135, Language-only 150->144, 0 regressions. Recovers the 2 DED 1298 rows the reverted intra-paren-space-strip had targeted, now via safe exact-equality.",
+      "reviewed_at": "2026-08-20T20:14:04",
+      "reviewed_by": "unspecified"
+    },
+    "46": {
+      "languages": {
+        "Betul Gondi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (morphological citation mismatch). Starling cites a fuller inflected/derived verb form -- Gondi -ānā infinitive (achchānā, nēskānā, paiyānā, dursānā) or Kuwi -ali/-nai deverbal (andali, pēṛhali, dācali) -- where Burrow's DEDR gives the bare verb stem/root for the same etymon (accānā, paŋ-, turs-, per-, dāʔ-). Both citations are correct; they differ only in which morphological form the source headworded. Not a matcher failure. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "120": {
+      "languages": {
+        "Kuwi (Fitzgerald)": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (morphological citation mismatch). Starling cites a fuller inflected/derived verb form -- Gondi -ānā infinitive (achchānā, nēskānā, paiyānā, dursānā) or Kuwi -ali/-nai deverbal (andali, pēṛhali, dācali) -- where Burrow's DEDR gives the bare verb stem/root for the same etymon (accānā, paŋ-, turs-, per-, dāʔ-). Both citations are correct; they differ only in which morphological form the source headworded. Not a matcher failure. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "5124": {
+      "languages": {
+        "Kuwi (Fitzgerald)": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (morphological citation mismatch). Starling cites a fuller inflected/derived verb form -- Gondi -ānā infinitive (achchānā, nēskānā, paiyānā, dursānā) or Kuwi -ali/-nai deverbal (andali, pēṛhali, dācali) -- where Burrow's DEDR gives the bare verb stem/root for the same etymon (accānā, paŋ-, turs-, per-, dāʔ-). Both citations are correct; they differ only in which morphological form the source headworded. Not a matcher failure. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        },
+        "Kui": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "3765": {
+      "languages": {
+        "Betul Gondi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (morphological citation mismatch). Starling cites a fuller inflected/derived verb form -- Gondi -ānā infinitive (achchānā, nēskānā, paiyānā, dursānā) or Kuwi -ali/-nai deverbal (andali, pēṛhali, dācali) -- where Burrow's DEDR gives the bare verb stem/root for the same etymon (accānā, paŋ-, turs-, per-, dāʔ-). Both citations are correct; they differ only in which morphological form the source headworded. Not a matcher failure. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        },
+        "Mandla Gondi (Phailbus)": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (morphological citation mismatch). Starling cites a fuller inflected/derived verb form -- Gondi -ānā infinitive (achchānā, nēskānā, paiyānā, dursānā) or Kuwi -ali/-nai deverbal (andali, pēṛhali, dācali) -- where Burrow's DEDR gives the bare verb stem/root for the same etymon (accānā, paŋ-, turs-, per-, dāʔ-). Both citations are correct; they differ only in which morphological form the source headworded. Not a matcher failure. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "3808": {
+      "languages": {
+        "Mandla Gondi (Williamson)": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (morphological citation mismatch). Starling cites a fuller inflected/derived verb form -- Gondi -ānā infinitive (achchānā, nēskānā, paiyānā, dursānā) or Kuwi -ali/-nai deverbal (andali, pēṛhali, dācali) -- where Burrow's DEDR gives the bare verb stem/root for the same etymon (accānā, paŋ-, turs-, per-, dāʔ-). Both citations are correct; they differ only in which morphological form the source headworded. Not a matcher failure. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        },
+        "Mandla Gondi (Phailbus)": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (morphological citation mismatch). Starling cites a fuller inflected/derived verb form -- Gondi -ānā infinitive (achchānā, nēskānā, paiyānā, dursānā) or Kuwi -ali/-nai deverbal (andali, pēṛhali, dācali) -- where Burrow's DEDR gives the bare verb stem/root for the same etymon (accānā, paŋ-, turs-, per-, dāʔ-). Both citations are correct; they differ only in which morphological form the source headworded. Not a matcher failure. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "4423": {
+      "languages": {
+        "Kuwi (Fitzgerald)": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (morphological citation mismatch). Starling cites a fuller inflected/derived verb form -- Gondi -ānā infinitive (achchānā, nēskānā, paiyānā, dursānā) or Kuwi -ali/-nai deverbal (andali, pēṛhali, dācali) -- where Burrow's DEDR gives the bare verb stem/root for the same etymon (accānā, paŋ-, turs-, per-, dāʔ-). Both citations are correct; they differ only in which morphological form the source headworded. Not a matcher failure. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        },
+        "Kuwi (Schulze)": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (morphological citation mismatch). Starling cites a fuller inflected/derived verb form -- Gondi -ānā infinitive (achchānā, nēskānā, paiyānā, dursānā) or Kuwi -ali/-nai deverbal (andali, pēṛhali, dācali) -- where Burrow's DEDR gives the bare verb stem/root for the same etymon (accānā, paŋ-, turs-, per-, dāʔ-). Both citations are correct; they differ only in which morphological form the source headworded. Not a matcher failure. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        },
+        "Maria Gondi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "3140": {
+      "languages": {
+        "Kuwi (Fitzgerald)": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (morphological citation mismatch). Starling cites a fuller inflected/derived verb form -- Gondi -ānā infinitive (achchānā, nēskānā, paiyānā, dursānā) or Kuwi -ali/-nai deverbal (andali, pēṛhali, dācali) -- where Burrow's DEDR gives the bare verb stem/root for the same etymon (accānā, paŋ-, turs-, per-, dāʔ-). Both citations are correct; they differ only in which morphological form the source headworded. Not a matcher failure. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "3399": {
+      "languages": {
+        "Mandla Gondi (Phailbus)": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (morphological citation mismatch). Starling cites a fuller inflected/derived verb form -- Gondi -ānā infinitive (achchānā, nēskānā, paiyānā, dursānā) or Kuwi -ali/-nai deverbal (andali, pēṛhali, dācali) -- where Burrow's DEDR gives the bare verb stem/root for the same etymon (accānā, paŋ-, turs-, per-, dāʔ-). Both citations are correct; they differ only in which morphological form the source headworded. Not a matcher failure. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "910": {
+      "languages": {
+        "Inscriptional Telugu": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (Inscriptional-Telugu ṛ/ḍ correspondence). Starling's Inscriptional-Telugu form writes retroflex ṛ where Burrow's DEDR writes ḍ (ēṛu/ēḍu, tāṛu/tāḍu, tōṛa/tōḍa) -- a real ṛ~ḍ correspondence in the epigraphic register. Deliberately NOT folded in the matcher because ṛ and ḍ are contrastive elsewhere; kept as a documented divergence. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        },
+        "Kinwat Kolami": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "3180": {
+      "languages": {
+        "Inscriptional Telugu": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (Inscriptional-Telugu ṛ/ḍ correspondence). Starling's Inscriptional-Telugu form writes retroflex ṛ where Burrow's DEDR writes ḍ (ēṛu/ēḍu, tāṛu/tāḍu, tōṛa/tōḍa) -- a real ṛ~ḍ correspondence in the epigraphic register. Deliberately NOT folded in the matcher because ṛ and ḍ are contrastive elsewhere; kept as a documented divergence. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "3563": {
+      "languages": {
+        "Inscriptional Telugu": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (Inscriptional-Telugu ṛ/ḍ correspondence). Starling's Inscriptional-Telugu form writes retroflex ṛ where Burrow's DEDR writes ḍ (ēṛu/ēḍu, tāṛu/tāḍu, tōṛa/tōḍa) -- a real ṛ~ḍ correspondence in the epigraphic register. Deliberately NOT folded in the matcher because ṛ and ḍ are contrastive elsewhere; kept as a documented divergence. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "260": {
+      "languages": {
+        "Konda (Burrow/Bhattacharya)": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "96": {
+      "languages": {
+        "Kolami": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "4266": {
+      "languages": {
+        "Telugu (Krishnamurti)": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "1893": {
+      "languages": {
+        "Manda": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "1123": {
+      "languages": {
+        "Kui": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "4847": {
+      "languages": {
+        "Gommu Gondi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "4935": {
+      "languages": {
+        "Kolami": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "3655": {
+      "languages": {
+        "Kota": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        },
+        "Toda": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "3884": {
+      "languages": {
+        "Muria Gondi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        },
+        "Maria Gondi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "3949": {
+      "languages": {
+        "Telugu (Krishnamurti)": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "4149": {
+      "languages": {
+        "Kota": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "4527": {
+      "languages": {
+        "Kuwi (Fitzgerald)": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "4275": {
+      "languages": {
+        "Mandla Gondi (Phailbus)": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        },
+        "Muria Gondi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        },
+        "Maria Gondi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        },
+        "Seoni Gondi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        },
+        "Koya Gondi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        },
+        "Yeotmal Gondi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "2391": {
+      "languages": {
+        "Kota": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "5557": {
+      "languages": {
+        "Pengo": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "5531": {
+      "languages": {
+        "Kuwi (Israel)": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "1": {
+      "languages": {
+        "Telugu": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        },
+        "Kuwi (Fitzgerald)": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        },
+        "Malto": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "363": {
+      "languages": {
+        "Kondekor Gadba": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "333": {
+      "languages": {
+        "Sunkarametta Kuwi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        },
+        "Parja Kuwi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        },
+        "Kuwi (Israel)": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "399": {
+      "languages": {
+        "Tamil": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        },
+        "Malayalam": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        },
+        "Kannada": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "334": {
+      "languages": {
+        "Kannada": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "2491": {
+      "languages": {
+        "Koya Gondi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "809": {
+      "languages": {
+        "Sunkarametta Kuwi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "837": {
+      "languages": {
+        "Kondekor Gadba": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "905": {
+      "languages": {
+        "Tekriya Kuwi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "1165": {
+      "languages": {
+        "Poya Gadba": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "868": {
+      "languages": {
+        "Kolami (Setumadhava Rao)": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "5151": {
+      "languages": {
+        "Telugu": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        },
+        "Toda": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "282": {
+      "languages": {
+        "Kolami (Setumadhava Rao)": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "1479": {
+      "languages": {
+        "Parja Kuwi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "1711": {
+      "languages": {
+        "Kuwi (Schulze)": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "2617": {
+      "languages": {
+        "Konda": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "5013": {
+      "languages": {
+        "Maria Gondi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "4968": {
+      "languages": {
+        "Durg Gondi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "3682": {
+      "languages": {
+        "Pengo": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "5160": {
+      "languages": {
+        "Brahui": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "3684": {
+      "languages": {
+        "Tulu": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "3726": {
+      "languages": {
+        "Kuwi (Schulze)": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "4205": {
+      "languages": {
+        "Konda": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        },
+        "Tulu": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "2341": {
+      "languages": {
+        "Kondekor Gadba": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "2264": {
+      "languages": {
+        "Kurukh": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "3122": {
+      "languages": {
+        "Khuttia Kui": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        },
+        "Sunkarametta Kuwi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        },
+        "Kuwi (Israel)": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "3263": {
+      "languages": {
+        "Sunkarametta Kuwi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        },
+        "Parja Kuwi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "644": {
+      "languages": {
+        "Kondekor Gadba": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "578": {
+      "languages": {
+        "Salur Gadba": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "5247": {
+      "languages": {
+        "Ollari Gadba": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "5334": {
+      "languages": {
+        "Sunkarametta Kuwi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        },
+        "Kuwi (Israel)": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (dialect-attribution difference). Starling attributes this form to a dialect that Burrow's consolidated Go./Kuwi entry tags to a DIFFERENT dialect: Burrow's huppe is (M.)=Maria not Muria (2675), gumiya is (D. Mu.) not Maria (1818), kētul is (Mu. Ma.) not Koya (1416), kohk- is (Mu.) not Gommu (2063), vāŋg- (-it-) is (Su.)=Sunkarametta not (Isr.)=Israel (5334), guḍḍī is (Ph.)/(Mu.) not (Tr.)=Betul (1655). The form exists in Burrow but under a different dialect label -- a genuine source-level attribution difference, verified after the postposed-dialect-marker lever (which recovered the cases where the marker DID match). [Lane-A postposed-marker follow-up, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:41:14",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "5270": {
+      "languages": {
+        "Salur Gadba": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        },
+        "Durg Gondi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "4509": {
+      "languages": {
+        "Malayalam": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (phonological/spelling divergence). Starling's headword and Burrow's DEDR form for this language share the etymon/root but differ in a vowel, consonant, or transcription detail beyond the project's established conservative folds (e.g. āṇ/āḷ, aṛ-/al-, kūnd/gūnd). The two sources record the reflex slightly differently -- real transcription/dialect variation, not a matcher normalization gap. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        },
+        "Tamil": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        },
+        "Kannada": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        },
+        "Kodagu": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "156": {
+      "languages": {
+        "Maria Gondi (Mitchell)": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "277": {
+      "languages": {
+        "Inscriptional Telugu": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "813": {
+      "languages": {
+        "Kolami (Setumadhava Rao)": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "1850": {
+      "languages": {
+        "Kota": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "1818": {
+      "languages": {
+        "Inscriptional Telugu": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        },
+        "Maria Gondi (Mitchell)": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (dialect-attribution difference). Starling attributes this form to a dialect that Burrow's consolidated Go./Kuwi entry tags to a DIFFERENT dialect: Burrow's huppe is (M.)=Maria not Muria (2675), gumiya is (D. Mu.) not Maria (1818), kētul is (Mu. Ma.) not Koya (1416), kohk- is (Mu.) not Gommu (2063), vāŋg- (-it-) is (Su.)=Sunkarametta not (Isr.)=Israel (5334), guḍḍī is (Ph.)/(Mu.) not (Tr.)=Betul (1655). The form exists in Burrow but under a different dialect label -- a genuine source-level attribution difference, verified after the postposed-dialect-marker lever (which recovered the cases where the marker DID match). [Lane-A postposed-marker follow-up, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:41:14",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "5153": {
+      "languages": {
+        "Inscriptional Telugu": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        },
+        "Parja Kuwi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "1249": {
+      "languages": {
+        "Betul Gondi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "1957": {
+      "languages": {
+        "Inscriptional Telugu": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "1977": {
+      "languages": {
+        "Kuwi (Fitzgerald)": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "2064": {
+      "languages": {
+        "Kui": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "1567": {
+      "languages": {
+        "Kui": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "1419": {
+      "languages": {
+        "Brahui": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "4717": {
+      "languages": {
+        "Parji": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "3621": {
+      "languages": {
+        "Dongriya Kuwi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "3688": {
+      "languages": {
+        "Yeotmal Gondi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "4187": {
+      "languages": {
+        "Tulu": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "2402": {
+      "languages": {
+        "Salur Gadba": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "2377": {
+      "languages": {
+        "Brahui": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "3406": {
+      "languages": {
+        "Kolami (Setumadhava Rao)": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "3245": {
+      "languages": {
+        "Toda": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "3481": {
+      "languages": {
+        "Brahui": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "3539": {
+      "languages": {
+        "Kuwi (Israel)": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "3367": {
+      "languages": {
+        "Telugu": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "697": {
+      "languages": {
+        "Brahui": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "583": {
+      "languages": {
+        "Khuttia Kui": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "5301": {
+      "languages": {
+        "Toda": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "5552": {
+      "languages": {
+        "Kui": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (distinct reflex). Burrow's DEDR publishes a wholly different form for this language+meaning than Starling's headword (little or no shared skeleton) -- a different lexeme, a different dialect's form, or no cognate reflex at all. A genuine content divergence between the two sources, not a matching artifact. [Lane-A grouped genuine-divergence pass, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:27:54",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "postposed-dialect-marker-scan": {
+      "status": "parser_bug_fixed",
+      "note": "Postposed dialect-marker inline-form scan (matcher-side/zero-regen). Burrow writes some consolidated Go./Kuwi dialect forms with the marker AFTER the form ('; huppe (M.) rat', '; kētul (Mu. Ma.) hut', '; paiyānā (Tr.)', '; panḍ- (G.)', '; dursānā (W.)', '; gumiya (D. Mu.)', '; guḍḍī (Ph.)'); the existing inline scan only handled PREPOSED '(marker) form', so these read as Language-only. gloss_extraction.extract_gloss_forms_for_abbrevs now also scans for a SEGMENT-INITIAL form token (after ';' or gloss start) immediately followed by a dialect marker containing a target abbrev -- forward-anchored on BOTH the segment boundary and the target marker, so it never reaches across into a different dialect's form (the failure mode of the 2026-08-19 reverted backward-look) nor grabs a mid-segment English gloss word. +8 all Language-only->Yes (19075->19083, gloss_dialect_exact): DED 2675 Maria(Mitchell) huppe, 1655 Mandla(Ph) guḍḍī, 1818 Muria gumiya, 1416 Muria+Maria kētul, 3808 Betul paiyānā, 3884 Gommu panḍ-, 3399 Mandla(Williamson) dursānā. No frozen 135, Language-only 144->136, 0 regressions. Also CORRECTED 4 rows just mis-logged as genuine_divergence (1818/3808/3884/3399) -- postposed-marked in Burrow, not divergent; those ledger entries removed. Ledger key postposed-dialect-marker-scan.",
+      "reviewed_at": "2026-08-20T20:40:14",
+      "reviewed_by": "unspecified"
+    },
+    "827": {
+      "languages": {
+        "Toda": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (absent reflex). Starling's form for this dialect is absent from Burrow's DEDR entry for this DED -- the form does not appear in any attestation/gloss for the language. A genuine source-level content gap, not a matcher-reach limitation. [Lane-A postposed-marker follow-up, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:41:14",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "2675": {
+      "languages": {
+        "Muria Gondi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (dialect-attribution difference). Starling attributes this form to a dialect that Burrow's consolidated Go./Kuwi entry tags to a DIFFERENT dialect: Burrow's huppe is (M.)=Maria not Muria (2675), gumiya is (D. Mu.) not Maria (1818), kētul is (Mu. Ma.) not Koya (1416), kohk- is (Mu.) not Gommu (2063), vāŋg- (-it-) is (Su.)=Sunkarametta not (Isr.)=Israel (5334), guḍḍī is (Ph.)/(Mu.) not (Tr.)=Betul (1655). The form exists in Burrow but under a different dialect label -- a genuine source-level attribution difference, verified after the postposed-dialect-marker lever (which recovered the cases where the marker DID match). [Lane-A postposed-marker follow-up, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:41:14",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "1655": {
+      "languages": {
+        "Betul Gondi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (dialect-attribution difference). Starling attributes this form to a dialect that Burrow's consolidated Go./Kuwi entry tags to a DIFFERENT dialect: Burrow's huppe is (M.)=Maria not Muria (2675), gumiya is (D. Mu.) not Maria (1818), kētul is (Mu. Ma.) not Koya (1416), kohk- is (Mu.) not Gommu (2063), vāŋg- (-it-) is (Su.)=Sunkarametta not (Isr.)=Israel (5334), guḍḍī is (Ph.)/(Mu.) not (Tr.)=Betul (1655). The form exists in Burrow but under a different dialect label -- a genuine source-level attribution difference, verified after the postposed-dialect-marker lever (which recovered the cases where the marker DID match). [Lane-A postposed-marker follow-up, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:41:14",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "1416": {
+      "languages": {
+        "Koya Gondi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (dialect-attribution difference). Starling attributes this form to a dialect that Burrow's consolidated Go./Kuwi entry tags to a DIFFERENT dialect: Burrow's huppe is (M.)=Maria not Muria (2675), gumiya is (D. Mu.) not Maria (1818), kētul is (Mu. Ma.) not Koya (1416), kohk- is (Mu.) not Gommu (2063), vāŋg- (-it-) is (Su.)=Sunkarametta not (Isr.)=Israel (5334), guḍḍī is (Ph.)/(Mu.) not (Tr.)=Betul (1655). The form exists in Burrow but under a different dialect label -- a genuine source-level attribution difference, verified after the postposed-dialect-marker lever (which recovered the cases where the marker DID match). [Lane-A postposed-marker follow-up, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:41:14",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    },
+    "2063": {
+      "languages": {
+        "Gommu Gondi": {
+          "status": "genuine_divergence",
+          "note": "genuine_divergence (dialect-attribution difference). Starling attributes this form to a dialect that Burrow's consolidated Go./Kuwi entry tags to a DIFFERENT dialect: Burrow's huppe is (M.)=Maria not Muria (2675), gumiya is (D. Mu.) not Maria (1818), kētul is (Mu. Ma.) not Koya (1416), kohk- is (Mu.) not Gommu (2063), vāŋg- (-it-) is (Su.)=Sunkarametta not (Isr.)=Israel (5334), guḍḍī is (Ph.)/(Mu.) not (Tr.)=Betul (1655). The form exists in Burrow but under a different dialect label -- a genuine source-level attribution difference, verified after the postposed-dialect-marker lever (which recovered the cases where the marker DID match). [Lane-A postposed-marker follow-up, 2026-08-20.]",
+          "reviewed_at": "2026-08-20T20:41:14",
+          "reviewed_by": "claude-triage"
+        }
+      }
+    }
+  }
+}

@@ -104,3 +104,35 @@ nahuatl_processor.ipynb
 lrc_venv/
 # local lrc-test admin session cookie (never commit)
 .lrc_cookie
+
+# ---------------------------------------------------------------------------
+# Dravidian pilot — cross-machine sync carve-outs
+#
+# The blanket *.csv / *.json / *.xlsx rules above are right for bulk data, but
+# a few small files are hand-curated state that CANNOT be regenerated. Those
+# are force-tracked here so a second machine gets full working context.
+#
+# Everything still ignored is either (a) a source-of-truth scrape synced via
+# Box, or (b) derived output rebuildable from those scrapes + tracked code.
+# See docs/SYNC.md for the split and the Mac bootstrap procedure.
+# ---------------------------------------------------------------------------
+
+# Hand-curated triage state — irreplaceable, no script regenerates this
+!data/dravidian/burrow_ded/review_ledger.json
+
+# Current validation summary only. The .before-x/.pre-x snapshots taken during
+# A/B runs stay ignored — they accumulated to 34 files and were cleared; recover
+# any you need from history rather than re-tracking them.
+!tree_validation_output/tree_validation_summary.json
+
+# Active review worklists
+!tree_validation_output/loop_worklist.json
+!tree_validation_output/genuine_divergence_worksheet.csv
+
+# Never track regenerable snapshot baselines (large, dead history)
+tree_validation_output/results.*.csv
+tree_validation_output/tree_validation_results.*.csv
+data/dravidian/burrow_ded/burrow_corpus.cleaned.*.json
+
+# transient build/error logs from local loop runs
+tree_validation_output/loop_build_err.txt
