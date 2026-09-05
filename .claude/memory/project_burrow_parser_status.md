@@ -1,6 +1,6 @@
 ---
 name: burrow-parser-status-current-open-issues
-description: Status of parser bugs and corpus state; Ko./Pattern-E/Tamil-missing/Naiki/Ma-type/Kuwi-type/leading-qualifier/headword-qualifier-after-lang-marker/nested-tag-headword-bold-bcf (791f89b) all closed; open: To.-type embedded form (21 misses), Kui bare sense-suffix forms, single-char headwords, DED 410/4896 dupes
+description: "Status of parser bugs and corpus state; Ko./Pattern-E/Tamil-missing/Naiki/Ma-type/Kuwi-type/leading-qualifier/headword-qualifier-after-lang-marker/nested-tag-headword-bold-bcf (791f89b) all closed; open: To.-type embedded form (21 misses), Kui bare sense-suffix forms, single-char headwords, DED 410/4896 dupes"
 metadata: 
   node_type: memory
   type: project
