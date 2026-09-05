@@ -40,10 +40,10 @@ only on a re-scrape or a full revalidation.
 | `f3df8ae54effb769` | 8.5 MB | `data/dravidian/starling/starling_complete_data_markup.json` | 2026-09-05 |
 | `6aabc8c835cd2a9b` | 2.4 MB | `data/dravidian/starling/output.xlsx` | 2026-09-05 |
 | `a686023c3ab10b1b` | 71.9 MB | `data/dravidian/lrc_import/dravidilex_batch_import.json` | 2026-09-05 |
-| `9dfeaefabdafb83d` | 4.8 MB | `data/dravidian/cross-validating-dded-starling/tree_validation_output/tree_validation_results.xlsx` | ⚠ **stale — 2026-07-07 build** |
-| `b1a7fe84a3f61241` | 1.1 MB | `data/dravidian/cross-validating-dded-starling/tree_validation_output/validation_audit_report.xlsx` | ⚠ **stale — 2026-07-07 build** |
-| `9b145a7d94a1c058` | 0.1 MB | `data/dravidian/cross-validating-dded-starling/tree_validation_output/coverage_by_ded_paragraph.xlsx` | ⚠ **stale — 2026-07-07 build** |
-| `ef2f120e9a720b08` | 40.5 MB | `data/dravidian/cross-validating-dded-starling/tree_validation_output/tree_validation_results.csv` | ⚠ **stale — 2026-07-07 build** |
+| `60e8f22ed217c71c` | 5.0 MB | `data/dravidian/cross-validating-dded-starling/tree_validation_output/tree_validation_results.xlsx` | 2026-09-05 |
+| `837c50d165cf1b8b` | 1.0 MB | `data/dravidian/cross-validating-dded-starling/tree_validation_output/validation_audit_report.xlsx` | 2026-09-05 |
+| `f370d8f9ec259ede` | 0.1 MB | `data/dravidian/cross-validating-dded-starling/tree_validation_output/coverage_by_ded_paragraph.xlsx` | 2026-09-05 |
+| `efb031bb6bd72b46` | 39.8 MB | `data/dravidian/cross-validating-dded-starling/tree_validation_output/tree_validation_results.csv` | 2026-09-05 |
 
 > **Superseded input (2026-09-05).** Earlier revisions of this file, the vault's progress report
 > §6, and the validator's own docstring referred to `starling_complete_data_scrape.json`. That was
@@ -53,10 +53,10 @@ only on a re-scrape or a full revalidation.
 > 2026-08-22 by the scraper colon-artifact fix (`08e14ae`). All references have been repointed,
 > including `starling_tree_validator.py`'s docstring and the `/triage-ded` skill.
 >
-> **The four `data/dravidian/cross-validating-dded-starling/tree_validation_output/` reports are stale.** They are 2026-07-07 builds and predate
-> the entire 94.0% → 98.6% tail. Only `tree_validation_summary.json`, `loop_findings.md`,
-> `loop_worklist.json` and `genuine_divergence_worksheet.csv` (all git-tracked) are current
-> (2026-08-21). Re-run the validator before shipping any row-level report.
+> **All reports regenerated 2026-09-05** by a full validator re-run, so the hashes above are
+> current and the four that had been stuck at 2026-07-07 now agree with the summary. Only
+> `triage_queue.csv` (2026-06-23) is older — it comes from `triage_mismatches.py`, not the
+> validator.
 
 Sizes/hashes captured **2026-09-05**. **Re-run the checksum command below at
 upload time and compare after download** — a background job once rewrote
@@ -131,12 +131,12 @@ PYTHONIOENCODING=utf-8 ./lrc_venv/bin/python \
   --output-dir data/dravidian/cross-validating-dded-starling/tree_validation_output
 ```
 
-Expected headline (**2026-08-21, pilot-frozen**): **entries_matched 19,083, match rate 98.6%**
-of 19,354 in-scope entries — **Language only 136, No 135**. Compare against
+Expected headline (**2026-08-21, pilot-frozen**): **entries_matched 19,100, match rate 98.6%**
+of 19,371 in-scope entries — **Language only 136, No 135**. Compare against
 `data/dravidian/cross-validating-dded-starling/tree_validation_output/tree_validation_summary.json`, which is in git.
 
-The 19,354 denominator excludes **653** non-DED-keyed subgroup-database orphans (`ad5da93`);
-against the full 20,007-row scrape the same matches are 95.4%. The 136 `Language only` rows are
+The 19,371 denominator excludes **654** non-DED-keyed subgroup-database orphans (`ad5da93`);
+against the full 20,025-row scrape the same matches are 95.4%. The 136 `Language only` rows are
 adjudicated `genuine_divergence`, **not** matches — see `docs/dravidian_validator_progress.md`
 §10–§11 before quoting any of these numbers.
 

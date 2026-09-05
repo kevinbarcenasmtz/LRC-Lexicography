@@ -1,145 +1,137 @@
 ﻿category,ded,language,starling_hw,burrow_form,starling_meaning
-morphological_citation,46,Betul Gondi,achchānā,accānā,"to be cut (of one's foot on a stump, or one's"
-morphological_citation,120,Kuwi (Fitzgerald),andali,aṇḍatasi,to aid
-morphological_citation,5124,Kuwi (Fitzgerald),mrūkhali,mṇok- (-h-),to dip into
-morphological_citation,3765,Betul Gondi,nēskānā,nēnjkaṛ(i),"to breathe heavily, pant"
-morphological_citation,3765,Mandla Gondi (Phailbus),nēskānā,nēnjkaṛ(i),"to breathe heavily, pant"
-morphological_citation,3808,Betul Gondi,paiyānā,paŋ-,"to be split (of wood, with axe)"
-morphological_citation,3808,Mandla Gondi (Williamson),paiyānā,paŋ-,to split (intr.)
-morphological_citation,3808,Mandla Gondi (Phailbus),paiyānā,paŋ-,to split (intr.)
-morphological_citation,4423,Kuwi (Fitzgerald),pēṛhali,per- (-h-),to lift
-morphological_citation,4423,Kuwi (Schulze),perh'nai,per- (-h-),"to lift, to raise"
-morphological_citation,3140,Kuwi (Fitzgerald),dācali,dā'- (dāt-),to cut with knife
-morphological_citation,3399,Mandla Gondi (Williamson),dursānā,turs-,to stir
-morphological_citation,3399,Mandla Gondi (Phailbus),dursānā,turs-,to thrust in
+close_spelling_vowel_consonant,96,Kolami,aṭ- (-ṭt-),aṭ- (aṭt-),"to stick (intr.), (child) attaches itself to breast"
+close_spelling_vowel_consonant,260,Konda (Burrow/Bhattacharya),"aṛ- (aṭ-, aṇ-)","al- (aṭ-, aṇ-)","to plait, weave"
+close_spelling_vowel_consonant,495,Muria Gondi,vallek,lēki,Bombax malabaricum
+close_spelling_vowel_consonant,1123,Kui,ḍrāḍu (pl. ḍrāṭka) (W),grāḍu,calf
+close_spelling_vowel_consonant,1893,Manda,kūnd (pl. gūtke),gūnd,mushroom
+close_spelling_vowel_consonant,2391,Kota,kac av- (aft-),kac av- (avt-),to pestle (millet) second time
+close_spelling_vowel_consonant,3655,Kota,"nāng [n,notŋ]",na·ng (n,four
+close_spelling_vowel_consonant,3655,Toda,nōng (obl.nōngn-),no·ng (n,four
+close_spelling_vowel_consonant,3884,Maria Gondi,panḍ-,paṇi,"to make, construct"
+close_spelling_vowel_consonant,3884,Muria Gondi,panḍ-,paṇi,"to make, build, repair"
+close_spelling_vowel_consonant,3949,Telugu (Krishnamurti),(?) pāru,"parapu, paṟapu","to creep, crawl"
+close_spelling_vowel_consonant,4149,Kota,piṛy māv,piṛy ma·y,female deer
+close_spelling_vowel_consonant,4266,Telugu (Krishnamurti),"(?) maḍḍa, moḍḍa",buḍḍa,penis
+close_spelling_vowel_consonant,4275,Koya Gondi,pūna,punō,new
+close_spelling_vowel_consonant,4275,Mandla Gondi (Phailbus),pūnāl,punō,new
+close_spelling_vowel_consonant,4275,Maria Gondi,pūna,punō,new
+close_spelling_vowel_consonant,4275,Muria Gondi,pūna,punō,new
+close_spelling_vowel_consonant,4275,Seoni Gondi,"pūna, pūne",punō,new
+close_spelling_vowel_consonant,4275,Yeotmal Gondi,"pūna, pūn",punō,new
+close_spelling_vowel_consonant,4527,Kuwi (Fitzgerald),pompki-ahanaha,pom- (-it-),with arms interlaced (pl. action)
+close_spelling_vowel_consonant,4847,Gommu Gondi,"veṛeṛ, vereṛ, vereḍi",warēṛ,neck
+close_spelling_vowel_consonant,4935,Kolami,"mūḍs (Pat.), muṛug (P)",muḍsū,knee
+close_spelling_vowel_consonant,5531,Kuwi (Israel),vēpa marnu,wēpa,the neem tree
+close_spelling_vowel_consonant,5557,Pengo,lēkiŋ,Iēkiŋ,(pl.) strips of bamboo
+display_fallback_or_postposed,827,Toda,eɵy,e,courage
+display_fallback_or_postposed,1416,Koya Gondi,kētul,machan,machan
+display_fallback_or_postposed,1655,Betul Gondi,guḍḍī,tomb,tomb
+display_fallback_or_postposed,1818,Maria Gondi (Mitchell),gumiya,grave,grave
+display_fallback_or_postposed,2063,Gommu Gondi,kohk-,thresh,to thresh with flail
+display_fallback_or_postposed,2675,Muria Gondi,huppe,field-rat,field-rat
+display_fallback_or_postposed,5334,Kuwi (Israel),vāŋg- (-it-),leak,to leak
+distinct_reflex,156,Maria Gondi (Mitchell),-,āpōṛā̆l,father
+distinct_reflex,277,Inscriptional Telugu,ṛaccu,aḍiy-āsa,to destroy
+distinct_reflex,410,Kinwat Kolami,ineṛ,"im/imd, ivr, id, idav",today
+distinct_reflex,410,Kolami (Setumadhava Rao),"īneḍ, neḍī","im/imd, ivr, id, idav",today
+distinct_reflex,583,Khuttia Kui,"truth, accuracy, certainty; true, etc.; truly, etc.",uhpa (uht-),truth; false
+distinct_reflex,697,Brahui,uṭ,anning,(pres. 1 sg.) to be
+distinct_reflex,813,Kolami (Setumadhava Rao),"yarg-, yarŋg- (KR-187)",erŋg- (ereŋkt-),to defecate
+distinct_reflex,1249,Betul Gondi,"kaiṭṭānā, (Gramm. kaittānā)",kehke,"to taste bitter, as quinine"
+distinct_reflex,1419,Brahui,kā-,hining,"(pres. indef.kāv, kās, kāe, kān, kāre, kār; pres.fut.kāva, kāsa, kāik, kāna, kāre, kāra;kāmbolet us (incl.) go) ""to go, depart, etc."" (seehi-n-ing)"
+distinct_reflex,1567,Kui,"""a kind of bee""",kirga vihaŋga,a kind of bee
+distinct_reflex,1818,Inscriptional Telugu,kṛocu,kōlu,to dig
+distinct_reflex,1850,Kota,gud- (gudy-),kur- (kuṯ-),"to strike with fist, nudge with elbow"
+distinct_reflex,1957,Inscriptional Telugu,"kēsiri, kēsina",cēyu,"(Nellore, 6th cent. A.D.) they did, that he did"
+distinct_reflex,1977,Kuwi (Fitzgerald),kiryū (pl. kīrka),kirpejja,ear
+distinct_reflex,2064,Kui,"""hoe""",koḍi,hoe
+distinct_reflex,2377,Brahui,cal-[ēng]ing,"caling, calēnging","to become cracked, split"
+distinct_reflex,2402,Salur Gadba,saḍpi,saṛit (pl. sakkil),cowdung
+distinct_reflex,3122,Kuwi (Israel),ṛev- (-it-),taṛj- (-it-),to take out soil from hole
+distinct_reflex,3122,Sunkarametta Kuwi,ṛev- (-it-),taṛj- (-it-),"to dig, excavate"
+distinct_reflex,3245,Toda,teṣ t/ɵwɨ̄r_ (?),tï·k- (tï·ky-),"ball of food (fortwɨ̄r_, see 2897) eaten in preliminary ceremony by ordinand for tī priesthood"
+distinct_reflex,3263,Parja Kuwi,tin- (ticc-/cicc-),tinjali (tic-),to eat
+distinct_reflex,3367,Telugu,turugu (B),tuṭṭe,"to insert, stick in as flowers, cram in, gag by thrusting a cloth in the mouth, caulk (a ship)"
+distinct_reflex,3406,Kolami (Setumadhava Rao),tigtā,tik- (tikt-),deceased (KR-597)
+distinct_reflex,3481,Brahui,durr-[ēng]ing,"durring, durrēnging","to dare, venture"
+distinct_reflex,3539,Kuwi (Israel),doy- (-it-),toiyali,"to kick, step on"
+distinct_reflex,3621,Dongriya Kuwi,naṭ'a,la'aŋa,bug
+distinct_reflex,3688,Yeotmal Gondi,imeṭ (obl. mī-),immaṭ,you (pl.)
+distinct_reflex,4187,Tulu,"puḷuku, (B-K) puḷku","pīṅkuḍuni, pīṅkuni, pīṅguḷuni","slipping out, anything soft or greasy"
+distinct_reflex,4423,Maria Gondi,par̨-,peˀ,to pile up grain in a stack
+distinct_reflex,4509,Kannada,"bede, beda","pode (podad-, poded-, podd-)","heat, rutting, ruttishness, sensual longing"
+distinct_reflex,4509,Kodagu,bede,poda-,intercourse of animals (not cattle)
+distinct_reflex,4509,Tamil,vitappu,"putai (-v-, -nt-)",desire
+distinct_reflex,4717,Parji,"mārloŋg, (S) marnoŋg",makka,rib
+distinct_reflex,5124,Kui,"""to draw water by dipping in a pot""",mluk-,to draw water by dipping in a pot
+distinct_reflex,5151,Toda,"ēɵ (obl. personalēn-),pl.ēɵām","e-, e·-",which person or thing
+distinct_reflex,5153,Inscriptional Telugu,ēṇḍu (gen.ēṇṭi),"ē̃ḍu, ē̃ḍādi",year
+distinct_reflex,5153,Parja Kuwi,vāṛoki,īyona,next year
+distinct_reflex,5301,Toda,poɵaṇ,poQaṇ,Solanum indicum
+distinct_reflex,5552,Kui,vau (pl.vanga),vaspa (vast-),"edge, cutting edge or end"
 inscr_telugu_r_d_corresp,910,Inscriptional Telugu,ēṛu,ēḍu,(7th cent.) seven
 inscr_telugu_r_d_corresp,3180,Inscriptional Telugu,tāṛu,tāḍu,palmyra or toddy palm
 inscr_telugu_r_d_corresp,3563,Inscriptional Telugu,tōṛa,"tōḍa, tōḍi",with
-close_spelling_vowel_consonant,260,Konda (Burrow/Bhattacharya),"aṛ- (aṭ-, aṇ-)","al- (aṭ-, aṇ-)","to plait, weave"
-close_spelling_vowel_consonant,96,Kolami,aṭ- (-ṭt-),aṭ- (aṭt-),"to stick (intr.), (child) attaches itself to "
-close_spelling_vowel_consonant,4266,Telugu (Krishnamurti),"(?) maḍḍa, moḍḍa",buḍḍa,penis
-close_spelling_vowel_consonant,1893,Manda,kūnd (pl. gūtke),gūnd,mushroom
-close_spelling_vowel_consonant,1123,Kui,ḍrāḍu (pl. ḍrāṭka) (W),grāḍu,calf
-close_spelling_vowel_consonant,4847,Gommu Gondi,"veṛeṛ, vereṛ, vereḍi",warēṛ,neck
-close_spelling_vowel_consonant,4935,Kolami,"mūḍs (Pat.), muṛug (P)",muḍsū,knee
-close_spelling_vowel_consonant,3655,Kota,"nāng [n,notŋ]",na·ng (n,four
-close_spelling_vowel_consonant,3655,Toda,nōng (obl.nōngn-),no·ng (n,four
-close_spelling_vowel_consonant,495,Muria Gondi,vallek,lēki,Bombax malabaricum
-close_spelling_vowel_consonant,3884,Gommu Gondi,panḍ-,paṇi,to build (house)
-close_spelling_vowel_consonant,3884,Muria Gondi,panḍ-,paṇi,"to make, build, repair"
-close_spelling_vowel_consonant,3884,Maria Gondi,panḍ-,paṇi,"to make, construct"
-close_spelling_vowel_consonant,3949,Telugu (Krishnamurti),(?) pāru,"parapu, paṟapu","to creep, crawl"
-close_spelling_vowel_consonant,4149,Kota,piṛy māv,piṛy ma·y,female deer
-close_spelling_vowel_consonant,4527,Kuwi (Fitzgerald),pompki-ahanaha,pom- (-it-),with arms interlaced (pl. action)
-close_spelling_vowel_consonant,4275,Mandla Gondi (Phailbus),pūnāl,punō,new
-close_spelling_vowel_consonant,4275,Muria Gondi,pūna,punō,new
-close_spelling_vowel_consonant,4275,Maria Gondi,pūna,punō,new
-close_spelling_vowel_consonant,4275,Seoni Gondi,"pūna, pūne",punō,new
-close_spelling_vowel_consonant,4275,Koya Gondi,pūna,punō,new
-close_spelling_vowel_consonant,4275,Yeotmal Gondi,"pūna, pūn",punō,new
-close_spelling_vowel_consonant,2391,Kota,kac av- (aft-),kac av- (avt-),to pestle (millet) second time
-close_spelling_vowel_consonant,5557,Pengo,lēkiŋ,Iēkiŋ,(pl.) strips of bamboo
-close_spelling_vowel_consonant,5531,Kuwi (Israel),vēpa marnu,wēpa,the neem tree
-partial_shared_root,1,Telugu,ā,vã̄ḍu,adj.that
+morphological_citation,46,Betul Gondi,achchānā,accānā,"to be cut (of one's foot on a stump, or one's hand with a penknife)"
+morphological_citation,120,Kuwi (Fitzgerald),andali,aṇḍatasi,to aid
+morphological_citation,3140,Kuwi (Fitzgerald),dācali,dā'- (dāt-),to cut with knife
+morphological_citation,3399,Mandla Gondi (Phailbus),dursānā,turs-,to thrust in
+morphological_citation,3765,Betul Gondi,nēskānā,nēnjkaṛ(i),"to breathe heavily, pant"
+morphological_citation,3765,Mandla Gondi (Phailbus),nēskānā,nēnjkaṛ(i),"to breathe heavily, pant"
+morphological_citation,3808,Mandla Gondi (Phailbus),paiyānā,paŋ-,to split (intr.)
+morphological_citation,3808,Mandla Gondi (Williamson),paiyānā,paŋ-,to split (intr.)
+morphological_citation,4423,Kuwi (Fitzgerald),pēṛhali,per- (-h-),to lift
+morphological_citation,4423,Kuwi (Schulze),perh'nai,per- (-h-),"to lift, to raise"
+morphological_citation,5124,Kuwi (Fitzgerald),mrūkhali,mṇok- (-h-),to dip into
 partial_shared_root,1,Kuwi (Fitzgerald),ā,ā adj.,that most remote
 partial_shared_root,1,Malto,ā,"áh, ár, áth",that
-partial_shared_root,363,Kondekor Gadba,ās-,ayl-,to choose
-partial_shared_root,333,Sunkarametta Kuwi,ā (āt-),ā-,"to become, be"
-partial_shared_root,333,Parja Kuwi,ā (āt-),ā-,"to become, be"
+partial_shared_root,1,Telugu,ā,vã̄ḍu,adj.that
+partial_shared_root,282,Kolami (Setumadhava Rao),arr-,ar- (art-),"to cry, frighten (KR-37)"
 partial_shared_root,333,Kuwi (Israel),ā (āt-),ā-,"to become, be"
-partial_shared_root,399,Tamil,āṇ,āḷ,"male, manliness, courage, superiority, warrio"
-partial_shared_root,399,Malayalam,āṇ,āḷ,male
-partial_shared_root,399,Kannada,āṇ,āḷ,"male; manliness, bravery"
+partial_shared_root,333,Parja Kuwi,ā (āt-),ā-,"to become, be"
+partial_shared_root,333,Sunkarametta Kuwi,ā (āt-),ā-,"to become, be"
 partial_shared_root,334,Kannada,"ā (pl.ākal), āvu",ā,cow
-partial_shared_root,2491,Koya Gondi,īk-,īṅ-,(Su.) to tear
-partial_shared_root,809,Sunkarametta Kuwi,e- (-t-),e-,to arrive
-partial_shared_root,837,Kondekor Gadba,elb (pl. elub),elub (pl. elbul),white ant
-partial_shared_root,905,Tekriya Kuwi,ēṛ-,ē'nai,to hold out the hand
-partial_shared_root,1165,Poya Gadba,kaṛmeṭ,kaṛsid (pl. kaṛsil),stick
-partial_shared_root,410,Telugu,ī,vī˜ḍu,adjectivethis
-partial_shared_root,410,Manda,"ivan, idel, idi",ī,"this man, this woman, this thing"
+partial_shared_root,363,Kondekor Gadba,ās-,ayl-,to choose
+partial_shared_root,399,Kannada,āṇ,āḷ,"male; manliness, bravery"
+partial_shared_root,399,Malayalam,āṇ,āḷ,male
+partial_shared_root,399,Tamil,āṇ,āḷ,"male, manliness, courage, superiority, warrior"
 partial_shared_root,410,Kui,ī,"ianju, iaru, īri",this
+partial_shared_root,410,Kurukh,ī,"īs, īr/ibṛar, īd, ibṛā",this
 partial_shared_root,410,Kuwi (Fitzgerald),ī,"īwasi, īwari, īdi, īwati",this
 partial_shared_root,410,Kuwi (Schulze),ī,īvasi,this
-partial_shared_root,410,Kurukh,ī,"īs, īr/ibṛar, īd, ibṛā",this
 partial_shared_root,410,Malto,ī,"íh, ír, íth",this
+partial_shared_root,410,Manda,"ivan, idel, idi",ī,"this man, this woman, this thing"
+partial_shared_root,410,Telugu,ī,vī˜ḍu,adjectivethis
+partial_shared_root,495,Adilabad Gondi,velkī,lēki,(Su.) silk-cotton tree
+partial_shared_root,578,Salur Gadba,ūc-,us-,to spit
+partial_shared_root,644,Kondekor Gadba,ūl-,umbl-,to urinate
+partial_shared_root,809,Sunkarametta Kuwi,e- (-t-),e-,to arrive
+partial_shared_root,837,Kondekor Gadba,elb (pl. elub),elub (pl. elbul),white ant
 partial_shared_root,868,Kolami (Setumadhava Rao),in-,en- (ent-),"to say (so-and-so), be said to be (so-and-so)"
-partial_shared_root,5151,Telugu,ē,evãḍu,adj. which
-partial_shared_root,282,Kolami (Setumadhava Rao),arr-,ar- (art-),"to cry, frighten (KR-37)"
+partial_shared_root,905,Tekriya Kuwi,ēṛ-,ē'nai,to hold out the hand
 partial_shared_root,910,Kinwat Kolami,ēṛ,eḍ,seven
+partial_shared_root,1165,Poya Gadba,kaṛmeṭ,kaṛsid (pl. kaṛsil),stick
 partial_shared_root,1479,Parja Kuwi,kāl (p. -ka),kāl (pl. -ka),leg
 partial_shared_root,1711,Kuwi (Schulze),gurromi,gūrumi,horse
-partial_shared_root,2617,Konda,"sītel, sīntel","sītel dubu, sīntel maranu","in:sītel dubu, sīntel maranudate tree, Phoeni"
-partial_shared_root,5013,Maria Gondi,buʔc-,bu?c-,to bark
-partial_shared_root,4968,Durg Gondi,molol (pl. molohk),malōl (pl. malōhk,hare
-partial_shared_root,5154,Toda,om (obl.om-),em,we (incl.)
-partial_shared_root,495,Adilabad Gondi,velkī,lēki,(Su.) silk-cotton tree
+partial_shared_root,2264,Kurukh,"cāʔanā, cāʔnā (cā̃cas)",cā'(a)nā (cã̄cas),"to stink, give forth an offensive smell; to smell in general"
+partial_shared_root,2341,Kondekor Gadba,savur (?),sam-,rheum of the eyes
+partial_shared_root,2491,Koya Gondi,īk-,īṅ-,(Su.) to tear
+partial_shared_root,2617,Konda,"sītel, sīntel","sītel dubu, sīntel maranu","in:sītel dubu, sīntel maranudate tree, Phoenix sylvestris"
+partial_shared_root,2674,Pengo,hōr,sōr,salt (sōrin DED is erroneous;hōrin the index is correct)
+partial_shared_root,3122,Khuttia Kui,ṛab-,ṛaj-,to dig
+partial_shared_root,3263,Sunkarametta Kuwi,tin- (ticc-/cicc-),tīh-,to eat
 partial_shared_root,3682,Pengo,nenj- (nenc-),neni- (nenc-),to be filled
-partial_shared_root,5160,Brahui,ī (obl. kan-),ī,I
 partial_shared_root,3684,Tulu,ī (obl.nin-),ī,you (sg.)
 partial_shared_root,3726,Kuwi (Schulze),lōlu,lūlu,thread
 partial_shared_root,4205,Konda,pir_a mundi,pite,buttock
 partial_shared_root,4205,Tulu,pini. pinni,pira,"little, small, slight"
-partial_shared_root,2341,Kondekor Gadba,savur (?),sam-,rheum of the eyes
-partial_shared_root,2264,Kurukh,"cāʔanā, cāʔnā (cā̃cas)",cā'(a)nā (cã̄cas),"to stink, give forth an offensive smell; to s"
-partial_shared_root,2674,Pengo,hōr,sōr,salt (sōrin DED is erroneous;hōrin the index 
-partial_shared_root,3122,Khuttia Kui,ṛab-,ṛaj-,to dig
-partial_shared_root,3263,Sunkarametta Kuwi,tin- (ticc-/cicc-),tīh-,to eat
-partial_shared_root,644,Kondekor Gadba,ūl-,umbl-,to urinate
-partial_shared_root,578,Salur Gadba,ūc-,us-,to spit
-partial_shared_root,5247,Ollari Gadba,vat (pl. -kil),vat (pl. okil),finger ring
-partial_shared_root,5334,Sunkarametta Kuwi,vāŋg- (-it-),vwāngali,"to flow, be poured"
-partial_shared_root,5270,Salur Gadba,"vār- (vadd-, vann-; imp. vā, var)","var- (vad-, van-)",to come
-partial_shared_root,5270,Durg Gondi,vā-,waiānā (wāt-,to come
 partial_shared_root,4509,Malayalam,vitampuka,puta,to long for
-distinct_reflex,156,Maria Gondi (Mitchell),-,āpōṛā̆l,father
-distinct_reflex,277,Inscriptional Telugu,ṛaccu,aḍiy-āsa,to destroy
-distinct_reflex,813,Kolami (Setumadhava Rao),"yarg-, yarŋg- (KR-187)",erŋg- (ereŋkt-),to defecate
-distinct_reflex,1850,Kota,gud- (gudy-),kur- (kuṯ-),"to strike with fist, nudge with elbow"
-distinct_reflex,1818,Muria Gondi,gumiya,koṛpanj,pit
-distinct_reflex,410,Kinwat Kolami,ineṛ,"im/imd, ivr, id, idav",today
-distinct_reflex,410,Kolami (Setumadhava Rao),"īneḍ, neḍī","im/imd, ivr, id, idav",today
-distinct_reflex,5151,Toda,"ēɵ (obl. personalēn-),pl.ēɵām","e-, e·-",which person or thing
-distinct_reflex,5153,Inscriptional Telugu,ēṇḍu (gen.ēṇṭi),"ē̃ḍu, ē̃ḍādi",year
-distinct_reflex,5153,Parja Kuwi,vāṛoki,īyona,next year
-distinct_reflex,1249,Betul Gondi,"kaiṭṭānā, (Gramm. kaittānā)",kehke,"to taste bitter, as quinine"
-distinct_reflex,1957,Inscriptional Telugu,"kēsiri, kēsina",cēyu,"(Nellore, 6th cent. A.D.) they did, that he d"
-distinct_reflex,1977,Kuwi (Fitzgerald),kiryū (pl. kīrka),kirpejja,ear
-distinct_reflex,2064,Kui,"""hoe""",koḍi,hoe
-distinct_reflex,1818,Inscriptional Telugu,kṛocu,kōlu,to dig
-distinct_reflex,1567,Kui,"""a kind of bee""",kirga vihaŋga,a kind of bee
-distinct_reflex,1419,Brahui,kā-,hining,"(pres. indef.kāv, kās, kāe, kān, kāre, kār; p"
-distinct_reflex,4717,Parji,"mārloŋg, (S) marnoŋg",makka,rib
-distinct_reflex,5124,Kui,"""to draw water by dipping in a pot""",mluk-,to draw water by dipping in a pot
-distinct_reflex,3621,Dongriya Kuwi,naṭ'a,la'aŋa,bug
-distinct_reflex,3688,Yeotmal Gondi,imeṭ (obl. mī-),immaṭ,you (pl.)
-distinct_reflex,4423,Maria Gondi,par̨-,peˀ,to pile up grain in a stack
-distinct_reflex,4187,Tulu,"puḷuku, (B-K) puḷku","pīṅkuḍuni, pīṅkuni, pīṅguḷuni","slipping out, anything soft or greasy"
-distinct_reflex,2402,Salur Gadba,saḍpi,saṛit (pl. sakkil),cowdung
-distinct_reflex,2377,Brahui,cal-[ēng]ing,"caling, calēnging","to become cracked, split"
-distinct_reflex,3122,Sunkarametta Kuwi,ṛev- (-it-),taṛj- (-it-),"to dig, excavate"
-distinct_reflex,3122,Kuwi (Israel),ṛev- (-it-),taṛj- (-it-),to take out soil from hole
-distinct_reflex,3406,Kolami (Setumadhava Rao),tigtā,tik- (tikt-),deceased (KR-597)
-distinct_reflex,3245,Toda,teṣ t/ɵwɨ̄r_ (?),tï·k- (tï·ky-),"ball of food (fortwɨ̄r_, see 2897) eaten in p"
-distinct_reflex,3263,Parja Kuwi,tin- (ticc-/cicc-),tinjali (tic-),to eat
-distinct_reflex,3481,Brahui,durr-[ēng]ing,"durring, durrēnging","to dare, venture"
-distinct_reflex,3539,Kuwi (Israel),doy- (-it-),toiyali,"to kick, step on"
-distinct_reflex,3367,Telugu,turugu (B),tuṭṭe,"to insert, stick in as flowers, cram in, gag "
-distinct_reflex,697,Brahui,uṭ,anning,(pres. 1 sg.) to be
-distinct_reflex,583,Khuttia Kui,"truth, accuracy, certainty; true, etc.; truly, etc.",uhpa (uht-),truth; false
-distinct_reflex,5301,Toda,poɵaṇ,poQaṇ,Solanum indicum
-distinct_reflex,5552,Kui,vau (pl.vanga),vaspa (vast-),"edge, cutting edge or end"
-distinct_reflex,4509,Tamil,vitappu,"putai (-v-, -nt-)",desire
-distinct_reflex,4509,Kannada,"bede, beda","pode (podad-, poded-, podd-)","heat, rutting, ruttishness, sensual longing"
-distinct_reflex,4509,Kodagu,bede,poda-,intercourse of animals (not cattle)
-display_fallback_or_postposed,2675,Muria Gondi,huppe,field-rat,field-rat
-display_fallback_or_postposed,2675,Maria Gondi (Mitchell),huppe,rat,"rat, mouse"
-display_fallback_or_postposed,827,Toda,eɵy,e,courage
-display_fallback_or_postposed,1655,Betul Gondi,guḍḍī,tomb,tomb
-display_fallback_or_postposed,1655,Mandla Gondi (Phailbus),guḍḍī,temple,temple
-display_fallback_or_postposed,1818,Maria Gondi (Mitchell),gumiya,grave,grave
-display_fallback_or_postposed,1416,Muria Gondi,kētul,hut,hut in field for watching
-display_fallback_or_postposed,1416,Maria Gondi,kētul,hut,hut in field for watching
-display_fallback_or_postposed,1416,Koya Gondi,kētul,machan,machan
-display_fallback_or_postposed,2063,Gommu Gondi,kohk-,thresh,to thresh with flail
-display_fallback_or_postposed,5334,Kuwi (Israel),vāŋg- (-it-),leak,to leak
+partial_shared_root,4968,Durg Gondi,molol (pl. molohk),malōl (pl. malōhk,hare
+partial_shared_root,5013,Maria Gondi,buʔc-,bu?c-,to bark
+partial_shared_root,5151,Telugu,ē,evãḍu,adj. which
+partial_shared_root,5154,Toda,om (obl.om-),em,we (incl.)
+partial_shared_root,5160,Brahui,ī (obl. kan-),ī,I
+partial_shared_root,5247,Ollari Gadba,vat (pl. -kil),vat (pl. okil),finger ring
+partial_shared_root,5270,Durg Gondi,vā-,waiānā (wāt-,to come
+partial_shared_root,5270,Salur Gadba,"vār- (vadd-, vann-; imp. vā, var)","var- (vad-, van-)",to come
+partial_shared_root,5334,Sunkarametta Kuwi,vāŋg- (-it-),vwāngali,"to flow, be poured"

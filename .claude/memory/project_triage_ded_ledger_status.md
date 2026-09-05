@@ -1,6 +1,6 @@
 ---
 name: triage-ded-ledger-status
-description: "DED<->Starling triage ledger — FINAL pilot state 2026-08-21: entry_match_rate 98.6%, entries_matched 19,083/19,354, Language only 136, No 135; residual adjudicated genuine_divergence (AI-triaged, unreviewed)"
+description: "DED<->Starling triage ledger — FINAL pilot state 2026-08-21: entry_match_rate 98.6%, entries_matched 19,100/19,371, Language only 136, No 135; residual adjudicated genuine_divergence (AI-triaged, unreviewed)"
 metadata: 
   node_type: memory
   type: project
@@ -11,8 +11,8 @@ metadata:
 ## FINAL STATE — pilot frozen 2026-08-21
 
 ```
-total_language_entries   19,354   (in scope; 653 subgroup-DB orphans excluded, ad5da93)
-entries_matched          19,083   98.6%
+total_language_entries   19,371   (in scope; 654 subgroup-DB orphans excluded, ad5da93)
+entries_matched          19,100   98.6%
   Language only             136   logged genuine_divergence
   No                        135
 ```
@@ -20,28 +20,42 @@ entries_matched          19,083   98.6%
 Source of truth: `data/dravidian/cross-validating-dded-starling/tree_validation_output/tree_validation_summary.json` (git-tracked). The last fix
 of the pilot was **`c5f78ff`** (postposed dialect markers, matcher-side/zero-regen):
 19,075 → **19,083** (+8, all Language-only → Yes), **Language only 144 → 136**, No frozen 135.
+A full re-run on 2026-09-05 against the current scrape gives **19,100 / 19,371** — same 98.6%, same
+136 + 135 residual; the +17 is scrape drift from `08e14ae`, not a validation change.
 
 **Three corrections to the older notes below, which were written mid-tail:**
 
-1. **The rate is 98.6%, not 98.5%**, and matched is **19,083, not 19,075** — the session log below
+1. **The rate is 98.6%, not 98.5%**, and matched is **19,083** on the 08-21 scrape (**19,100** on
+   the current one), not 19,075 — the session log below
    stops one commit short of `c5f78ff`.
-2. **Language-only is 136, not 144.** `c5f78ff` recovered 8 of the 11 rows that had been
-   *"HELD FOR REVIEW"* as `display_fallback_or_postposed` — they were postposed-marker cases, not
-   display bugs. `genuine_divergence_worksheet.csv` still lists 144 and is one revision stale.
+2. **Language-only is 136, not 144.** `c5f78ff` recovered 8 rows. They were *not* all from the 11
+   `display_fallback_or_postposed` rows that had been "HELD FOR REVIEW" — verified by joining the
+   old worksheet against fresh results, the 8 split 4 `display_fallback_or_postposed` /
+   2 `morphological_citation` / 1 `close_spelling_vowel_consonant` / 1 `distinct_reflex`.
+   `genuine_divergence_worksheet.csv` was **regenerated 2026-09-05** and now holds the live 136:
+   `partial_shared_root` 52, `distinct_reflex` 39, `close_spelling_vowel_consonant` 24,
+   `morphological_citation` 11, `display_fallback_or_postposed` 7, `inscr_telugu_r_d_corresp` 3.
 3. **The residual was adjudicated, never "accepted as matches."** The ledger note stamped on the
    set reads *"real transcription/dialect variation, not a matcher normalization gap."* Ledger now
    holds **174 DED entries / 147 language-level records / 145 `genuine_divergence`** — and
    **135 of the 147 are `reviewed_by: claude-triage`**, i.e. AI-classified with no human
-   spot-check. They are not in the 19,083 and must not be folded into a published rate.
-   Of the 144 worksheet rows, 40 are labelled `distinct_reflex` — genuinely different words.
+   spot-check. They are not in the 19,100 and must not be folded into a published rate.
+   Of the live 136, **39 are labelled `distinct_reflex`** — genuinely different words.
+   **The triage is demonstrably fallible:** DED 1818 Muria `gumiya` was classified
+   `distinct_reflex` and was then matched by `c5f78ff`. One mislabel in 144 is a low rate, but it
+   is why the human spot-check stays open.
 
 Full narrative, denominator caveats, and citation guidance: `docs/dravidian_validator_progress.md`
 §10–§11.
 
-**Open, in value order:** human spot-check of the `genuine_divergence` sample · regenerate the
-worksheet and the four stale 2026-07-07 reports in `data/dravidian/cross-validating-dded-starling/tree_validation_output/` · finish
-`loop_worklist.json` (33 of 52 language groups still `pending`, 170 rows) · Box re-sync of the
-v12–v16 corpus regens.
+**Open TODOs:** (1) **human spot-check of the `genuine_divergence` sample** — 135 of 147 records
+are `reviewed_by: claude-triage`, and DED 1818 proves at least one was wrong; (2) **scrape
+CVOTGD** — 662 rows carry only a page number; (3) finish `loop_worklist.json` — 33 of 52 language
+groups still `pending`, 170 rows.
+
+**Done 2026-09-05:** full validator re-run refreshed the four reports that had been stuck at their
+2026-07-07 build, and regenerated the worksheet. Box re-sync of the v12–v16 corpus regens is taken
+as done, with one more upload planned after this session.
 
 ---
 
@@ -485,7 +499,7 @@ should expect DED 0 to now be excluded from the queue.
   construction, and the fold touches only the 13 A-entries so nothing else can move). Sim
   confirmed all 8 populated bases recover with **0 "No" remaining**; full validator:
   `entry_match_rate` 95.0% → **95.1%**, `entries_matched` 18,381 → **18,410 (+29)**,
-  entries_with_ded unchanged (19,354), **0 losses**. Dominated by DED 3621 (14 No + several
+  entries_with_ded unchanged (19,371), **0 losses**. Dominated by DED 3621 (14 No + several
   Language-only recovered). Backup: `tree_validation_summary.BEFORE-Afold.json`.
 
 - **`totype-bold-embedded-marker`** (systemic key, not a DED#) — `parser_bug_fixed` (2026-08-18,

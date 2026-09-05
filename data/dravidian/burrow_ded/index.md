@@ -148,8 +148,8 @@ PYTHONIOENCODING=utf-8 ./lrc_venv/bin/python \
 
 Test mode (first N records): append `--test 2`.
 
-**Expected result (pilot-frozen, 2026-08-21):** `entries_matched` **19,083 / 19,354**,
-`entry_match_rate` **98.6%**, `Language only` 136, `No` 135, plus **653** subgroup-DB orphans
+**Expected result (pilot-frozen, 2026-08-21):** `entries_matched` **19,100 / 19,371**,
+`entry_match_rate` **98.6%**, `Language only` 136, `No` 135, plus **654** subgroup-DB orphans
 excluded from the denominator. Compare against `data/dravidian/cross-validating-dded-starling/tree_validation_output/tree_validation_summary.json`
 (tracked in git). Read `docs/dravidian_validator_progress.md` §11 before quoting the rate anywhere.
 

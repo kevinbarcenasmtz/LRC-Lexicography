@@ -114,8 +114,11 @@ command into the `lex_reflex_source` pivot:
 
 - `DEDR`: full cleaned Burrow entry HTML by the reflex's own `Number in DED`.
 - `STARLING`: compact rich citation with Starling database/text number/record/link.
-- `CVOTGD`: page/entry-number-only; **CVOTGD has still not been scraped** — `original_entry` is
-  empty on all 662 rows and only `page_number` is populated. This is the one open data gap.
+- `CVOTGD`: page/entry-number-only. **TODO — CVOTGD has still not been scraped**: `original_entry`
+  is empty on all 662 rows and only `page_number` is populated. This is the one open data gap in
+  the payload. (The other open TODO on the pilot is not a data gap but a review one: a human
+  spot-check of the `genuine_divergence` set behind the validation figure — see
+  `docs/dravidian_validator_progress.md` §11.)
 
 **Citation format — reformatted 2026-08-23** (`build_starling_entry`). The database label is now
 italic, the record id bold, the parts comma-joined, and the link follows on the same line:
