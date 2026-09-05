@@ -11,5 +11,5 @@
 # machines produce byte-identical output.
 # ---------------------------------------------------------------------------
 data/dravidian/burrow_ded/review_ledger.json  text eol=lf
-tree_validation_output/*.json                 text eol=lf
-tree_validation_output/*.csv                  text eol=lf
+data/dravidian/cross-validating-dded-starling/tree_validation_output/*.json                 text eol=lf
+data/dravidian/cross-validating-dded-starling/tree_validation_output/*.csv                  text eol=lf

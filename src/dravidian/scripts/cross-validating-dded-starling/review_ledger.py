@@ -3,7 +3,7 @@ Cross-session review-decision ledger for the DED <-> Starling triage workflow.
 
 Why this exists
 ----------------
-The mismatch backlog in ``tree_validation_output/tree_validation_results.csv``
+The mismatch backlog in ``data/dravidian/cross-validating-dded-starling/tree_validation_output/tree_validation_results.csv``
 gets reviewed across scattered sessions over months. Without persistence, a
 fresh ``triage_mismatches.py`` run would resurface DED numbers that were
 already triaged and resolved (either fixed in the parser, or confirmed as a

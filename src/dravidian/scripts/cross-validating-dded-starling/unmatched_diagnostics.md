@@ -10,7 +10,7 @@ corpus, ledger, or commit was changed in producing this.
 **Coverage: 19 / 52 groups (415 / 585 rows) — the highest-volume groups.**
 Remaining pending (33 groups, ~170 rows), next up: Kuwi (Schulze), Telugu
 (Krishnamurti), Sunkarametta Kuwi, Salur Gadba, Betul Gondi, Inscriptional Telugu…
-Live worklist/status: `tree_validation_output/loop_worklist.json` (gitignored).
+Live worklist/status: `data/dravidian/cross-validating-dded-starling/tree_validation_output/loop_worklist.json` (gitignored).
 
 ## Cross-cutting systemic levers (recurring across groups)
 

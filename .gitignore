@@ -123,16 +123,16 @@ lrc_venv/
 # Current validation summary only. The .before-x/.pre-x snapshots taken during
 # A/B runs stay ignored — they accumulated to 34 files and were cleared; recover
 # any you need from history rather than re-tracking them.
-!tree_validation_output/tree_validation_summary.json
+!data/dravidian/cross-validating-dded-starling/tree_validation_output/tree_validation_summary.json
 
 # Active review worklists
-!tree_validation_output/loop_worklist.json
-!tree_validation_output/genuine_divergence_worksheet.csv
+!data/dravidian/cross-validating-dded-starling/tree_validation_output/loop_worklist.json
+!data/dravidian/cross-validating-dded-starling/tree_validation_output/genuine_divergence_worksheet.csv
 
 # Never track regenerable snapshot baselines (large, dead history)
-tree_validation_output/results.*.csv
-tree_validation_output/tree_validation_results.*.csv
+data/dravidian/cross-validating-dded-starling/tree_validation_output/results.*.csv
+data/dravidian/cross-validating-dded-starling/tree_validation_output/tree_validation_results.*.csv
 data/dravidian/burrow_ded/burrow_corpus.cleaned.*.json
 
 # transient build/error logs from local loop runs
-tree_validation_output/loop_build_err.txt
+data/dravidian/cross-validating-dded-starling/tree_validation_output/loop_build_err.txt

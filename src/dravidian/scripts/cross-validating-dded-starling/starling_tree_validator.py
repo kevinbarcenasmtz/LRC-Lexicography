@@ -7,7 +7,7 @@ Proto-Dravidian (top-level root, no DED number) is reported on but NOT
 validated -- it sits above the DED entirely. The attestation ceiling is
 the highest proto node that actually carries a DED number.
 Usage:
-python .\\src\\dravidian\\scripts\\cross-validating-dded-starling\\starling_tree_validator.py .\\data\\dravidian\\starling\\starling_complete_data_scrape.json --corpus .\\data\\dravidian\\burrow_ded\\burrow_corpus.cleaned.json
+python .\\src\\dravidian\\scripts\\cross-validating-dded-starling\\starling_tree_validator.py .\\data\\dravidian\\starling\\starling_complete_data.json --corpus .\\data\\dravidian\\burrow_ded\\burrow_corpus.cleaned.json
 
 """
 
@@ -1111,7 +1111,7 @@ def validate_record(
 def run_validation(
     starling_path: str,
     corpus_path: str,
-    output_dir: str = "tree_validation_output",
+    output_dir: str = "data/dravidian/cross-validating-dded-starling/tree_validation_output",
     test_records: Optional[int] = None,
     strict: bool = False,
 ) -> None:
@@ -1240,7 +1240,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--output-dir",
-        default="tree_validation_output",
+        default="data/dravidian/cross-validating-dded-starling/tree_validation_output",
     )
     parser.add_argument(
         "--test",
