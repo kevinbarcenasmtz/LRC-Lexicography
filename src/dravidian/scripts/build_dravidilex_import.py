@@ -639,25 +639,28 @@ def build_starling_entry(record):
     Keep only source-locator facts here: Starling branch/database, Starling ID,
     text number, and link to the original record.
     """
-    parts = []
     url = record.get("URL")
-    citation_bits = []
+    database_label = ""
+    text_number = ""
     if url:
         database_label, text_number = starling_url_metadata(url)
-        if database_label:
-            citation_bits.append(database_label)
-        if text_number:
-            citation_bits.append(f"text no. {text_number}")
-    if record.get("Starling ID"):
-        citation_bits.append(f"record {record['Starling ID']}")
-    if citation_bits:
-        parts.append(f"<small>{html.escape(' · '.join(citation_bits))}")
+
+    citation_parts = []
+    if database_label:
+        citation_parts.append(f"<i>{html.escape(database_label)}</i>")
+    if text_number:
+        citation_parts.append(f"text no. {html.escape(text_number)}")
+    starling_id = record.get("Starling ID")
+    if starling_id:
+        citation_parts.append(f"record <b>{html.escape(str(starling_id))}</b>")
+
+    parts = ["<small>"]
+    if citation_parts:
+        parts.append(", ".join(citation_parts))
+        parts.append(". ")
     if url:
-        if citation_bits:
-            parts.append("<br>")
         parts.append(f'<a href="{html.escape(url, quote=True)}">View original record</a>')
-    if citation_bits:
-        parts.append("</small>")
+    parts.append("</small>")
     return sanitize_source_html("".join(parts))
 
 

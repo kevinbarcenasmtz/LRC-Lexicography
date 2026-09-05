@@ -1,11 +1,32 @@
 ---
 name: burrow-parser-status-current-open-issues
-description: "Status of parser bugs and corpus state; Ko./Pattern-E/Tamil-missing/Naiki/Ma-type/Kuwi-type/leading-qualifier/headword-qualifier-after-lang-marker/nested-tag-headword-bold-bcf (791f89b) all closed; open: To.-type embedded form (21 misses), Kui bare sense-suffix forms, single-char headwords, DED 410/4896 dupes"
+description: "Burrow parser status — corpus at v16 (766011a, 2026-08-20) and in sync with the parser. Closed: Ko./Pattern-E/Tamil-missing/Naiki/Ma-type/Kuwi-type/leading-qualifier/nested-tag-bold/To.-type-bold (44287fc)/single-char-vowel (fc3104b)/Pattern-G (fae4cca). Open: To.-type running-text TEXT variant, Kui bare sense-suffix forms, DED 410/4896 duplicate entries"
 metadata: 
   node_type: memory
   type: project
   originSessionId: 4c15ee36-3791-4871-bfb4-b07e45e829b0
-  modified: 2026-08-18T05:25:47.067Z
+  modified: 2026-09-05T00:00:00.000Z
+---
+
+## Corpus state (2026-09-05)
+
+`burrow_corpus.cleaned.json` is at **v16** — last reparse `2026-08-20T12:28:29`, which is the
+regen for `766011a` (committed 80 s later). 5,685 entries, 30,354 attestations, 4,804 repaired
+glosses. **In sync with the parser**: `c5f78ff`, the final fix of the pilot, is matcher-side and
+needs no regen. Version table: `docs/dravidian_validator_progress.md` §4.
+
+**Closed since this file was last written:** To.-type bold-embedded marker behind scientific names
+(`44287fc`), single-char vowel headwords (`fc3104b`), DED 1 Ta. Pattern-G (`fae4cca`), Naiki
+`(Ch.)` between-marker qualifier (`5b4b16d`), four non-canonical-markup one-offs (`6f20bd2`),
+Tamil comma-for-period marker (`766011a`).
+
+**Still open:** the To.-type **running-text TEXT variant** (no `<b>` before `<i>`, incl. DED 5154's
+own To. and elided-form DED 814 — needs a headword-quality guard the `<b>` anchor cannot provide);
+Kui bare sense-suffix forms; DED 410/4896 duplicate entries.
+
+**Box re-sync** for the v12–v16 regens is taken as done (2026-09-05); one more upload is planned
+after the current session wraps. See `docs/SYNC.md` Tier 2.
+
 ---
 
 ## Closed — Ko. missing attestation (issue_kota_parser_missing_attestation.md)

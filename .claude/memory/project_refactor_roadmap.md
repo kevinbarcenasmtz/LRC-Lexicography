@@ -30,6 +30,14 @@ separate corpus entries (inspect_ded_entry depends on this). review_ledger's
 wrapper falls back to the stripped literal on None so the archival "0" ledger
 entry stays reachable. All 22 ledger keys unchanged under the new cleaner.
 
-Validation recipe: run validator on data/dravidian/starling/starling_complete_data_scrape.json
+Validation recipe: run validator on **data/dravidian/starling/starling_complete_data.json**
 + data/dravidian/burrow_ded/burrow_corpus.cleaned.json, `cmp` CSV against
-tree_validation_output/tree_validation_results.csv. See [[project-triage-ded-ledger-status]].
+data/dravidian/cross-validating-dded-starling/tree_validation_output/tree_validation_results.csv. See [[project-triage-ded-ledger-status]].
+
+**Input repointed 2026-09-05:** this note previously said `starling_complete_data_scrape.json`
+— a superseded scrape, no longer on disk. The current inputs are `starling_complete_data.json`
+and the markup superset `starling_complete_data_markup.json`. Every reference has been repointed
+(validator docstring, `/triage-ded` skill, docs, vault).
+
+**Baseline note:** the 87.1% / 17,080 figure above was the 2026-08-16 refactor baseline and is
+long superseded — the pilot froze at **98.6% / 19,083** on 2026-08-21.

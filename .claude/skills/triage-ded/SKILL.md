@@ -16,7 +16,7 @@ use the project virtual environment's interpreter (see the repo's
 `./lrc_env/Scripts/python.exe` (Git Bash) -- not a bare `python`.
 
 Paths used throughout:
-- Results: `tree_validation_output/tree_validation_results.csv`
+- Results: `data/dravidian/cross-validating-dded-starling/tree_validation_output/tree_validation_results.csv`
 - Corpus: `data/dravidian/burrow_ded/burrow_corpus.cleaned.json`
 - Ledger: `data/dravidian/burrow_ded/review_ledger.json`
 - Scripts: `src/dravidian/scripts/cross-validating-dded-starling/{triage_mismatches,inspect_ded_entry,review_ledger}.py`
@@ -47,7 +47,7 @@ but your snippet will not:
 
 1. **Orient.** Run:
    ```
-   lrc_env\Scripts\python.exe src/dravidian/scripts/cross-validating-dded-starling/triage_mismatches.py tree_validation_output/tree_validation_results.csv --primary ded_language --exclude-reviewed --ledger data/dravidian/burrow_ded/review_ledger.json --output tree_validation_output/triage_queue.csv
+   lrc_env\Scripts\python.exe src/dravidian/scripts/cross-validating-dded-starling/triage_mismatches.py data/dravidian/cross-validating-dded-starling/tree_validation_output/tree_validation_results.csv --primary ded_language --exclude-reviewed --ledger data/dravidian/burrow_ded/review_ledger.json --output data/dravidian/cross-validating-dded-starling/tree_validation_output/triage_queue.csv
    ```
    Read back only a handful of top rows to the user, not the whole file.
    Call out the shape: one DED# with several different languages failing
@@ -137,7 +137,7 @@ but your snippet will not:
      `tree_validation_summary.json` first since the run overwrites it in
      place:
      ```
-     lrc_env\Scripts\python.exe src/dravidian/scripts/cross-validating-dded-starling/starling_tree_validator.py data/dravidian/starling/starling_complete_data_scrape.json --corpus data/dravidian/burrow_ded/burrow_corpus.cleaned.json --output-dir tree_validation_output
+     lrc_env\Scripts\python.exe src/dravidian/scripts/cross-validating-dded-starling/starling_tree_validator.py data/dravidian/starling/starling_complete_data.json --corpus data/dravidian/burrow_ded/burrow_corpus.cleaned.json --output-dir data/dravidian/cross-validating-dded-starling/tree_validation_output
      ```
 
 7. **Report the before/after `entry_match_rate`** from
@@ -169,7 +169,7 @@ but your snippet will not:
 9. **Commit and push the code fix** -- only after the fix is verified and the
    ledger entry is written. Ask the user first unless they've already said to
    commit. Stage only the changed **source files**; the ledger
-   (`review_ledger.json`) and everything under `tree_validation_output/` are
+   (`review_ledger.json`) and everything under `data/dravidian/cross-validating-dded-starling/tree_validation_output/` are
    gitignored data artifacts and are not committed. Write a descriptive
    message that states the before/after `entry_match_rate` and row delta.
    Follow the user's standing preference on co-author trailers (they have

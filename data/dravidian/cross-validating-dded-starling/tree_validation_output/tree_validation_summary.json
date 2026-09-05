@@ -1,12 +1,12 @@
 ﻿{
-  "total_language_entries": 19354,
-  "entries_with_ded": 19354,
+  "total_language_entries": 19371,
+  "entries_with_ded": 19371,
   "entries_without_ded": 0,
-  "entries_matched": 19083,
+  "entries_matched": 19100,
   "entry_match_rate": 98.6,
-  "unique_branches": 7948,
+  "unique_branches": 7953,
   "branch_status_breakdown": {
-    "fully_attested": 7740,
+    "fully_attested": 7745,
     "partially_attested (6/7)": 7,
     "partially_attested (4/5)": 25,
     "not_attested": 44,
@@ -31,13 +31,13 @@
     "partially_attested (1/4)": 1
   },
   "confidence_distribution": {
-    "100%-110%": 13297,
-    "90%-100%": 5786
+    "100%-110%": 13303,
+    "90%-100%": 5797
   },
   "records_processed": 20,
-  "subgroup_db_orphans_excluded": 653,
+  "subgroup_db_orphans_excluded": 654,
   "subgroup_db_orphans_by_database": {
-    "gndet": 635,
+    "gndet": 636,
     "kuiet": 5,
     "telet": 4,
     "ndret": 4,

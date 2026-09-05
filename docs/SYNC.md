@@ -5,7 +5,7 @@ travels in **git**, what travels over **Box**, and what is **rebuilt locally**.
 
 The guiding rule comes from `data/dravidian/burrow_ded/index.md`:
 **`burrow_corpus.json` is the single source of truth.** Everything downstream
-(`burrow_corpus.cleaned.json`, every file in `tree_validation_output/`) is
+(`burrow_corpus.cleaned.json`, every file in `data/dravidian/cross-validating-dded-starling/tree_validation_output/`) is
 reproducible from it plus tracked code. So only genuinely irreplaceable things
 need to travel.
 
@@ -19,10 +19,10 @@ rules would otherwise swallow them).
 
 | File | What it is |
 |---|---|
-| `data/dravidian/burrow_ded/review_ledger.json` | **168 triage entries / 214 reviewed keys.** Your accumulated per-DED decisions and notes. Nothing regenerates this. |
-| `tree_validation_output/tree_validation_summary*.json` | Metric history — the audit trail behind every fix (~156 KB total). |
-| `tree_validation_output/genuine_divergence_worksheet.csv` | Active divergence-logging worksheet. |
-| `tree_validation_output/loop_worklist.json`, `loop_findings.md` | Review worklists. |
+| `data/dravidian/burrow_ded/review_ledger.json` | **174 DED entries; 147 language-level records, of which 145 are `genuine_divergence`.** Accumulated per-DED decisions and notes. Nothing regenerates this. ⚠ 135 of the 147 language-level records are `reviewed_by: claude-triage` — AI-classified, not human-reviewed. |
+| `data/dravidian/cross-validating-dded-starling/tree_validation_output/tree_validation_summary*.json` | Metric history — the audit trail behind every fix (~156 KB total). |
+| `data/dravidian/cross-validating-dded-starling/tree_validation_output/genuine_divergence_worksheet.csv` | Active divergence-logging worksheet. |
+| `data/dravidian/cross-validating-dded-starling/tree_validation_output/loop_worklist.json`, `loop_findings.md` | Review worklists. |
 | `src/dravidian/scripts/.../unmatched_diagnostics.md` | Diagnostics driving the current matcher work. |
 | `CLAUDE.md`, `.claude/skills/triage-ded/SKILL.md` | Project instructions + the triage skill. |
 | `.claude/memory/*.md` | Claude's project memory (see "Memory" below). |
@@ -32,38 +32,55 @@ rules would otherwise swallow them).
 Source-of-truth scrapes and current outputs. Too large for git, and they change
 only on a re-scrape or a full revalidation.
 
-| SHA-256 (first 16) | Size | Path |
-|---|---:|---|
-| `f09c59b666fad80b` | 16.1 MB | `data/dravidian/burrow_ded/burrow_corpus.json` |
-| `6b6dc5dc6d17a5bb` | 17.9 MB | `data/dravidian/burrow_ded/burrow_corpus.cleaned.json` |
-| `ebb8df002b5d8c2a` | 8.6 MB | `data/dravidian/starling/starling_complete_data_scrape.json` |
-| `8ec996221f813086` | 3.5 MB | `data/dravidian/starling/output.xlsx` |
-| `319fdf69fd7aa3ab` | 5.0 MB | `tree_validation_output/tree_validation_results.xlsx` |
-| `f1baa61d6274e353` | 1.0 MB | `tree_validation_output/validation_audit_report.xlsx` |
-| `4edd5960a8c2f0f5` | 0.1 MB | `tree_validation_output/coverage_by_ded_paragraph.xlsx` |
-| `6981368bf786da9e` | 39.8 MB | `tree_validation_output/tree_validation_results.csv` |
+| SHA-256 (first 16) | Size | Path | Captured |
+|---|---:|---|---|
+| `f09c59b666fad80b` | 16.1 MB | `data/dravidian/burrow_ded/burrow_corpus.json` | 2026-09-05 (unchanged since 08-20) |
+| `6b6dc5dc6d17a5bb` | 17.9 MB | `data/dravidian/burrow_ded/burrow_corpus.cleaned.json` | 2026-09-05 (unchanged since 08-20) |
+| `472c959d1fe3adf8` | 6.9 MB | `data/dravidian/starling/starling_complete_data.json` | 2026-09-05 |
+| `f3df8ae54effb769` | 8.5 MB | `data/dravidian/starling/starling_complete_data_markup.json` | 2026-09-05 |
+| `6aabc8c835cd2a9b` | 2.4 MB | `data/dravidian/starling/output.xlsx` | 2026-09-05 |
+| `a686023c3ab10b1b` | 71.9 MB | `data/dravidian/lrc_import/dravidilex_batch_import.json` | 2026-09-05 |
+| `60e8f22ed217c71c` | 5.0 MB | `data/dravidian/cross-validating-dded-starling/tree_validation_output/tree_validation_results.xlsx` | 2026-09-05 |
+| `837c50d165cf1b8b` | 1.0 MB | `data/dravidian/cross-validating-dded-starling/tree_validation_output/validation_audit_report.xlsx` | 2026-09-05 |
+| `f370d8f9ec259ede` | 0.1 MB | `data/dravidian/cross-validating-dded-starling/tree_validation_output/coverage_by_ded_paragraph.xlsx` | 2026-09-05 |
+| `efb031bb6bd72b46` | 39.8 MB | `data/dravidian/cross-validating-dded-starling/tree_validation_output/tree_validation_results.csv` | 2026-09-05 |
 
-Sizes/hashes are a point-in-time snapshot (2026-08-20). **Re-run the checksum
-command below at upload time and compare after download** — a background job
-rewrote `validation_audit_report.xlsx` mid-capture, so don't trust a stale hash.
+> **Superseded input (2026-09-05).** Earlier revisions of this file, the vault's progress report
+> §6, and the validator's own docstring referred to `starling_complete_data_scrape.json`. That was
+> a real scrape, now **superseded and no longer on disk**. The current inputs are
+> `data/dravidian/starling/starling_complete_data.json` and the markup-preserving superset
+> `starling_complete_data_markup.json` from the 2026-08-08 re-scrape. Both were last rewritten
+> 2026-08-22 by the scraper colon-artifact fix (`08e14ae`). All references have been repointed,
+> including `starling_tree_validator.py`'s docstring and the `/triage-ded` skill.
+>
+> **All reports regenerated 2026-09-05** by a full validator re-run, so the hashes above are
+> current and the four that had been stuck at 2026-07-07 now agree with the summary. Only
+> `triage_queue.csv` (2026-06-23) is older — it comes from `triage_mismatches.py`, not the
+> validator.
+
+Sizes/hashes captured **2026-09-05**. **Re-run the checksum command below at
+upload time and compare after download** — a background job once rewrote
+`validation_audit_report.xlsx` mid-capture, so don't trust a stale hash.
 
 ```bash
 # On either machine, from repo root:
-sha256sum data/dravidian/burrow_ded/burrow_corpus.json \
-          data/dravidian/burrow_ded/burrow_corpus.cleaned.json \
-          data/dravidian/starling/starling_complete_data_scrape.json \
-          data/dravidian/starling/output.xlsx
+# macOS: shasum -a 256    Linux/Git-Bash: sha256sum
+shasum -a 256 data/dravidian/burrow_ded/burrow_corpus.json \
+              data/dravidian/burrow_ded/burrow_corpus.cleaned.json \
+              data/dravidian/starling/starling_complete_data.json \
+              data/dravidian/starling/starling_complete_data_markup.json \
+              data/dravidian/starling/output.xlsx
 ```
 
-Strictly, only `burrow_corpus.json` + `starling_complete_data_scrape.json` +
+Strictly, only `burrow_corpus.json` + `starling_complete_data.json` +
 `output.xlsx` are *required* — `burrow_corpus.cleaned.json` and the
-`tree_validation_output/` reports are shipped so the Mac gets byte-parity
+`data/dravidian/cross-validating-dded-starling/tree_validation_output/` reports are shipped so the Mac gets byte-parity
 immediately instead of spending a reparse + full validation run to get there.
 
 ## Tier 3 — Rebuilt locally, never synced
 
 `burrow_corpus.cleaned.json` (if not taken from Box), everything else in
-`tree_validation_output/`, `__pycache__/`, `.mypy_cache/`, `lrc_env/`.
+`data/dravidian/cross-validating-dded-starling/tree_validation_output/`, `__pycache__/`, `.mypy_cache/`, `lrc_venv/`.
 
 `.gitignore` now also hard-blocks the snapshot patterns that used to pile up
 (`results.*.csv`, `tree_validation_results.*.csv`,
@@ -79,24 +96,27 @@ git clone https://github.com/kevinbarcenasmtz/LRC-Lexicography.git
 cd LRC-Lexicography
 git checkout dravidilex-pilot
 
-python3 -m venv lrc_env
-./lrc_env/bin/pip install -r src/requirements.txt
+python3 -m venv lrc_venv
+./lrc_venv/bin/pip install -r src/requirements.txt
 
 # Drop the Tier 2 files from Box into these exact paths:
 #   data/dravidian/burrow_ded/burrow_corpus.json
 #   data/dravidian/burrow_ded/burrow_corpus.cleaned.json
-#   data/dravidian/starling/starling_complete_data_scrape.json
+#   data/dravidian/starling/starling_complete_data.json
+#   data/dravidian/starling/starling_complete_data_markup.json
 #   data/dravidian/starling/output.xlsx
-#   tree_validation_output/*.xlsx
+#   data/dravidian/cross-validating-dded-starling/tree_validation_output/*.xlsx
 ```
 
-Note the Mac venv layout is `lrc_env/bin/python`, not `lrc_env/Scripts/python.exe`.
-`CLAUDE.md` documents the Windows path; use the `bin` form on macOS.
+**The venv on this Mac is `lrc_venv/`, not `lrc_env/`** — rebuilt 2026-08-08 on Python 3.12 from
+`src/requirements.txt` (the pre-move one pointed at `~/Projects/LRC-Lexicography` and lacked the
+scraping deps). Layout is `lrc_venv/bin/python`, not `lrc_venv/Scripts/python.exe`; `CLAUDE.md`
+documents the Windows path, so use the `bin` form on macOS.
 
 ### Rebuild the derived corpus (only if you skipped it on Box)
 
 ```bash
-./lrc_env/bin/python src/dravidian/scripts/cross-validating-dded-starling/reparse_burrow_corpus.py \
+./lrc_venv/bin/python src/dravidian/scripts/cross-validating-dded-starling/reparse_burrow_corpus.py \
     data/dravidian/burrow_ded/burrow_corpus.json \
     --output data/dravidian/burrow_ded/burrow_corpus.cleaned.json
 ```
@@ -104,16 +124,21 @@ Note the Mac venv layout is `lrc_env/bin/python`, not `lrc_env/Scripts/python.ex
 ### Revalidate (confirms parity with this machine)
 
 ```bash
-PYTHONIOENCODING=utf-8 ./lrc_env/bin/python \
+PYTHONIOENCODING=utf-8 ./lrc_venv/bin/python \
   src/dravidian/scripts/cross-validating-dded-starling/starling_tree_validator.py \
-  data/dravidian/starling/starling_complete_data_scrape.json \
+  data/dravidian/starling/starling_complete_data.json \
   --corpus data/dravidian/burrow_ded/burrow_corpus.cleaned.json \
-  --output-dir tree_validation_output
+  --output-dir data/dravidian/cross-validating-dded-starling/tree_validation_output
 ```
 
-Expected headline (2026-08-20): **entries_matched 19,075, match rate 98.5%**,
-Language-only 144, No 135. Compare against
-`tree_validation_output/tree_validation_summary.json`, which is in git.
+Expected headline (**2026-08-21, pilot-frozen**): **entries_matched 19,100, match rate 98.6%**
+of 19,371 in-scope entries — **Language only 136, No 135**. Compare against
+`data/dravidian/cross-validating-dded-starling/tree_validation_output/tree_validation_summary.json`, which is in git.
+
+The 19,371 denominator excludes **654** non-DED-keyed subgroup-database orphans (`ad5da93`);
+against the full 20,025-row scrape the same matches are 95.4%. The 136 `Language only` rows are
+adjudicated `genuine_divergence`, **not** matches — see `docs/dravidian_validator_progress.md`
+§10–§11 before quoting any of these numbers.
 
 ### Memory
 
@@ -141,32 +166,22 @@ look like a whole-file diff. Two guards are in place:
   machines emit byte-identical JSON.
 
 The existing ledger was renormalized to LF (content verified identical at the
-time; the committed ledger holds 174 entries / 145 `genuine_divergence`).
+time). The committed ledger holds **174 DED entries / 147 language-level records /
+145 `genuine_divergence`** — re-verified 2026-09-05.
 
 ---
 
-## Language tree source
+## Language tree source — RESOLVED 2026-08-22
 
-`build_dravidilex_import.py` reads a language-tree workbook to build
-`dravidilex_languages.csv` (`build_languages_csv()`, called at line 394):
+~~`build_dravidilex_import.py` reads `data/dravidian/three-tier-language tree.xlsx`
+(`TREE_XLSX`, line 44) to build `dravidilex_languages.csv`; that Krishnamurti-2003 workbook is
+superseded and the constant needs repointing.~~
 
-```python
-TREE_XLSX = DATA_DIR / "three-tier-language tree.xlsx"   # line 44
-```
+**Closed.** `data/dravidian/lrc_import/dravidilex_languages.csv` is now the **tracked source of
+truth** for the language tier, and the same 38 rows that were imported to lrc-test
+(`7b20411`, `bc4b427`, `d9fbef0`). The old three-tier workbook is only a fallback if that CSV is
+absent, and it was never tracked in git — nothing needs deleting or migrating.
 
-That Krishnamurti-2003 workbook is **superseded**. A newer tree lives on the Mac
-and is already on Box; the old three-tier file is being retired. It was never
-tracked in git (`git log --all --diff-filter=ADR -- "*three-tier*"` is empty) and
-is not on the Windows machine, so nothing here needs deleting — only the
-`TREE_XLSX` constant needs repointing at the replacement.
-
-Two things to check when repointing:
-
-- **Path/filename** — if the replacement is dropped in at the same path under a
-  different name, update line 44 (and the header comment at line 8).
-- **Sheet layout** — `build_languages_csv()` does `wb.active` and reads
-  Family/Subfamily/Language positionally. If the newer workbook has a different
-  active sheet or column order, the path change alone is not enough.
-
-`data/dravidian/lrc_import/index.md` also describes the old tree (lines 5, 21)
-and should be updated to name the replacement.
+The CSV is both a tracked *input* and a rewritten normalized *output* of the build script, so it
+travels in Tier 1 and needs no Box hop. `data/dravidian/lrc_import/index.md` documents the
+38-language layout and the mapping decisions behind it.

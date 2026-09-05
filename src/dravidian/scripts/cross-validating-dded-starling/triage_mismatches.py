@@ -4,7 +4,7 @@ Triage / prioritize DED <-> Starling mismatch rows for manual review.
 Why this exists
 ----------------
 A full validation run leaves thousands of mismatch rows in
-``tree_validation_output/tree_validation_results.csv``. Scrolling through
+``data/dravidian/cross-validating-dded-starling/tree_validation_output/tree_validation_results.csv``. Scrolling through
 them one at a time in Excel doesn't surface the signal that matters most: a
 single parser bug often fails many rows at once. This script groups the
 backlog so a review session can spot that signal quickly:
@@ -33,10 +33,10 @@ Relation to other scripts in this directory
 
 Usage
 -----
-    python triage_mismatches.py tree_validation_output/tree_validation_results.csv \\
+    python triage_mismatches.py data/dravidian/cross-validating-dded-starling/tree_validation_output/tree_validation_results.csv \\
         --primary ded_language --exclude-reviewed \\
         --ledger data/dravidian/burrow_ded/review_ledger.json \\
-        --output tree_validation_output/triage_queue.csv
+        --output data/dravidian/cross-validating-dded-starling/tree_validation_output/triage_queue.csv
 """
 
 from __future__ import annotations
